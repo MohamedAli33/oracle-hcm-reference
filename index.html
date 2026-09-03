@@ -1091,7 +1091,18 @@
       margin:10px auto 0;
       border-radius:14px;
     }
-    .page-nav-inner.open{display:flex;}
+    .page-nav-inner.open{
+      display:flex;
+      position:fixed;
+      top:70px;
+      left:50%;
+      transform:translateX(-50%);
+      width:calc(100% - 32px);
+      max-width:420px;
+      max-height:calc(100vh - 90px);
+      overflow-y:auto;
+      z-index:29;
+    }
     .page-nav-btn{padding:11px 13px;font-size:13px;text-align:center;border-radius:10px;}
     .compare-wrap,.report-category,.sql-report,.advice,.controls,
     .stats,.grid,.section-title,.tricks,.suffix-guide,.compare-wrap,
