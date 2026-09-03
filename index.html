@@ -31,11 +31,13 @@
     background:var(--bg);
     color:var(--text);
     min-height:100vh;
-    padding-bottom:60px;
     position:relative;
-    overflow-x:hidden;
     overflow-wrap:break-word;
     word-wrap:break-word;
+  }
+  .page-content{
+    padding-bottom:60px;
+    overflow-x:hidden;
   }
   /* glass background: floating blurred color orbs behind everything */
   .orb{
@@ -1128,16 +1130,18 @@
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
 
-<header>
-  <h1>مرجع جداول Oracle HCM</h1>
-  <p>دليلي الشخصي أثناء تعلم أوراكل HCM — أهم الجداول ومصايد الصنعة</p>
-</header>
-
 <div class="page-nav-toggle" id="pageNavToggle" role="button" tabindex="0" aria-label="فتح قائمة التنقل">
   <span class="bar"></span>
   <span class="bar"></span>
   <span class="bar"></span>
 </div>
+
+<div class="page-content">
+
+<header>
+  <h1>مرجع جداول Oracle HCM</h1>
+  <p>دليلي الشخصي أثناء تعلم أوراكل HCM — أهم الجداول ومصايد الصنعة</p>
+</header>
 
 <div class="page-nav">
   <div class="page-nav-inner" id="pageNav">
@@ -1215,6 +1219,8 @@
 <footer>
   مرجع شخصي لتعلم Oracle HCM — البيانات مبنية على توثيق أوراكل الرسمي ومصادر مجتمعية. تحقق دايماً من التوثيق الرسمي قبل الاعتماد الكامل في بيئة إنتاج.
 </footer>
+
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
