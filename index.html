@@ -34,6 +34,8 @@
     padding-bottom:60px;
     position:relative;
     overflow-x:hidden;
+    overflow-wrap:break-word;
+    word-wrap:break-word;
   }
   /* glass background: floating blurred color orbs behind everything */
   .orb{
@@ -121,15 +123,23 @@
     gap:5px;
     width:38px;
     height:38px;
-    position:absolute;
-    top:50%;
+    position:fixed;
+    top:24px;
     right:16px;
-    transform:translateY(-50%);
-    background:rgba(255,255,255,.06);
+    z-index:30;
+    background:rgba(28,36,56,.85);
+    backdrop-filter:blur(18px) saturate(150%);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
     border:1px solid rgba(255,255,255,.14);
     border-radius:10px;
     cursor:pointer;
     user-select:none;
+    pointer-events:auto;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    transform:translateZ(0);
+    -webkit-transform:translateZ(0);
+    will-change:transform;
   }
   .page-nav-toggle .bar{
     width:18px;
@@ -254,6 +264,9 @@
     gap:20px;
     box-shadow:0 4px 24px rgba(0,0,0,.18);
   }
+  .sql-report-card > div{
+    min-width:0;
+  }
   .sql-report-title-ar{
     font-size:21px;
     font-weight:900;
@@ -311,6 +324,7 @@
     border:1px solid rgba(255,255,255,.08);
     border-radius:10px;
     padding:13px 15px;
+    min-width:0;
   }
   .sql-benefit b{
     display:block;
@@ -331,6 +345,7 @@
     border:1px solid rgba(255,255,255,.08);
     background:rgba(255,255,255,.02);
     padding:12px;
+    min-width:0;
   }
   .sql-diagram-wrap svg{
     display:block;
@@ -360,6 +375,7 @@
     overflow:hidden;
     border:1px solid rgba(255,255,255,.1);
     background:#0b0f1a;
+    min-width:0;
   }
   .sql-code-bar{
     display:flex;
@@ -553,6 +569,7 @@
     gap:9px;
     box-shadow:0 4px 24px rgba(0,0,0,.18);
     transition:border-color .18s ease, transform .18s ease;
+    min-width:0;
   }
   .cmd-card:hover{
     border-color:rgba(139,125,255,.45);
@@ -587,6 +604,7 @@
     border:1px solid rgba(255,255,255,.1);
     background:#0b0f1a;
     margin-top:4px;
+    min-width:0;
   }
   .cmd-example-bar{
     display:flex;
@@ -820,6 +838,7 @@
     gap:8px;
     box-shadow:0 4px 24px rgba(0,0,0,.18);
     transition:transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+    min-width:0;
   }
   .card:hover{
     transform:translateY(-3px);
@@ -975,6 +994,9 @@
     color:#141018;
     box-shadow:0 4px 14px rgba(139,125,255,.35);
   }
+  .trick-body{
+    min-width:0;
+  }
   .trick-body h3{
     margin:0 0 7px;
     font-size:15.5px;
@@ -998,6 +1020,10 @@
     color:var(--accent2);
     direction:ltr;
     display:inline-block;
+    max-width:100%;
+    overflow-wrap:break-word;
+    word-break:break-word;
+    white-space:normal;
     font-size:12.5px;
   }
 
@@ -1020,6 +1046,7 @@
     font-weight:500;
     line-height:1.7;
     color:var(--muted);
+    min-width:0;
   }
   .suffix-item b{
     color:var(--accent2);
@@ -1104,12 +1131,13 @@
 <header>
   <h1>مرجع جداول Oracle HCM</h1>
   <p>دليلي الشخصي أثناء تعلم أوراكل HCM — أهم الجداول ومصايد الصنعة</p>
-  <div class="page-nav-toggle" id="pageNavToggle" role="button" tabindex="0" aria-label="فتح قائمة التنقل">
-    <span class="bar"></span>
-    <span class="bar"></span>
-    <span class="bar"></span>
-  </div>
 </header>
+
+<div class="page-nav-toggle" id="pageNavToggle" role="button" tabindex="0" aria-label="فتح قائمة التنقل">
+  <span class="bar"></span>
+  <span class="bar"></span>
+  <span class="bar"></span>
+</div>
 
 <div class="page-nav">
   <div class="page-nav-inner" id="pageNav">
@@ -2866,6 +2894,87 @@ const ADVICE = [
         <li><strong>REST API:</strong> لو عندك نظام تاني متكامل مع أوراكل وعاوز تعدّل الرواتب برمجيًا، أوراكل عندها REST resource اسمه <code>salaries</code> تحت مسار عام زي <code>/fscmRestApi/resources/&lt;VERSION&gt;/salaries</code> (رقم الـ VERSION بيختلف حسب إصدار بيئتكم — اتأكد منه من توثيق أوراكل الرسمي أو من فريق التكامل عندكم).</li>
       </ul>
       <div class="tip">⚠️ الطريقتين دول شغل الـ IT / Data Migration / التكامل — مش الاستخدام اليومي العادي للـ HR.</div>
+    `
+  },
+  {
+    icon:"🗓️",
+    title:"يوم في شغل HCM Technical & Functional Consultant — الأدوات والشاشات اللي هتستخدمها يوميًا وفين مكانها",
+    body: `
+      <p>لما تجمع بين الجانب الوظيفي (Functional) والتقني (Technical) في Oracle Fusion Cloud، يومك بيتوزع بين حل مشاكل المستخدمين، بناء تقارير، تعديل شاشات، ونقل بيانات. دي أهم الأدوات والشاشات اللي هتفضل تدخل عليها بشكل شبه يومي، مقسّمة حسب طبيعة الشغل، ومعاها فين بالظبط تلاقيها جوه الفيوجن.</p>
+
+      <h4>1) أدوات التقارير واستخراج البيانات</h4>
+      <ul>
+        <li><strong>BI Publisher (BIP):</strong> الأداة الأساسية لكتابة استعلامات SQL مباشرة وسحب بيانات خام من جداول أوراكل، وبناء Data Models وتقارير مطبوعة (زي قسيمة الراتب أو العقود).</li>
+        <li><strong>OTBI (Oracle Transactional Business Intelligence):</strong> لبناء تقارير سريعة وسحب مؤشرات بالسحب والإفلات (Drag and Drop) للمستخدمين ومسؤولي الـ HR من غير ما تكتب SQL.</li>
+        <li><strong>SQL Developer / DBeaver:</strong> لتجربة الـ Queries بسرعة قبل ما تحطها في BI Publisher — بس خد بالك: ده مش وصول مباشر لقاعدة بيانات الـ Production نفسها؛ غالبًا بيكون عن طريق حساب قراءة فقط (Read-Only) على نسخة تقارير (BICC / OTBI-based)، ومش كل الشركات بتدي الصلاحية دي أصلاً — اتأكد من الـ DBA أو مسؤول الأمان عندكم الأول.</li>
+        <li><strong>Postman / Insomnia:</strong> لتجربة واجهات REST أو SOAP APIs لما تبني تكاملات (Integrations) بين فيوجن وأنظمة تانية (زي جهاز البصمة أو البنوك) — الأداة دي بتفضل مطلوبة أكتر لمستشاري التكامل (Integration Consultant) عن التكنو-فانكشنال العادي، بس مفيد جدًا تعرفها.</li>
+      </ul>
+      <p class="img-cap">فين تلاقيهم: Navigator ← Tools ← Reports and Analytics ← زرار Browse Catalog (فوق يمين الصفحة) — من هنا بتوصل لشاشة بناء تقارير الـ SQL والـ OTBI.</p>
+
+      <h4>2) أدوات نقل وتحديث البيانات</h4>
+      <ul>
+        <li><strong>HCM Data Loader (HDL):</strong> الأداة الأقوى لرفع وتحديث بيانات بكميات ضخمة (Mass Updates) — موظفين جدد، تحديث رواتب جماعي، تعديل هيكل تنظيمي — عن طريق ملفات نصية (.dat).</li>
+        <li><strong>HSDL (Spreadsheet Data Loader):</strong> بترفع وتحدّث بيانات مباشرة من ملفات Excel مربوطة بالنظام — مناسبة أكتر للرواتب والمكافآت الشهرية أو لما تدي المستخدمين المتقدمين أداة أسهل من ملفات الـ .dat.</li>
+      </ul>
+      <p class="img-cap">فين تلاقيهم: Navigator ← My Client Groups ← Data Exchange — هتلاقي جوّاها Manage HCM Data Loader (لملفات .dat) و Run Spreadsheet Data Loader (للإكسيل).</p>
+
+      <h4>3) أدوات تخصيص وتعديل النظام</h4>
+      <ul>
+        <li><strong>Page Composer / Visual Builder Studio (VBS):</strong> لتعديل شكل الشاشات — إخفاء خانة، إظهار خانة تانية، أو خلي حقل معين إجباري بناءً على طلب البزنس.</li>
+        <li><strong>Fast Formulas (FF):</strong> لغة البرمجة الخاصة بأوراكل — هتحتاجها كتير خصوصًا في الـ Payroll والـ Absence لكتابة معادلات حسابية للرواتب، الخصومات، مكافأة نهاية الخدمة، أو طريقة حساب رصيد الإجازات.</li>
+        <li><strong>Sandbox:</strong> بيئة عمل افتراضية مؤقتة — لازم تفتحها وتفعّلها قبل أي تعديل على الواجهات أو الصلاحيات، عشان التعديل ميأثرش على باقي المستخدمين لحد ما تعتمده (Publish).</li>
+      </ul>
+      <p class="img-cap">فين تلاقيهم: الـ Sandbox من Navigator ← Configuration ← Sandboxes (أو من قائمة Settings and Actions تحت صورتك ← Manage Sandboxes) — بعد ما تفعّله هيظهرلك شريط أصفر فوق الشاشة فيه Tools ← Page Composer. الـ Fast Formulas من خانة البحث العلوي (اكتب Fast Formulas) أو من جوه Setup and Maintenance.</p>
+
+      <h4>4) الشاشات الوظيفية والرقابية اليومية</h4>
+      <ul>
+        <li><strong>Setup and Maintenance (FSM):</strong> الشاشة الأم لأي إعداد (Configuration) في النظام — وظيفة جديدة، فرع جديد، تعديل دورة اعتمادات...إلخ.</li>
+        <li><strong>Security Console:</strong> لإدارة الصلاحيات (Roles) — إنشاء صلاحيات مخصصة، تعديل صلاحية موظف، قفل حسابات، وتتبع الـ Users.</li>
+        <li><strong>Transaction Console:</strong> لمراقبة الاعتمادات (Approvals) — تعرف فين توقفت موافقة طلب معين (إجازة، تعديل راتب) وتقدر تعيد توجيهه أو توافق نيابة عن مدير مسافر (Force Approve).</li>
+        <li><strong>Person Management / Employment:</strong> للبحث عن الموظفين وتصحيح بياناتهم الوظيفية وتواريخهم يدويًا.</li>
+      </ul>
+      <p class="img-cap">فين تلاقيهم: Setup and Maintenance من صورتك الشخصية (أعلى يمين) ← Setup and Maintenance. Security Console وTransaction Console من Navigator ← Tools. Person Management من Navigator ← My Client Groups.</p>
+
+      <div class="tip">💡 نصيحة لإنتاجية أعلى: احتفظ بملف شخصي فيه قوالب SQL جاهزة (Scripts) لأهم الجداول (زي PER_ALL_PEOPLE_F وPER_ALL_ASSIGNMENTS_M) — هتنسخ منها وتعدّل عليها كل يوم بدل ما تكتب من الصفر. ده بالظبط اللي الملف ده بيعمله لك.</div>
+      <div class="tip">⚠️ لو مش لاقي أداة معينة من دول في قائمتك، غالبًا معناه إن حسابك ناقصه صلاحية تقنية زي Application Implementation Consultant أو IT Security Manager — اطلبها من مسؤول الأمان عندكم.</div>
+    `
+  },
+  {
+    icon:"⚙️",
+    title:"قائمة Settings and Actions (تحت صورتك الشخصية) — كل خيار فيها بيعمل إيه",
+    body: `
+      <p>لما تدوس على صورتك الشخصية (أو اسمك) فوق يمين الشاشة، بتفتحلك قائمة اسمها <strong>Settings and Actions</strong> — مخصصة للتحكم في حسابك، الإعدادات الوظيفية، وتخصيص واجهة النظام. القائمة مقسّمة لمجموعات:</p>
+
+      <h4>Personalization</h4>
+      <ul>
+        <li><strong>Access Accessibility Settings:</strong> لتعديل ألوان الشاشة، تكبير الخطوط، أو تفعيل قارئ الشاشة لسهولة الوصول.</li>
+        <li><strong>Set Preferences:</strong> أهم شاشة للمستخدم العادي — تغيير لغة النظام (عربي/إنجليزي)، المنطقة الزمنية، تنسيق التاريخ والعملة، وإشعارات البريد الإلكتروني.</li>
+      </ul>
+
+      <h4>Administration (بتظهر لو عندك صلاحيات تقنية/استشارية)</h4>
+      <ul>
+        <li><strong>Edit Pages:</strong> بتفتحلك وضع Page Composer لتعديل الشاشة الحالية اللي انت واقف عليها.</li>
+        <li><strong>Edit Global Page Template:</strong> خيار متقدم لتعديل الهيكل الثابت للنظام (شكل الهيدر/الفوتر، توزيع الأزرار الأساسية) — بتستخدمه نادرًا مقارنة بـ Edit Pages.</li>
+        <li><strong>Manage Configurations:</strong> لإدارة مجموعات إعدادات الواجهة (Configuration Sets) اللي عملتها بالـ Sandbox — بتستخدمها لتصدير/نقل التخصيصات دي بين البيئات (زي من Test لـ Production).</li>
+        <li><strong>Setup and Maintenance:</strong> لوحة التحكم الأم (FSM) — منها تبني وتعدّل إعدادات HR والرواتب والإجازات، وتدور على الـ Tasks والـ Fast Formulas.</li>
+        <li><strong>Highlight Flexfields:</strong> بتفعّل تمييز بصري للحقول الإضافية (DFF/EFF) اللي اتضافت على الشاشة، بشكل مختلف عن حقول أوراكل الأساسية — لون التمييز بالظبط ممكن يختلف شوية حسب نسخة النظام عندكم.</li>
+      </ul>
+
+      <h4>Troubleshooting</h4>
+      <ul>
+        <li><strong>Run Diagnostics Tests:</strong> بتشغّل اختبارات تشخيص جاهزة (Diagnostic Tests) مرتبطة بالشاشة أو الموظف اللي انت واقف عليه — مفيدة لما تيجيلك مشكلة زي راتب مش ظاهر أو إجازة معلقة، وبترجعلك تقرير فيه سبب المشكلة المحتمل.</li>
+        <li><strong>Record Issue:</strong> بتسجل خطواتك على الشاشة (لقطات/Logs) لتوثيق مشكلة تقنية، تمهيدًا لفتح تذكرة دعم فني مع أوراكل (Service Request).</li>
+      </ul>
+
+      <h4>عام ومساعدة</h4>
+      <ul>
+        <li><strong>Print Me:</strong> لأخذ نسخة جاهزة للطباعة من الشاشة الحالية.</li>
+        <li><strong>Hide Help Icons:</strong> بتخفي علامات الاستفهام (؟) الصغيرة اللي بتشرح كل حقل.</li>
+        <li><strong>Applications Help:</strong> بيفتحلك دليل أوراكل الرسمي (Oracle Help Center) للشاشة اللي انت واقف عليها.</li>
+        <li><strong>About This Application:</strong> بتوريك رقم إصدار الفيوجن عندكم (زي 24C أو 24D) واسم السيرفر (Pod Name) — معلومات هيطلبها منك دعم أوراكل الفني كل مرة تفتح تذكرة.</li>
+      </ul>
+
+      <div class="tip">🧭 بصفتك Technical & Functional Consultant، أكتر خيارين هتدخل عليهم كتير من القائمة دي هما Setup and Maintenance وRun Diagnostics Tests.</div>
     `
   },
 ];
