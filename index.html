@@ -1162,6 +1162,7 @@
     <div class="page-nav-btn" data-view="reports">📊 أهم تقارير HCM</div>
     <div class="page-nav-btn" data-view="sqlreports">🗂️ تقارير SQL جاهزة</div>
     <div class="page-nav-btn" data-view="commands">🧮 أهم أوامر SQL</div>
+    <div class="page-nav-btn" data-view="fastformula">⚡ Fast Formula</div>
     <div class="page-nav-btn" data-view="advice">🧭 نصايح الطريق</div>
   </div>
 </div>
@@ -1220,6 +1221,12 @@
   <div class="section-title"><h2>🧮 أهم أوامر SQL</h2><div class="line"></div></div>
   <p class="commands-intro">دي أهم الأوامر والدوال اللي فعليًا استخدمناها في الكويريهات بتاعتنا في الملف ده — كل أمر: وظيفته باختصار، شرح مبسّط، ومثال حي شغال.</p>
   <div id="commandsContainer"></div>
+</div>
+
+<div id="view-fastformula" class="view">
+  <div class="section-title"><h2>⚡ لغة Fast Formula</h2><div class="line"></div></div>
+  <p class="commands-intro">الـ Fast Formula هي لغة أوراكل الخاصة بيها لكتابة قواعد وحسابات معقدة جوه السيستم نفسه، لما الإعدادات العادية (Configuration) متكفيش. الفرق الجوهري بينها وبين SQL: SQL بتستخدمها تقرأ وتحلل بيانات موجودة بالفعل (تقارير وتحليل)، أما الفورميلا فبتشتغل وقت التنفيذ الفعلي جوه السيستم — بتحسب قيمة في كشف الراتب، أو توافق/ترفض عملية زي طلب إجازة، لحظة ما المستخدم بيضغط Submit. تلاقيها من صورتك الشخصية ← Setup and Maintenance ← دور في البحث على "Fast Formulas"، أو من الـ Navigator ← My Client Groups ← Payroll ← Fast Formulas.</p>
+  <div id="fastFormulaContainer"></div>
 </div>
 
 <div id="view-advice" class="view">
@@ -2472,6 +2479,187 @@ SQL_COMMANDS.forEach(cat=>{
   });
 
   commandsContainerEl.appendChild(catWrap);
+});
+
+/* ===== لغة Fast Formula — الأساسيات والأوامر اللي هتستخدمها فعليًا ===== */
+const FAST_FORMULA_COMMANDS = [
+  {
+    category:"🏗️ الهيكل الأساسي اللي مبني عليه أي فورميلا",
+    items:[
+      {
+        name:"INPUTS ARE",
+        purpose:"بتستقبل قيم جاية من السيستم وقت تشغيل الفورميلا (زي عدد الساعات، أو رقم بيدخله المستخدم يدوي).",
+        explain:"أول سطر بتكتبه في أي فورميلا محتاجة تستقبل مدخل متغير — من غيرها الفورميلا هتفضل شغالة على أرقام ثابتة بس. مفيدة جدًا في فورميلات الـ Elements اللي بتاخد مدخل يدوي من شاشة الموظف (زي عدد أيام إضافي أو مكافأة لمرة واحدة).",
+        example:"INPUTS ARE Hours_Worked, Hourly_Rate\n\nOvertime_Pay = Hours_Worked * Hourly_Rate * 1.5\n\nRETURNS Overtime_Pay"
+      },
+      {
+        name:"DEFAULT FOR ... IS ...",
+        purpose:"بتدي قيمة افتراضية لأي Database Item أو Input ممكن يكون فاضي (NULL)، عشان الفورميلا متقفش بخطأ.",
+        explain:"لو حاولت تستخدم DBI قيمته NULL في عملية حسابية من غير ما تحط له DEFAULT، الفورميلا هتفشل وتديك Error وقت التشغيل الفعلي على الموظفين — يعني ممكن يوقفلك كشف رواتب كامل وقت الـ Run. القاعدة الذهبية: حط DEFAULT لأي DBI هتستخدمه قبل ما تدخل بيه في أي حساب أو شرط.",
+        example:"DEFAULT FOR PER_ASG_SALARY_AMOUNT IS 0\nDEFAULT FOR PER_ASG_START_DATE IS '1951/01/01 00:00:00' (date)"
+      },
+      {
+        name:"RETURNS",
+        purpose:"آخر سطر في أي فورميلا — بيرجّع النتيجة النهائية للسيستم عشان يستخدمها (يحطها في الراتب، يوقف/يسمح بعملية، إلخ).",
+        explain:"من غير RETURNS الفورميلا بتتعمل لها Compile عادي بس ملهاش أي تأثير فعلي، لأن السيستم مش هياخد منها حاجة أصلاً. تقدر ترجّع أكتر من متغير مرة واحدة (مفصولين بفاصلة) — زي مثال التحقق من صلاحية الإجازة اللي بيرجّع قيمة الصلاحية (VALID) مع رسالة الخطأ مع بعض في نفس السطر.",
+        example:"RETURNS Overtime_Pay\n\n/* أو أكتر من قيمة مع بعض: */\nRETURNS VALID, ERROR_MESSAGE"
+      }
+    ]
+  },
+  {
+    category:"🔀 الشروط (IF)",
+    items:[
+      {
+        name:"IF ... THEN { } ELSE { }",
+        purpose:"بتطبّق شرط وتاخد قرار مختلف حسب لو الشرط صح أو غلط — أشهر صيغة وأسهلها في القراءة.",
+        explain:"دي الصيغة اللي هتشوفها في أغلب أمثلة أوراكل الرسمية، وهتستخدمها في كل قانون شغل عندك فيه أكتر من حالة (زي حد أدنى وحد أقصى لبدل السكن). لازم كل قوس { يتقفل بـ } بعده، ولو نسيت واحد الفورميلا هتديك خطأ وقت الـ Compile مش وقت التشغيل — يعني هتكتشفه بدري، وده مكسب.",
+        example:"IF (Housing_Allowance < 1500) THEN {\n    Housing_Allowance = 1500\n}\nELSE {\n    Housing_Allowance = Housing_Allowance\n}"
+      },
+      {
+        name:"IF ... THEN ... ELSE ... END IF",
+        purpose:"نفس فكرة IF بالظبط، بس بصيغة تانية من غير أقواس { } — الاتنين شغالين بكفاءة واحدة.",
+        explain:"الصيغة دي أقرب لناس جايين من خلفية VB أو PL/SQL القديم. اختار أي صيغة تريحك واستمر عليها، بس متخلطش الاتنين في نفس جملة IF واحدة عشان متتلخبطش وانت بتراجع كود بعد فترة طويلة.",
+        example:"IF (Salary > 20000) THEN\n   Bonus = 5000\nELSE\n   Bonus = 1000\nEND IF"
+      }
+    ]
+  },
+  {
+    category:"🔁 التكرار (Loop)",
+    items:[
+      {
+        name:"WHILE ( ... ) LOOP { }",
+        purpose:"بتكرر مجموعة أوامر طول ما شرط معين لسه صح — الطريقة الوحيدة للتكرار في Fast Formula (مفيش FOR loop خالص).",
+        explain:"أوراكل قصرتها على WHILE بس عشان تحمي سيرفرات الـ Cloud من أي Loop ملوش نهاية (Infinite Loop). علشان كده لازم يكون عندك عداد بيزيد جوه الـ Loop نفسه (زي I = I + 1)، وإلا الفورميلا هتفضل شغالة لحد ما توصل لحد أقصى للتكرارات (غالبًا حوالي 100 إلى 1000 حسب البيئة) وتوقف بخطأ Loop Limit Exceeded. بتستخدمها كتير مع المصفوفات (Arrays) الجايه من DBIs بترجع أكتر من قيمة — زي رصيد إجازات موظف شهر بشهر على مدار السنة.",
+        example:"I = 1\nTotal = 0\nWHILE (I <= 12) LOOP {\n    Total = Total + Monthly_Amounts[I]\n    I = I + 1\n}\nRETURNS Total"
+      }
+    ]
+  },
+  {
+    category:"🧮 الدوال الجاهزة (Functions) اللي هتستخدمها كتير",
+    items:[
+      {
+        name:"DAYS_BETWEEN(date1, date2)",
+        purpose:"بتحسب عدد الأيام بين تاريخين.",
+        explain:"العمود الفقري لأي حساب فيه \"مدة خدمة\" أو \"مدة استحقاق\" — زي حساب سنوات الخدمة لمكافأة نهاية الخدمة، أو التأكد إن الموظف كمّل مدة معينة قبل ما يقدر يقدّم على إجازة معينة.",
+        example:"Service_Days = DAYS_BETWEEN(TERMINATION_DATE, PER_ASG_START_DATE)"
+      },
+      {
+        name:"ADD_DAYS(date, number)",
+        purpose:"بتضيف عدد أيام على تاريخ معين وترجّع تاريخ جديد.",
+        explain:"مفيدة لما تحتاج تحسب تاريخ نهاية فترة معينة انطلاقًا من تاريخ بداية — زي حساب تاريخ انتهاء فترة التجربة (Probation) بإضافة 90 يوم على تاريخ التعيين.",
+        example:"Probation_End_Date = ADD_DAYS(PER_ASG_START_DATE, 90)"
+      },
+      {
+        name:"ROUND(number, places)",
+        purpose:"بتقرّب رقم عشري لعدد خانات معين بعد الفاصلة.",
+        explain:"في حسابات الرواتب لازم النتيجة النهائية تتقرّب لخانتين عشريتين (الهللات) قبل ما تتحط في كشف الراتب — لو مقربتش ممكن يطلع رقم بعدد خانات غريب زي 1234.56789 في راتب الموظف.",
+        example:"EOS_Final_Amount = ROUND(EOS_Amount, 2)"
+      },
+      {
+        name:"TRUNC(number)",
+        purpose:"بتقطع (تشيل) كسور الرقم العشري من غير أي تقريب.",
+        explain:"الفرق عن ROUND إن TRUNC بيشيل الكسور ومش بيقرّب — يعني 1234.99 تبقى 1234 مش 1235. بتستخدمها لما قانون الشركة يقول \"من غير تقريب\" صراحة في حساب معين.",
+        example:"Whole_Years = TRUNC(Total_Service_Years)"
+      },
+      {
+        name:"UPPER(text)",
+        purpose:"بتحوّل كل حروف النص لكابيتال (Uppercase).",
+        explain:"بتستخدمها في المقارنات النصية عشان تتأكد إن اختلاف حالة الحروف (Uppercase/Lowercase) مايأثرش على نتيجة المقارنة — زي مقارنة كود دولة أو قسم ممكن يتكتب بأشكال مختلفة من مستخدم لآخر.",
+        example:"IF (UPPER(Legislation_Code) = 'SA') THEN {\n    GOSI_Rate = 0.10\n}"
+      },
+      {
+        name:"SUBSTR(text, start, length)",
+        purpose:"بتقص جزء معين من نص، ابتداءً من موضع معين وبطول معين.",
+        explain:"مفيدة لما تحتاج تقرأ جزء ثابت من كود مركّب — زي أول حرفين من كود الموظف اللي بيدلوا على الفرع أو الشركة.",
+        example:"Branch_Code = SUBSTR(Employee_Number, 1, 2)"
+      }
+    ]
+  },
+  {
+    category:"🗄️ عناصر قاعدة البيانات (Database Items - DBIs)",
+    items:[
+      {
+        name:"DBI — مش أمر، ده مفهوم أساسي",
+        purpose:"متغيرات جاهزة من أوراكل بتقرأ مباشرة من قاعدة البيانات — بديل الفورميلا عن كتابة SELECT.",
+        explain:"في الـ Fast Formula مفيش SELECT * FROM زي الـ SQL خالص — أوراكل بتوفرلك DBIs جاهزة (زي راتب الموظف، تاريخ تعيينه، اسم وظيفته) وانت بس بتستدعيها بالاسم في الكود. أهم حاجة تاخدها بالك منها: أسماء الـ DBIs بتختلف حسب نوع الفورميلا (Formula Type) وبلد التشريع (Legislation)، فمتحفظش اسم DBI شفته في مثال وتستخدمه على طول في فورميلا تانية — افتح شاشة كتابة الفورميلا، دوس على زرار \"View Database Items\"، ودوّر على الاسم الصح من جوه بيئتك أنت بالظبط.",
+        example:"/* أمثلة شائعة — تأكد من اسمها الفعلي عندك بـ View Database Items */\nPER_ASG_SALARY_AMOUNT      -- راتب الموظف الحالي\nPER_ASG_START_DATE         -- تاريخ التعيين\nPER_ASG_JOB_NAME           -- المسمى الوظيفي"
+      }
+    ]
+  },
+  {
+    category:"🧭 نوع الفورميلا وربطها بالنظام — مش كود، لكن أهم خطوة عملية",
+    items:[
+      {
+        name:"Formula Type",
+        purpose:"بيحدد فين ومتى الفورميلا هتشتغل جوه السيستم — لازم تختاره صح وانت بتنشئ الفورميلا عشان تظهر في المكان الصح أصلاً.",
+        explain:"لو عملت فورميلا لحساب بدل في الراتب لازم نوعها يكون Oracle Payroll، ولو هتستخدمها للتحقق من صلاحية طلب إجازة لازم تكون من نوع خاص بالـ Absence Eligibility/Entitlement. اختيار النوع الغلط معناه الفورميلا هتتعمل لها Compile تمام من غير أي خطأ، بس مش هتظهر أصلاً في الشاشة اللي انت محتاجها فيها — وده أكتر حاجة بتلخبط المبتدئين.",
+        example:"أشهر الأنواع اللي هتستخدمها كـ HCM Consultant:\nOracle Payroll                    -> لحساب عناصر الأجر (Elements)\nAbsence Eligibility/Entitlement    -> قواعد استحقاق وصلاحية الإجازات\nQualification / Assignment         -> شروط وقواعد أخرى على بيانات الموظف"
+      },
+      {
+        name:"ربط الفورميلا بعنصر الأجر (Element)",
+        purpose:"الخطوة اللي بتخلي الفورميلا فعليًا \"تشتغل\" جوه كشف الراتب، مش مجرد كود اتعمله Compile وخلاص.",
+        explain:"الفورميلا لوحدها متعملش حاجة لغاية ما تربطها بـ Element من صفحة إعداداته (Status Processing Rules)، وتحدد نتيجة الفورميلا (زي EOS_Final_Amount) هتترجم لإيه في الـ Element — غالبًا Direct Result يعني القيمة بتتحط زي ما هي في كشف الراتب من غير أي تعديل إضافي من السيستم.",
+        example:"Element -> Status Processing Rules -> (+) ->\nFormula Name: XX_SAUDI_EOS_CALCULATION\n\nFormula Results ->\nEOS_Final_Amount -> Result Type: Direct Result"
+      }
+    ]
+  },
+  {
+    category:"💡 مثال متكامل شغال: مكافأة نهاية الخدمة (Saudi EOS)",
+    items:[
+      {
+        name:"XX_SAUDI_EOS_CALCULATION",
+        purpose:"مثال حقيقي بيجمع كل الأساسيات اللي فوق (DEFAULT, IF/ELSE, Functions) في فورميلا واحدة كاملة وشغالة.",
+        explain:"بتحسب المكافأة حسب نظام العمل السعودي: نص شهر عن كل سنة من أول 5 سنين، وشهر كامل عن كل سنة بعد كده. تنبيه مهم قبل ما تطبقها على بيانات حقيقية: ده تبسيط تعليمي — النظام الفعلي فيه فروق لازم تضيفها بنفسك حسب حالة كل موظف: لو الموظف مستقيل (مش منتهية خدمته من الشركة) بياخد نسبة بس مش المكافأة كاملة (تقريبًا التلت بعد سنتين لغاية 5 سنين، والتلتين من 5 لـ10 سنين، وكاملة بعد 10 سنين)، ولو الإنهاء كان بسبب مخالفة (المادة 80) المكافأة ممكن تسقط تمامًا. لازم تتأكد من نظام العمل الفعلي وسياسة شركتك قبل أي تطبيق حقيقي.",
+        example:"/* اسم الفورميلا: XX_SAUDI_EOS_CALCULATION | النوع: Oracle Payroll */\n\nDEFAULT FOR PER_ASG_SALARY_AMOUNT IS 0\nDEFAULT FOR PER_ASG_START_DATE IS '1951/01/01 00:00:00' (date)\nDEFAULT FOR TERMINATION_DATE IS '1951/01/01 00:00:00' (date)\n\nSalary = PER_ASG_SALARY_AMOUNT\nEOS_Amount = 0\n\nTotal_Service_Days = DAYS_BETWEEN(TERMINATION_DATE, PER_ASG_START_DATE)\nTotal_Service_Years = Total_Service_Days / 365.25\n\nIF (Total_Service_Years <= 5) THEN {\n    EOS_Amount = Total_Service_Years * (Salary * 0.5)\n}\nELSE {\n    First_5_Years_Amount = 5 * (Salary * 0.5)\n    Remaining_Years = Total_Service_Years - 5\n    Remaining_Years_Amount = Remaining_Years * Salary\n    EOS_Amount = First_5_Years_Amount + Remaining_Years_Amount\n}\n\nEOS_Final_Amount = ROUND(EOS_Amount, 2)\n\nRETURNS EOS_Final_Amount"
+      }
+    ]
+  }
+];
+
+const fastFormulaContainerEl = document.getElementById('fastFormulaContainer');
+FAST_FORMULA_COMMANDS.forEach(cat=>{
+  const catWrap = document.createElement('div');
+  catWrap.className = 'cmd-category';
+  catWrap.innerHTML = `
+    <h3><span class="dot"></span>${cat.category}</h3>
+    <div class="cmd-grid"></div>
+  `;
+  const gridEl = catWrap.querySelector('.cmd-grid');
+
+  cat.items.forEach(cmd=>{
+    const card = document.createElement('div');
+    card.className = 'cmd-card';
+    card.innerHTML = `
+      <span class="cmd-name"></span>
+      <p class="cmd-purpose">${cmd.purpose}</p>
+      <p class="cmd-explain">${cmd.explain}</p>
+      <div class="cmd-example-wrap">
+        <div class="cmd-example-bar">
+          <span>مثال</span>
+          <button class="cmd-copy-btn" type="button" data-copy-cmd>${COPY_ICON}<span>نسخ</span></button>
+        </div>
+        <pre><code class="language-plaintext"></code></pre>
+      </div>
+    `;
+    card.querySelector('.cmd-name').textContent = cmd.name;
+    card.querySelector('code.language-plaintext').textContent = cmd.example;
+
+    const copyBtn = card.querySelector('[data-copy-cmd]');
+    copyBtn.addEventListener('click', ()=>{
+      copyText(cmd.example).then(()=>{
+        copyBtn.classList.add('copied');
+        copyBtn.innerHTML = `${CHECK_ICON}<span>اتنسخ ✓</span>`;
+        setTimeout(()=>{
+          copyBtn.classList.remove('copied');
+          copyBtn.innerHTML = `${COPY_ICON}<span>نسخ</span>`;
+        }, 1400);
+      }).catch(()=>{});
+    });
+
+    gridEl.appendChild(card);
+  });
+
+  fastFormulaContainerEl.appendChild(catWrap);
 });
 
 if(window.hljs){
