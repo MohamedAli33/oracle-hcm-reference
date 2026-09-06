@@ -3182,6 +3182,28 @@ const ADVICE = [
       <div class="tip">🧭 بصفتك Technical & Functional Consultant، أكتر خيارين هتدخل عليهم كتير من القائمة دي هما Setup and Maintenance وRun Diagnostics Tests.</div>
     `
   },
+  {
+    icon:"🚫",
+    title:"طب فيه PL/SQL في أوراكل فيوجن؟ وفين نكتب SQL أصلاً؟",
+    body: `
+      <h4>الإجابة المباشرة: لأ، مفيش PL/SQL جوه فيوجن كلاود</h4>
+      <p>ده أهم فرق بين أوراكل فيوجن (Cloud/SaaS) وأوراكل EBS (النسخة القديمة اللي كانت بتتنصب على سيرفر الشركة نفسها). في فيوجن، أوراكل بتمنع المطورين تمامًا من كتابة أو حفظ أي كود PL/SQL (Procedures, Functions, Triggers, Packages) جوه قاعدة البيانات بتاعتها. السبب: السيرفر ده مش سيرفرك لوحدك — بيتشارك بين آلاف الشركات على نفس البيئة (Multi-tenant SaaS)، فأي كود غريب ممكن يبطّئ السيرفر أو يتعارض مع التحديثات الربع سنوية (Quarterly Updates) اللي أوراكل بتنزلها لكل عملائها مرة واحدة.</p>
+
+      <h4>طب فين بنكتب SQL بس إذا؟</h4>
+      <p>بتكتبه Read-Only بس — يعني <code>SELECT</code> فقط من غير <code>INSERT</code> أو <code>UPDATE</code> أو <code>DELETE</code> — وده بيتكتب جوه <strong>BI Publisher Data Models</strong> (شرحناها بالتفصيل فوق في نفس الصفحة دي)، وهو بالظبط اللي بنعمله في تبويب "تقارير SQL جاهزة" و"أهم أوامر SQL" في الملف ده.</p>
+
+      <h4>طب المنطق البرمجي المعقد اللي كان بيتكتب PL/SQL زمان، رايح فين؟</h4>
+      <ul>
+        <li><strong>بديل الحسابات والمعادلات (Functions):</strong> <strong>Fast Formula</strong> (شرحناها كاملة في تبويبها لوحده) — لغتها شبيهة بالـ PL/SQL في المنطق (شروط، متغيرات، لوبس)، وهي البديل الرسمي لحساب الرواتب والإجازات وأي معادلة معقدة تانية.</li>
+        <li><strong>بديل الـ Database Triggers (التحقق وقت الحفظ):</strong> أدوات الـ Extensibility جوه الـ Sandbox — بتقدر تمنع المستخدم من حفظ شاشة لو فيها خطأ (زي إدخال موظف من غير رقم هوية)، بنفس فكرة Before Insert Trigger لكن من غير ما تكتب PL/SQL. <em>ملحوظة مهمة:</em> أداة Application Composer (اللي بتستخدم Groovy Scripts) دي أشهر وأوضح في موديولات الـ Sales/CX والـ ERP في فيوجن؛ في HCM تحديدًا الأشهر إنك توصل لنفس النتيجة عن طريق Fast Formula (بنوع Formula مخصص للتحقق/Validation) أو من جوه أدوات الـ Sandbox والـ Page Composer نفسها — يعني لو دورت على Application Composer في بيئة الـ HCM بتاعتك ومالقتهوش بنفس الشكل بالظبط، متتلخبطش؛ الفكرة والنتيجة واحدة، بس الاسم والمكان بيختلف شوية حسب الموديول.</li>
+      </ul>
+
+      <h4>الاستثناء الوحيد: لو محتاج PL/SQL حقيقي فعلاً</h4>
+      <p>لو الشركة محتاجة جداول مخصصة (Custom Tables) وباكجات PL/SQL كاملة زي أيام الـ EBS بالظبط، الحل إنها تشتري سيرفر منفصل تمامًا اسمه <strong>Oracle Autonomous Database</strong> (على بنية OCI) — سيرفر خاص بالشركة لوحدها بره الـ SaaS المشترك، تُكتب فيه أي PL/SQL أو Packages بحرية كاملة، وبعدين يترتبط بفيوجن عن طريق REST APIs أو أداة اسمها <strong>Oracle Integration Cloud (OIC)</strong> عشان البيانات تتحرك بين الاتنين بشكل آلي. الطريقة دي معروفة باسم PaaS4SaaS، وغالبًا مش هتحتاجها كـ Junior Technical Consultant — دي قرار بيتاخد على مستوى الشركة ومعمارية النظام، مش حاجة بتعملها لوحدك.</p>
+
+      <div class="tip">💡 خلاصة سريعة: SQL = تقرأ بيها بس (تقارير). Fast Formula = تحسب وتتحقق بيها وقت التشغيل الفعلي (بديل PL/SQL اليومي). PaaS/OCI = لو محتاج قاعدة بيانات منفصلة كاملة الصلاحيات، وده نادر جدًا في شغل الـ Technical Consultant العادي.</div>
+    `
+  },
 ];
 
 const adviceContainerEl = document.getElementById('adviceContainer');
