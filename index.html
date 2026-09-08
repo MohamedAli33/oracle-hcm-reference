@@ -254,6 +254,14 @@
     margin:16px auto 0;
     padding:0 20px;
   }
+  .sql-report + .sql-report{
+    margin-top:52px;
+    padding-top:36px;
+    border-top:1px dashed rgba(255,255,255,.14);
+  }
+  .alias-term{
+    font-family:"Fira Code","JetBrains Mono","Consolas","Courier New",monospace;
+  }
   .sql-report-card{
     background:rgba(255,255,255,.045);
     backdrop-filter:blur(20px) saturate(150%);
@@ -1273,6 +1281,8 @@ const TABLES = [
   {name:"PER_CITIZENSHIPS", module:"core", suffix:"none", desc:"جنسية الموظف الفعلية — LEGISLATION_CODE هنا معناه بلد الجنسية (EG, IN, SA...).", tip:""},
   {name:"PER_ASSIGNMENT_SUPERVISORS_F", module:"core", suffix:"F", desc:"علاقة المدير المباشر، وبيدعم أنواع مديرين مختلفة (خط مباشر، مدير مشروع).", tip:"الطريقة الحديثة بدل عمود supervisor_id القديم."},
   {name:"PER_ASSIGNMENT_EXTRA_INFO_F", module:"core", suffix:"F", desc:"بيانات إضافية مخصصة على مستوى التعيين (EIT/DFF) — تاريخية.", tip:"القيم بتتخزن في أعمدة ATTRIBUTE1...30 وتحتاج فك تشفير من تعريف الـ Value Set."},
+  {name:"PER_PERSON_TYPES_VL", module:"core", suffix:"VL", desc:"الـ View الجاهز لأنواع الأشخاص (Employee, Contingent Worker, Pending Worker...) بالاسم المعروض جاهز.", tip:""},
+  {name:"PER_SENIORITY_DATES_F", module:"core", suffix:"F", desc:"تواريخ الأقدمية المحسوبة (Seniority) للموظف — بتترجع بالسنين/الشهور/الأيام حسب نوع الأقدمية (Enterprise, Grade...).", tip:""},
 
   // Org structure
   {name:"HR_ALL_ORGANIZATION_UNITS_F", module:"org", suffix:"F", desc:"جدول الإدارات والأقسام (الموارد البشرية، الحسابات...).", tip:""},
@@ -1282,6 +1292,10 @@ const TABLES = [
   {name:"PER_JOBS_F", module:"org", suffix:"F", desc:"المسميات الوظيفية المتاحة في الشركة (محاسب، مهندس...).", tip:"مالوش عمود NAME جاهز على كل بيئة — لو رجعلك ORA-00904 على NAME استخدم الـ View PER_JOBS_F_VL بدل الجدول الأساسي."},
   {name:"PER_POSITIONS_F", module:"org", suffix:"F", desc:"تعريف الوظائف الشاغرة (Position) بالـ FTE والـ Headcount.", tip:"مختلف عن PER_JOBS_F — بعض الشركات تشتغل Position-based وبعضها Job-based، لازم تفرق بينهم."},
   {name:"PER_GRADES_F", module:"org", suffix:"F", desc:"درجات الموظفين وسلالم الرواتب (Grade 1, Grade 2...).", tip:"زي PER_JOBS_F بالظبط — لو NAME رجعلك ORA-00904 استخدم PER_GRADES_F_VL اللي بتدمج الاسم المترجم جاهز."},
+  {name:"PER_GRADES_F_TL", module:"org", suffix:"TL", desc:"اسم الدرجة (NAME) باللغة — جدول الترجمة المنفصل بتاع PER_GRADES_F لو مستخدمش الـ View _VL الجاهزة.", tip:""},
+  {name:"PER_JOBS_F_TL", module:"org", suffix:"TL", desc:"اسم الوظيفة (NAME) باللغة — جدول الترجمة المنفصل بتاع PER_JOBS_F لو مستخدمش الـ View _VL الجاهزة.", tip:""},
+  {name:"HR_ORGANIZATION_UNITS_F_TL", module:"org", suffix:"TL", desc:"اسم الإدارة/القسم (NAME) باللغة — جدول ترجمة منفصل لجدول الإدارات الخام HR_ALL_ORGANIZATION_UNITS_F.", tip:"لازم تحدد AND language = 'US' (أو الكود المناسب) وإلا هتاخد صف مكرر لكل لغة متاحة."},
+  {name:"HR_ALL_POSITIONS_F_TL", module:"org", suffix:"TL", desc:"اسم الشاغر الوظيفي (NAME) باللغة — جدول ترجمة منفصل لجدول HR_ALL_POSITIONS_F لو مستخدمش الـ View _VL الجاهزة.", tip:""},
   {name:"PER_DEPARTMENTS", module:"org", suffix:"none", desc:"تعريف الإدارات كتصنيف من نوع DEPARTMENT.", tip:""},
 
   // Payroll
@@ -1289,6 +1303,8 @@ const TABLES = [
   {name:"PAY_PAYROLL_ACTIONS", module:"payroll", suffix:"none", desc:"عمليات معالجة المرتبات (Run, QuickPay, Reversal) — أب لكل نتائج الرن.", tip:""},
   {name:"PAY_ELEMENT_TYPES_F", module:"payroll", suffix:"F", desc:"بنود المرتبات (بدل سكن، تأمينات، خصم غياب، حافز) — التعريف فقط.", tip:""},
   {name:"PAY_ELEMENT_TYPES_F_TL", module:"payroll", suffix:"TL", desc:"اسم بند المرتب (ELEMENT_NAME) باللغة — مش موجود في الجدول الأساسي PAY_ELEMENT_TYPES_F أصلاً.", tip:"لو حاولت تفلتر بـ ELEMENT_NAME على الجدول الأساسي مباشرة هتاخد ORA-00904 — لازم Join على النسخة دي."},
+  {name:"PAY_ELEMENT_TYPES_VL", module:"payroll", suffix:"VL", desc:"الـ View الجاهز لبنود المرتبات بيدمج التعريف الأساسي مع الاسم المترجم (ELEMENT_NAME) جاهز — بديل عملي لعمل join يدوي على PAY_ELEMENT_TYPES_F_TL.", tip:""},
+  {name:"PAY_INPUT_VALUES_F", module:"payroll", suffix:"F", desc:"تعريف حقول الإدخال لكل بند مرتب (Amount, Percentage, Hours...) — البند الواحد ممكن يكون له أكتر من حقل إدخال.", tip:"لازم تربطه بـ BASE_NAME عشان تعرف الرقم اللي جاي من PAY_ELEMENT_ENTRY_VALUES_F ده 'Amount' ولا 'Percentage'."},
   {name:"PAY_ELEMENT_ENTRIES_F", module:"payroll", suffix:"F", desc:"ربط البند فعلياً بالموظف (Recurring/Non-recurring).", tip:""},
   {name:"PAY_ELEMENT_ENTRY_VALUES_F", module:"payroll", suffix:"F", desc:"القيم المدخلة فعلياً لبند المرتب (المبلغ، النسبة، الساعات).", tip:""},
   {name:"PAY_RUN_RESULTS", module:"payroll", suffix:"none", desc:"النتيجة النهائية الفعلية للمرتب — كام حسب لكل بند شهرياً.", tip:"الجدول ده مفيهوش تواريخ تعقدك زي جداول الـ _F."},
@@ -1624,6 +1640,7 @@ REPORTS.forEach(cat=>{
 const SQL_REPORTS = [
   {
     titleAr: "تقرير ملاك الوظائف والهيكل الإداري",
+    aliases: {papf:"PER_ALL_PEOPLE_F", ppnf:"PER_PERSON_NAMES_F", paaf:"PER_ALL_ASSIGNMENTS_M", haouf:"HR_ALL_ORGANIZATION_UNITS", haouft:"HR_ORGANIZATION_UNITS_F_TL", pjf:"PER_JOBS_F", pjt:"PER_JOBS_F_TL", pgf:"PER_GRADES_F", pgt:"PER_GRADES_F_TL"},
     titleEn: "Employee Master Report / Headcount & Assignment Directory",
     intro: "لوحة مجمعة وفورية بتوريك مين شغال فين، وبيعمل إيه، وبأي درجة وظيفية حالياً. أوراكل بيخزن كود الموظف في جدول، واسمه في جدول تاني، وإدارته في جدول تالت خالص — الكويري ده وظيفته إنه يجمع الفرافير دي كلها في جدول واحد منظم ومفهوم للبشر.",
     benefits: [
@@ -1775,6 +1792,7 @@ ORDER BY
   },
   {
     titleAr: "دراسة حالة: فخ فلترة الجنسية بـ LEGISLATION_CODE",
+    aliases: {papf:"PER_ALL_PEOPLE_F", ppnf_en:"PER_PERSON_NAMES_F", pl:"PER_PEOPLE_LEGISLATIVE_F", pc:"PER_CITIZENSHIPS"},
     titleEn: "Case Study — the LEGISLATION_CODE Nationality Trap",
     warning: "الكويري ده مبني على افتراض غلط. لو شغّلته هيرجعلك كل الموظفين المسجلين تحت التشريع السعودي (سعوديين وغير سعوديين) مش السعوديين بس. اتعامل معاه كمثال تعليمي (Case Study) يوريك فين الغلط، مش كتقرير جاهز للاستخدام.",
     intro: "الكويري ده جاي بادّعاء إنه هيجيب 'الموظفين السعوديين بس' — شكله بسيط ومنطقي، بس فيه غلطة مفاهيمية في عمود واحد بس بتقلب النتيجة كلها. هنا هنفكك الكويري Join بـ Join، نوضح فين بالظبط الغلط وليه، وإيه الشكل الصح للفلترة على الجنسية الفعلية.",
@@ -1860,6 +1878,7 @@ WHERE
   },
   {
     titleAr: "تقرير الموظف الشامل بارامترات (Parameterized Employee Master)",
+    aliases: {peef:"PAY_ELEMENT_ENTRIES_F", petf:"PAY_ELEMENT_TYPES_F", peevf:"PAY_ELEMENT_ENTRY_VALUES_F", pivf:"PAY_INPUT_VALUES_F", ppos:"PER_PERIODS_OF_SERVICE", papf:"PER_ALL_PEOPLE_F", ppnf_e:"PER_PERSON_NAMES_F", ppnf_a:"PER_PERSON_NAMES_F", paaf:"PER_ALL_ASSIGNMENTS_F", pps:"PER_PERSON_TYPES_VL", pplf:"PER_PEOPLE_LEGISLATIVE_F", pp:"PER_PERSONS", flv:"FND_LOOKUP_VALUES", flv_n:"FND_LOOKUP_VALUES", flv_m:"FND_LOOKUP_VALUES", pc:"PER_CITIZENSHIPS", hapft_e:"HR_ALL_POSITIONS_F_TL", hapft_a:"HR_ALL_POSITIONS_F_TL", houft_e:"HR_ORGANIZATION_UNITS_F_TL", houft_a:"HR_ORGANIZATION_UNITS_F_TL", pg:"PER_GRADES_F", psdf:"PER_SENIORITY_DATES_F", pn:"PER_PHONES", pea:"PER_EMAIL_ADDRESSES", pni:"PER_NATIONAL_IDENTIFIERS"},
     titleEn: "Full Employee Profile with Computed Payroll — CTEs + Bind Variables",
     intro: "كويري متقدم بيجمع كل حاجة عن موظف واحد (أو كل الموظفين) في صف واحد: بيانات شخصية، وظيفية، وراتب محسوب فعليًا من عناصر المرتب مباشرة — من غير ما تكتب أي رقم يدوي. بيستخدم <code>WITH</code> (Common Table Expressions) عشان يجهز جزئين معقدين الأول، وبيستخدم Bind Variables عشان يشتغل كتقرير BI Publisher بفلاتر اختيارية (شخص واحد أو كل الموظفين). ده مستوى أعلى بكتير من الكويريهات اللي عملناها الأول.",
     benefitsTitle: "💼 ليه الكويري ده متقدم ومفيد؟",
@@ -2179,6 +2198,7 @@ ORDER BY PAPF.PERSON_NUMBER`,
   },
   {
     titleAr: "دراسة حالة حقيقية: تتبّع ORA-00904 لحد ما توصل لكويري بند مرتب شغال (Element Entries)",
+    aliases: {papf:"PER_ALL_PEOPLE_F", ppnf:"PER_PERSON_NAMES_F", paaf:"PER_ALL_ASSIGNMENTS_M", cs:"CMP_SALARY_F", peef:"PAY_ELEMENT_ENTRIES_F", peev:"PAY_ELEMENT_ENTRY_VALUES_F", pet:"PAY_ELEMENT_TYPES_VL"},
     titleEn: "Real Debugging Case Study — ORA-00904 while querying Element Entries (Housing Allowance)",
     warning: "الكويري النهائي هنا اتبنى فعليًا من تجربة تصحيح أخطاء حقيقية على عنصر Saudi_Housing_Allowance في بيئة اختبار (Vision) — مش كويري نموذجي مثالي 100%. فيه تبسيط واحد مهم (ROWNUM=1 من غير فلتر تاريخ) لازم تاخده في اعتبارك قبل ما تستخدمه في تقرير حقيقي — موضّح في آخر خطوة تحت.",
     intro: "بعد ما اتعمل عنصر مرتب Saudi_Housing_Allowance فعليًا وربطه بموظف (خطوات الإنشاء الكاملة في قسم \"نصايح الطريق\")، جه سؤال طبيعي: طب أجيب قيمته بالـ SQL إزاي؟ الرحلة دي مش كويري جاهز اتكتب صح من أول مرة — دي توثيق فعلي لسلسلة أخطاء ORA-00904 واتحلت خطوة بخطوة، عشان تتعلم إزاي تقرا رسالة الخطأ وتوصل للحل، بدل ما تحفظ كويري جاهز وتستخدمه من غير فهم.",
@@ -2302,6 +2322,7 @@ WHERE
   },
   {
     titleAr: "دراسة حالة حقيقية: تقرير رحلات الموظفين (Journeys) — من 3 أخطاء ORA-00904 لحد تريكة المزامنة الخفية",
+    aliases: {pac:"PER_ALLOCATED_CHECKLISTS_VL", papf:"PER_ALL_PEOPLE_F", ppnf:"PER_PERSON_NAMES_F", paam:"PER_ALL_ASSIGNMENTS_M", ppos:"PER_PERIODS_OF_SERVICE", ast:"PER_ASSIGNMENT_STATUS_TYPES", pea:"PER_EMAIL_ADDRESSES", xle:"XLE_ENTITY_PROFILES", bu:"FUN_ALL_BUSINESS_UNITS_V", hou:"HR_ORGANIZATION_UNITS_F_TL", pjf:"PER_JOBS_F_VL", hapf:"HR_ALL_POSITIONS_F_VL", pgf:"PER_GRADES_F_VL", pldf:"HR_LOCATIONS_ALL_F_VL", pasf:"PER_ASSIGNMENT_SUPERVISORS_F", mgr_name:"PER_PERSON_NAMES_F"},
     titleEn: "Real Case Study — HCM Journeys/Checklists Report: 3x ORA-00904 then the UI-vs-table sync trick",
     warning: "الكويري تحت اتفتحت فلاتره عمدًا وقت التشخيص (شروط WHERE وLEFT JOIN بدل INNER) عشان نثبت إن المشكلة مش في بناء الكويري نفسه — لازم تقفل الفلاتر وتراجع الـ JOINs قبل ما تستخدمه في تقرير حقيقي، زي ما موضّح في آخر خطوتين تحت.",
     intro: "الهدف كان تقرير بسيط في الظاهر: كل موظف اتخصصله رحلة (Journey/Checklist) اسمها 'Code of Conduct Agreement' في 2026، وحالته إيه (Completed / Overdue)، مع بياناته الوظيفية (الإدارة، المدير، الدرجة، الموقع). الرحلة فيها 3 أخطاء ORA-00904 متتالية بسبب أعمدة بأسماء متوقعة بديهيًا وطلعت غلط، وبعد ما اتحلوا كلهم، طلعت مفاجأة تانية خالص: الكويري بقى سليم 100% بس رجع 'No records to display' — واللي كشف تريكة مالهاش أي علاقة بالـ SQL خالص.",
@@ -2490,7 +2511,7 @@ SQL_REPORTS.forEach(r=>{
 
   card.innerHTML = `
     <div>
-      <div class="sql-report-title-ar">${r.titleAr}</div>
+      <h2 class="sql-report-title-ar">${r.titleAr}</h2>
       <div class="sql-report-title-en">${r.titleEn}</div>
     </div>
     ${r.warning ? `<div class="sql-warning-banner">⚠️ <span><b>تحذير:</b> ${r.warning}</span></div>` : ''}
@@ -2514,7 +2535,7 @@ SQL_REPORTS.forEach(r=>{
     </div>
     <div>
       <p class="sql-subtitle">🧩 الكويري</p>
-      <p class="sql-hint">💡 حرّك الماوس (أو دوس Tab) فوق أي كلمة متحتها خط منقط جوه الكود عشان تشوف معناها فورًا — من غير ما تنزل تدور تحت.</p>
+      <p class="sql-hint">💡 حرّك الماوس (أو دوس Tab) فوق أي كلمة متحتها خط منقط جوه الكود عشان تشوف معناها فورًا — من غير ما تنزل تدور تحت. ده شغال كمان على اختصارات أسماء الجداول (زي PAPF أو PAAF) وهيوريك اسم الجدول الحقيقي اللي بتقصده.</p>
       <div class="sql-code-wrap">
         <div class="sql-code-bar">
           <span>report.sql</span>
@@ -2537,6 +2558,7 @@ SQL_REPORTS.forEach(r=>{
   // fill code safely (avoid HTML-escaping issues) then highlight
   const codeEl = card.querySelector('code.language-sql');
   codeEl.textContent = r.sql;
+  codeEl.__aliases = r.aliases || {};
 
   const copyBtn = card.querySelector('[data-copy-sql]');
   copyBtn.addEventListener('click', ()=>{
@@ -3145,7 +3167,61 @@ function annotateSqlBlock(codeEl){
   });
 }
 
-document.querySelectorAll('.sql-code-wrap code.language-sql').forEach(el=>annotateSqlBlock(el));
+function annotateAliasBlock(codeEl){
+  const aliasMap = codeEl.__aliases;
+  if(!aliasMap || codeEl.dataset.aliasAnnotated) return;
+  const keys = Object.keys(aliasMap);
+  if(!keys.length) return;
+  codeEl.dataset.aliasAnnotated = '1';
+  const aliasRe = new RegExp('\\b(' + keys.map(k=>k.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|') + ')\\b', 'gi');
+  const walker = document.createTreeWalker(codeEl, NodeFilter.SHOW_TEXT, null);
+  const textNodes = [];
+  let n;
+  while((n = walker.nextNode())) textNodes.push(n);
+
+  textNodes.forEach(node=>{
+    const text = node.nodeValue;
+    aliasRe.lastIndex = 0;
+    if(!aliasRe.test(text)) return;
+    aliasRe.lastIndex = 0;
+
+    const frag = document.createDocumentFragment();
+    let lastIndex = 0;
+    let m;
+    while((m = aliasRe.exec(text))){
+      const alias = m[1];
+      const realTable = aliasMap[alias.toLowerCase()];
+      if(!realTable) continue;
+      if(m.index > lastIndex) frag.appendChild(document.createTextNode(text.slice(lastIndex, m.index)));
+      const span = document.createElement('span');
+      span.className = 'term alias-term';
+      span.tabIndex = 0;
+      span.textContent = alias;
+      span.addEventListener('mouseenter', ()=>showTooltip(span, realTable));
+      span.addEventListener('focus', ()=>showTooltip(span, realTable));
+      span.addEventListener('mouseleave', hideTooltip);
+      span.addEventListener('blur', hideTooltip);
+      span.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        const tip = ensureTooltip();
+        if(tip.classList.contains('show') && tip.dataset.term === realTable){
+          hideTooltip();
+        }else{
+          showTooltip(span, realTable);
+        }
+      });
+      frag.appendChild(span);
+      lastIndex = m.index + alias.length;
+    }
+    if(lastIndex < text.length) frag.appendChild(document.createTextNode(text.slice(lastIndex)));
+    if(frag.childNodes.length) node.parentNode.replaceChild(frag, node);
+  });
+}
+
+document.querySelectorAll('.sql-code-wrap code.language-sql').forEach(el=>{
+  annotateSqlBlock(el);
+  annotateAliasBlock(el);
+});
 
 const ADVICE = [
   {
