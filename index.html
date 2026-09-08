@@ -154,6 +154,39 @@
   .page-nav-toggle.open .bar:nth-child(2){opacity:0;}
   .page-nav-toggle.open .bar:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
 
+  .back-to-top{
+    display:none;
+    position:fixed;
+    bottom:20px;
+    right:16px;
+    z-index:30;
+    width:38px;
+    height:38px;
+    align-items:center;
+    justify-content:center;
+    background:rgba(28,36,56,.85);
+    backdrop-filter:blur(18px) saturate(150%);
+    -webkit-backdrop-filter:blur(18px) saturate(150%);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:10px;
+    color:var(--text);
+    cursor:pointer;
+    opacity:0;
+    pointer-events:none;
+    transform:translateY(8px);
+    transition:opacity .2s ease, transform .2s ease;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .back-to-top.show{
+    opacity:1;
+    pointer-events:auto;
+    transform:translateY(0);
+  }
+  .back-to-top:active{
+    background:rgba(79,209,197,.22);
+  }
+
   .view{display:none;}
   .view.active{display:block;}
 
@@ -1087,6 +1120,7 @@
     header h1{font-size:21px;}
     header p{font-size:12.5px;}
     .page-nav-toggle{display:flex;}
+    .back-to-top{display:flex;}
     .page-nav{padding:0 12px;margin-top:0;}
     .page-nav-inner{
       display:none;
@@ -1154,6 +1188,10 @@
   <span class="bar"></span>
   <span class="bar"></span>
 </div>
+
+<button class="back-to-top" id="backToTop" type="button" aria-label="ارجع لأول الصفحة">
+  <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>
+</button>
 
 <div class="page-content">
 
@@ -3812,6 +3850,21 @@ pageNav.addEventListener('click', (e)=>{
 document.addEventListener('click', (e)=>{
   if(!e.target.closest('.page-nav') && !e.target.closest('.page-nav-toggle')) closePageNav();
 });
+
+// زرار "ارجع لأول الصفحة" — بيظهر بس في الشاشات الصغيرة بعد ما تنزل شوية
+const backToTopBtn = document.getElementById('backToTop');
+if(backToTopBtn){
+  window.addEventListener('scroll', ()=>{
+    if(window.scrollY > 400){
+      backToTopBtn.classList.add('show');
+    }else{
+      backToTopBtn.classList.remove('show');
+    }
+  }, {passive:true});
+  backToTopBtn.addEventListener('click', ()=>{
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+}
 
 render();
 </script>
