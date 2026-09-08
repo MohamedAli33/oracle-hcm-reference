@@ -1253,6 +1253,7 @@ const MODULES = {
   recruit: {label:"Recruiting", color:"#c084fc"},
   learning: {label:"Learning", color:"#a3e635"},
   common: {label:"Common / Shared", color:"#93a0bd"},
+  checklists: {label:"Journeys / Checklists", color:"#e879f9"},
 };
 
 const TABLES = [
@@ -1278,9 +1279,9 @@ const TABLES = [
   {name:"HR_ALL_ORGANIZATION_UNITS", module:"org", suffix:"none", desc:"نسخة غير تاريخية لنفس بيانات وحدات المنظمة.", tip:""},
   {name:"HR_ORG_UNIT_CLASSIFICATIONS_F", module:"org", suffix:"F", desc:"تصنيف المنظمة (كيان قانوني، وحدة أعمال، إدارة...) بيتحدد في جدول منفصل.", tip:""},
   {name:"HR_LOCATIONS_ALL", module:"org", suffix:"ALL", desc:"مواقع العمل بعناوينها الكاملة، تُربط بالتعيينات.", tip:""},
-  {name:"PER_JOBS_F", module:"org", suffix:"F", desc:"المسميات الوظيفية المتاحة في الشركة (محاسب، مهندس...).", tip:""},
+  {name:"PER_JOBS_F", module:"org", suffix:"F", desc:"المسميات الوظيفية المتاحة في الشركة (محاسب، مهندس...).", tip:"مالوش عمود NAME جاهز على كل بيئة — لو رجعلك ORA-00904 على NAME استخدم الـ View PER_JOBS_F_VL بدل الجدول الأساسي."},
   {name:"PER_POSITIONS_F", module:"org", suffix:"F", desc:"تعريف الوظائف الشاغرة (Position) بالـ FTE والـ Headcount.", tip:"مختلف عن PER_JOBS_F — بعض الشركات تشتغل Position-based وبعضها Job-based، لازم تفرق بينهم."},
-  {name:"PER_GRADES_F", module:"org", suffix:"F", desc:"درجات الموظفين وسلالم الرواتب (Grade 1, Grade 2...).", tip:""},
+  {name:"PER_GRADES_F", module:"org", suffix:"F", desc:"درجات الموظفين وسلالم الرواتب (Grade 1, Grade 2...).", tip:"زي PER_JOBS_F بالظبط — لو NAME رجعلك ORA-00904 استخدم PER_GRADES_F_VL اللي بتدمج الاسم المترجم جاهز."},
   {name:"PER_DEPARTMENTS", module:"org", suffix:"none", desc:"تعريف الإدارات كتصنيف من نوع DEPARTMENT.", tip:""},
 
   // Payroll
@@ -1333,6 +1334,16 @@ const TABLES = [
   {name:"PER_ABSENCE_ENTRIES", module:"common", suffix:"none", desc:"سجلات الغياب (مرضي، إجازة سنوية، إجازة بدون مرتب).", tip:""},
   {name:"PER_CONTACT_RELATIONSHIPS", module:"common", suffix:"none", desc:"جهات الاتصال الطارئة والمعالين.", tip:""},
   {name:"PER_IMAGES", module:"common", suffix:"none", desc:"صور الموظفين الشخصية.", tip:""},
+
+  // Journeys / Checklists
+  {name:"PER_ALLOCATED_CHECKLISTS_VL", module:"checklists", suffix:"VL", desc:"الـ View الجاهز لرحلات الموظفين (Journeys/Checklists) المخصّصة لكل موظف — نقطة البداية الصح لأي كويري Journeys بدل الجدول الأساسي.", tip:"عمود الحالة اسمه CHECKLIST_STATUS مش STATUS — افتراض الاسم البديهي STATUS هو سبب شائع جداً لـ ORA-00904 هنا."},
+  {name:"PER_ALLOCATED_CHECKLISTS", module:"checklists", suffix:"none", desc:"الجدول الأساسي لتخصيص الرحلات من غير طبقة الترجمة الجاهزة — نفس بيانات الـ _VL بس أوسخ شوية في الاستخدام.", tip:""},
+  {name:"PER_ASSIGNMENT_STATUS_TYPES", module:"checklists", suffix:"none", desc:"تعريف حالات التعيين (نشط، منتهي...) بكودها الثابت في خلفية النظام.", tip:"للفلترة البرمجية المضمونة استخدم PER_SYSTEM_STATUS = 'ACTIVE_ASSIGN' — مش USER_STATUS النصي، لأنه بيختلف حسب اللغة والتخصيص في كل بيئة."},
+  {name:"XLE_ENTITY_PROFILES", module:"checklists", suffix:"none", desc:"بيانات الكيان القانوني (Legal Employer) اللي تعيين الموظف تابع له.", tip:""},
+  {name:"FUN_ALL_BUSINESS_UNITS_V", module:"checklists", suffix:"V", desc:"الـ View اللي بيدّي اسم وحدة الأعمال (Business Unit) اللي التعيين تابع لها.", tip:""},
+  {name:"HR_ALL_POSITIONS_F", module:"checklists", suffix:"F", desc:"تعريف الشواغر الوظيفية (Position) — جدول تاريخي زي أي _F.", tip:"مالوش عمود NAME مباشر — اسم الشاغر بيتقرا من الـ View HR_ALL_POSITIONS_F_VL بدل ما تعمل join يدوي على جدول ترجمة."},
+  {name:"HR_LOCATIONS_ALL_F_VL", module:"checklists", suffix:"VL", desc:"موقع العمل الجغرافي (Location) بالاسم المترجم جاهز.", tip:"لو جربت PER_LOCATION_DETAILS_F.LOCATION_NAME هتاخد ORA-00904 — العمود مش موجود بيه بالاسم ده، استخدم الـ View دي بدل منه."},
+  {name:"PER_LOCATION_DETAILS_F", module:"checklists", suffix:"F", desc:"تفاصيل مواقع العمل التاريخية — الجدول الأساسي من غير اسم مقروء جاهز.", tip:"⚠️ مفيش عمود LOCATION_NAME على الجدول ده مباشرة رغم إن الاسم بديهي ومتوقع — استخدم HR_LOCATIONS_ALL_F_VL لو عايز الاسم جاهز."},
 ];
 
 const TRICKS = [
@@ -1348,6 +1359,7 @@ const TRICKS = [
   {title:"اسم بند المرتب (Element Name) مش في الجدول الأساسي", body:"<code>PAY_ELEMENT_TYPES_F</code> مالوش عمود <code>ELEMENT_NAME</code>. الاسم (زي Basic Salary) مخزّن في جدول الترجمة <code>PAY_ELEMENT_TYPES_F_TL</code> بس، بنفس منطق أي _TL تاني. حاول تفلتر بيه من الجدول الأساسي مباشرة هتاخد <code>ORA-00904</code>."},
   {title:"عمود Ambiguous من غير سبب ظاهر؟ (ORA-00918)", body:"جداول HCM كتير محمية بسياسات أمان (VPD/Data Security) بتضيف شروط جوه الكويري تلقائيًا من غير ما تشوفها. لو استخدمت عمود زي <code>PERSON_ID</code> في Subquery من غير ما تدّي الجدول Alias واضح وتسبق العمود بيه، ممكن تاخد <code>ORA-00918</code> غامضة. الحل: دايماً حط Alias لكل جدول وسبق كل عمود بيه، حتى لو الجدول واحد بس في الـ Subquery."},
   {title:"⚠️ فخ خطير: WHERE PL.LEGISLATION_CODE = 'SA' مش معناها \"سعودي الجنسية\"", body:"شكل الكويري ده بيوهم إنه بيجيب السعوديين بس، لكنه غلط: <code>LEGISLATION_CODE</code> في <code>PER_PEOPLE_LEGISLATIVE_F</code> معناها \"مجموعة التشريع اللي السجل خاضع لها\" — يعني في أي شركة مسجلة في السعودية، كل الموظفين (سعوديين وغير سعوديين) هيرجعوا بنفس القيمة 'SA'، فالكويري فعليًا بيجيب <strong>كل الموظفين</strong> مش الجنسية السعودية بس. المعيار الصحيح للجنسية الفعلية هو <code>PER_CITIZENSHIPS.LEGISLATION_CODE</code> مع <code>PRIMARY_FLAG = 'Y'</code>. الفرق ده خطير جداً لو النتيجة هتتبنى عليها قرارات فعلية زي فتح شاشة موظف وتعديل راتبه بناءً على \"إنك متأكد إنه سعودي\" — الأمان الوهمي ده هو أخطر حاجة في القصة."},
+  {title:"⚠️ تريكة خطيرة: بيانات Journeys في الواجهة مش نفسها اللي في الجدول فورًا", body:"لو عملت رحلة (Journey/Checklist) وخصّصتها لموظف من شاشة Journeys وشفتها في الواجهة تمام، مش شرط تلاقيها فورًا لو استعلمت بالـ SQL على <code>PER_ALLOCATED_CHECKLISTS_VL</code>. الواجهة الحديثة بتتعامل مع مؤشرات بحث سريعة (Search Indexes)، والبيانات محتاجة Scheduled Process يرحّلها لجداول قاعدة البيانات الحقيقية. لو رجعلك \"No records to display\" من غير أي خطأ ORA، ده مش معناه إن الكويري غلط — جرب شغّل عملية قريبة من \"Process Events\" أو \"Allocate Checklists and Tasks\" (الاسم بيختلف حسب البيئة والإصدار) من Tools > Scheduled Processes الأول، قبل ما تشك في الكويري نفسه."},
 ];
 
 const SUFFIXES = [
@@ -2244,45 +2256,226 @@ ORDER BY PAPF.PERSON_NUMBER`,
 --     ON PEEF.PAYROLL_RELATIONSHIP_ID = PAAF.PAYROLL_RELATIONSHIP_ID
 -- ❌ ORA-00904: "PAAF"."PAYROLL_RELATIONSHIP_ID": invalid identifier
 
--- ===== ✅ الحل اللي نجح فعليًا =====
+-- ===== ✅ الحل اللي نجح فعليًا (مُتحقق منه على بيئة حقيقية) =====
 SELECT
-    PAPF.PERSON_NUMBER                                        AS "EMPLOYEE_NUMBER",
-    PPNF.DISPLAY_NAME                                         AS "EMPLOYEE_NAME",
-    (
-        SELECT PEEVF.SCREEN_ENTRY_VALUE
-        FROM PAY_ELEMENT_ENTRIES_F PEEF
-        JOIN PAY_ELEMENT_TYPES_F PETF
-            ON PEEF.ELEMENT_TYPE_ID = PETF.ELEMENT_TYPE_ID
-           AND PETF.ELEMENT_NAME = 'Saudi_Housing_Allowance'
-        JOIN PAY_ELEMENT_ENTRY_VALUES_F PEEVF
-            ON PEEF.ELEMENT_ENTRY_ID = PEEVF.ELEMENT_ENTRY_ID
-        WHERE PEEF.PERSON_ID = PAPF.PERSON_ID
-        -- ⚠️ الأصح إنك تضيف السطر ده هنا (مش موجود في النسخة اللي شغالة فعلاً حاليًا):
-        -- AND TRUNC(SYSDATE) BETWEEN PEEF.EFFECTIVE_START_DATE AND PEEF.EFFECTIVE_END_DATE
-        AND ROWNUM = 1
-    ) AS "HOUSING_ALLOWANCE"
+    papf.person_number               AS "Person Number",
+    ppnf.display_name                AS "Employee Name",
+    -- 1. الراتب الأساسي من جدول الرواتب المباشر
+    cs.salary_amount                 AS "Basic Salary",
+    -- 2. قيمة بدل السكن عن طريق Subquery مرتبط بـ PERSON_ID
+    (SELECT peev.screen_entry_value
+     FROM pay_element_entries_f peef
+     JOIN pay_element_entry_values_f peev ON peef.element_entry_id = peev.element_entry_id
+     JOIN pay_element_types_vl pet     ON peef.element_type_id = pet.element_type_id
+     WHERE peef.person_id = papf.person_id
+       AND pet.element_name = 'Saudi_Housing_Allowance'
+       -- ⚠️ الأصح إنك تضيف السطر ده هنا (مش موجود في النسخة اللي شغالة فعلاً حاليًا):
+       -- AND TRUNC(SYSDATE) BETWEEN peef.effective_start_date AND peef.effective_end_date
+       AND ROWNUM = 1)               AS "Housing Allowance"
 FROM
-    PER_ALL_PEOPLE_F PAPF
-JOIN PER_PERSON_NAMES_F PPNF
-    ON PAPF.PERSON_ID = PPNF.PERSON_ID
-   AND PPNF.NAME_TYPE = 'GLOBAL'
-LEFT JOIN PER_ALL_ASSIGNMENTS_M PAAF
-    ON PAPF.PERSON_ID = PAAF.PERSON_ID
-   AND PAAF.PRIMARY_FLAG = 'Y'
-LEFT JOIN CMP_SALARY CS
-    ON PAAF.ASSIGNMENT_ID = CS.ASSIGNMENT_ID
-   AND TRUNC(SYSDATE) BETWEEN CS.DATE_FROM AND CS.DATE_TO
+    per_all_people_f papf
+JOIN
+    per_person_names_f ppnf          ON papf.person_id = ppnf.person_id
+                                    AND ppnf.name_type = 'GLOBAL'
+JOIN
+    per_all_assignments_m paaf       ON papf.person_id = paaf.person_id
+                                    AND paaf.assignment_type = 'E'
+-- ربط جدول الراتب الأساسي مباشرة بـ Assignment ID المتاح
+LEFT JOIN
+    cmp_salary cs                    ON paaf.assignment_id = cs.assignment_id
+                                    AND TRUNC(SYSDATE) BETWEEN cs.date_from AND cs.date_to
 WHERE
-    TRUNC(SYSDATE) BETWEEN PAPF.EFFECTIVE_START_DATE AND PAPF.EFFECTIVE_END_DATE
-    AND TRUNC(SYSDATE) BETWEEN PPNF.EFFECTIVE_START_DATE AND PPNF.EFFECTIVE_END_DATE
-    AND PAPF.PERSON_NUMBER = '&EMPLOYEE_NUMBER'`,
+    -- الفلترة على موظف معين لتجربته فورًا — استبدلها ببارامتر BI Publisher (زي :P_PERSON_NUMBER) في تقرير حقيقي
+    papf.person_number = '3891'
+    AND TRUNC(SYSDATE) BETWEEN papf.effective_start_date AND papf.effective_end_date
+    AND TRUNC(SYSDATE) BETWEEN ppnf.effective_start_date AND ppnf.effective_end_date
+    AND TRUNC(SYSDATE) BETWEEN paaf.effective_start_date AND paaf.effective_end_date`,
     breakdown: [
       {label:"المحاولتان 1 و2 (كومنت فوق الكويري) ❌", explain:"الاتنين فشلوا بنفس رسالة الخطأ ORA-00904 لأن المفتاحين دول مش متاحين بالشكل المتوقع على الجداول دي في البيئة المستخدمة. درس عام: متفترضش شكل جدول من توثيق أوراكل العام بس — جرب وشوف الأعمدة الفعلية المتاحة عندك في الـ SQL Developer أو BI Publisher نفسه."},
-      {label:"Subquery مرتبط (Correlated Subquery) بـ PEEF.PERSON_ID = PAPF.PERSON_ID", explain:"بدل الـ JOIN المباشر اللي فشل، استخدمنا Subquery بيتنفذ لكل صف في الاستعلام الرئيسي، ويربط PAY_ELEMENT_ENTRIES_F بالموظف مباشرة عن طريق PERSON_ID اللي أثبت إنه شغال."},
-      {label:"PETF.ELEMENT_NAME = 'Saudi_Housing_Allowance'", explain:"بيحدد بند المرتب المطلوب بالاسم بدل ما يجيب كل البنود ويلخبط النتيجة في عمود واحد."},
-      {label:"⚠️ ROWNUM = 1 من غير شرط تاريخ", explain:"زي ما اتشرح فوق، ده أضعف نقطة في الكويري — الأنصح إنك تضيف شرط EFFECTIVE_START_DATE/END_DATE قبل ROWNUM=1 عشان تضمن إنك بتجيب الصف الفعال دلوقتي بس مش أي صف عشوائي."},
-      {label:"LEFT JOIN CMP_SALARY CS", explain:"الراتب الأساسي جاي من جدول منفصل خالص (CMP_SALARY) مربوط بـ ASSIGNMENT_ID العادي (اللي شغال هنا من غير مشاكل) مع شرط فترة سريان DATE_FROM/DATE_TO."},
-      {label:":EMPLOYEE_NUMBER (Bind Variable)", explain:"بارامتر لو الكويري اتحط في BI Publisher — يسمح تجيب موظف واحد بدل كل الموظفين، بنفس فكرة البارامترات في كويري \"الموظف الشامل\" فوق."},
+      {label:"Subquery مرتبط (Correlated Subquery) بـ peef.person_id = papf.person_id", explain:"بدل الـ JOIN المباشر اللي فشل، استخدمنا Subquery بيتنفذ لكل صف في الاستعلام الرئيسي، ويربط pay_element_entries_f بالموظف مباشرة عن طريق person_id اللي أثبت إنه شغال."},
+      {label:"pay_element_types_vl مش pay_element_types_f", explain:"دي النقطة اللي كانت غلط في نسخة سابقة من الكويري: pay_element_types_f الأساسي مالوش عمود element_name أصلاً (الاسم موجود بس في نسخة الترجمة _TL). الحل العملي الأسهل هنا: استخدام الـ View الجاهزة pay_element_types_vl اللي بتضم الاسم المترجم جاهز من غير ما تعمل الـ JOIN بنفسك يدويًا."},
+      {label:"⚠️ ROWNUM = 1 من غير شرط تاريخ", explain:"زي ما اتشرح فوق، ده أضعف نقطة في الكويري — الأنصح إنك تضيف شرط effective_start_date/end_date قبل ROWNUM=1 عشان تضمن إنك بتجيب الصف الفعال دلوقتي بس مش أي صف عشوائي."},
+      {label:"⚠️ مفيش شرط PRIMARY_FLAG على paaf", explain:"الكويري بيفترض إن للموظف Assignment واحد بس. لو موظف عنده أكتر من Assignment (زي شغل جزئي في إدارتين)، الكويري ده ممكن يرجّعله أكتر من صف — لو محتاج تضمن صف واحد بس زوّد شرط AND paaf.primary_flag = 'Y'."},
+      {label:"LEFT JOIN cmp_salary cs", explain:"الراتب الأساسي جاي من جدول منفصل خالص (cmp_salary) مربوط بـ assignment_id العادي (اللي شغال هنا من غير مشاكل) مع شرط فترة سريان date_from/date_to (مش effective_start_date زي باقي الجداول)."},
+      {label:"papf.person_number = '3891'", explain:"هنا مكتوب رقم موظف ثابت للتجربة السريعة — في تقرير حقيقي بتستبدلها ببارامتر BI Publisher (Bind Variable) زي :P_PERSON_NUMBER عشان تقدر تشغل نفس الكويري لأي موظف من غير ما تعدل الكود."},
+    ]
+  },
+  {
+    titleAr: "دراسة حالة حقيقية: تقرير رحلات الموظفين (Journeys) — من 3 أخطاء ORA-00904 لحد تريكة المزامنة الخفية",
+    titleEn: "Real Case Study — HCM Journeys/Checklists Report: 3x ORA-00904 then the UI-vs-table sync trick",
+    warning: "الكويري تحت اتفتحت فلاتره عمدًا وقت التشخيص (شروط WHERE وLEFT JOIN بدل INNER) عشان نثبت إن المشكلة مش في بناء الكويري نفسه — لازم تقفل الفلاتر وتراجع الـ JOINs قبل ما تستخدمه في تقرير حقيقي، زي ما موضّح في آخر خطوتين تحت.",
+    intro: "الهدف كان تقرير بسيط في الظاهر: كل موظف اتخصصله رحلة (Journey/Checklist) اسمها 'Code of Conduct Agreement' في 2026، وحالته إيه (Completed / Overdue)، مع بياناته الوظيفية (الإدارة، المدير، الدرجة، الموقع). الرحلة فيها 3 أخطاء ORA-00904 متتالية بسبب أعمدة بأسماء متوقعة بديهيًا وطلعت غلط، وبعد ما اتحلوا كلهم، طلعت مفاجأة تانية خالص: الكويري بقى سليم 100% بس رجع 'No records to display' — واللي كشف تريكة مالهاش أي علاقة بالـ SQL خالص.",
+    benefitsTitle: "🔍 خطوات الرحلة (3 أخطاء ORA + لغز الصفوف الفاضية + التريكة الكبرى)",
+    benefits: [
+      {title:"الخطأ 1: PAC.STATUS ❌", desc:"أول محاولة افترضت إن عمود حالة الرحلة اسمه STATUS زي ما بيتوقع أي حد بديهيًا — رجع ORA-00904. الاسم الصح CHECKLIST_STATUS. الدرس: أسماء الأعمدة في أوراكل نادرًا ما تكون الاسم البديهي اللي متوقعه، خصوصًا في موديولز أحدث زي Journeys."},
+      {title:"الخطأ 2: PLDF.LOCATION_NAME ❌", desc:"جدول المواقع الأساسي PER_LOCATION_DETAILS_F مالوش عمود LOCATION_NAME مباشر رغم إن الاسم متوقع تمامًا. الحل: الربط بدل منه مع الـ View HR_LOCATIONS_ALL_F_VL اللي بيدمج الاسم المترجم جاهز."},
+      {title:"الخطأ 3: PGF.NAME ❌ (ونفس المشكلة في الوظائف والشواغر)", desc:"جداول PER_GRADES_F و PER_JOBS_F و HR_ALL_POSITIONS_F كلها جداول _F خام، مالهاش عمود NAME مباشر — الاسم مخزّن في جداول ترجمة _TL منفصلة. الحل الأسرع: استبدال الجداول التلاتة بالـ Views الجاهزة _VL (PER_GRADES_F_VL، PER_JOBS_F_VL، HR_ALL_POSITIONS_F_VL) اللي بتدمج الترجمة تلقائيًا من غير join يدوي."},
+      {title:"لغز 'No records to display' من غير أي رسالة خطأ", desc:"بعد تصحيح الأعمدة التلاتة، الكويري بقى سليم برمجيًا 100% — بس مرجعش ولا صف. الفرق المهم عن ORA-00904/ORA-00942: هنا مفيش رسالة خطأ خالص، ومعناه إن الكويري بيتنفذ صح لكن شروط الـ WHERE أو الـ JOIN مش بتلاقي بيانات فعلية مطابقة. خطوة التشخيص: فك الفلاتر واحد واحد (شيل شرط السنة، بعدين اسم الرحلة، وحوّل كل INNER JOIN لـ LEFT JOIN مؤقتًا) عشان تعرف السبب."},
+      {title:"✅ التريكة الكبرى: الواجهة مش بتتكلم مباشرة مع الجدول اللي بتستعلم عليه", desc:"بعد فك كل الفلاتر لسه مفيش بيانات — طلع السبب إن شاشة Journeys الحديثة بتخزّن تخصيص الرحلة في مؤشر بحث سريع (Search Index) الأول، ومحتاجة عملية خلفية (Scheduled Process) تعالج وترحّل السجل الجديد لجدول PER_ALLOCATED_CHECKLISTS الحقيقي. في البيئة دي كانت العملية المتاحة اسمها Process Events (الاسم بيختلف حسب البيئة والإصدار — ممكن تلاقيها Allocate Checklists and Tasks في بيئة تانية)."},
+    ],
+    legend: [
+      {color:'#ff5c7a', label:'أعمدة اتفترض وجودها وطلعت ORA-00904'},
+      {color:'#4fd1c5', label:'الحل: Views جاهزة (_VL) بدل الجداول الأساسية'},
+      {color:'#e879f9', label:'تريكة المزامنة: الواجهة لوحدها والجدول لوحده'},
+    ],
+    diagram: `<svg viewBox="0 0 900 400" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrowJourneyIdx" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#ff5c7a"/>
+        </marker>
+        <marker id="arrowJourneySync" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#e879f9"/>
+        </marker>
+        <marker id="arrowJourneyVl" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#4fd1c5"/>
+        </marker>
+      </defs>
+
+      <line x1="450" y1="72" x2="450" y2="108" stroke="#ff5c7a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowJourneyIdx)"/>
+      <line x1="450" y1="160" x2="450" y2="198" stroke="#e879f9" stroke-width="2.4" marker-end="url(#arrowJourneySync)"/>
+      <line x1="400" y1="256" x2="130" y2="298" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowJourneyVl)"/>
+      <line x1="430" y1="256" x2="345" y2="298" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowJourneyVl)"/>
+      <line x1="470" y1="256" x2="560" y2="298" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowJourneyVl)"/>
+      <line x1="500" y1="256" x2="775" y2="298" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowJourneyVl)"/>
+
+      <rect x="330" y="16" width="240" height="56" rx="12" fill="#131a2c" fill-opacity="0.9" stroke="#e8ecf5" stroke-width="1.8"/>
+      <text x="450" y="40" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="12.5" font-weight="700" fill="#e8ecf5">Journeys UI</text>
+      <text x="450" y="57" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9.5" fill="#93a0bd">شاشة Assign Journey</text>
+
+      <rect x="330" y="108" width="240" height="52" rx="12" fill="#2a0f18" fill-opacity="0.9" stroke="#ff5c7a" stroke-width="1.8"/>
+      <text x="450" y="130" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="11.5" font-weight="700" fill="#ff9db0">Search Index (مؤقت)</text>
+      <text x="450" y="146" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#ff9db0">⚠️ لسه مش الجدول الحقيقي</text>
+
+      <rect x="330" y="198" width="240" height="58" rx="12" fill="#1a1430" fill-opacity="0.9" stroke="#e879f9" stroke-width="1.8"/>
+      <text x="450" y="220" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="11.5" font-weight="700" fill="#e8ecf5">PER_ALLOCATED_CHECKLISTS_VL</text>
+      <text x="450" y="236" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9.5" fill="#93a0bd">checklist_status ✅ (not status)</text>
+      <text x="450" y="250" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#e879f9">بعد Scheduled Process (Process Events) ✅</text>
+
+      <g font-family="Fira Code, Consolas, monospace" font-size="9">
+        <rect x="20" y="298" width="200" height="56" rx="10" fill="#0f2a24" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+        <text x="120" y="318" text-anchor="middle" font-weight="700" fill="#e8ecf5">PER_GRADES_F_VL ✅</text>
+        <text x="120" y="334" text-anchor="middle" fill="#ff9db0">not _F.NAME ❌</text>
+
+        <rect x="245" y="298" width="200" height="56" rx="10" fill="#0f2a24" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+        <text x="345" y="318" text-anchor="middle" font-weight="700" fill="#e8ecf5">PER_JOBS_F_VL ✅</text>
+        <text x="345" y="334" text-anchor="middle" fill="#ff9db0">not _F.NAME ❌</text>
+
+        <rect x="465" y="298" width="200" height="56" rx="10" fill="#0f2a24" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+        <text x="565" y="318" text-anchor="middle" font-weight="700" fill="#e8ecf5">HR_ALL_POSITIONS_F_VL ✅</text>
+        <text x="565" y="334" text-anchor="middle" fill="#ff9db0">not _F.NAME ❌</text>
+
+        <rect x="680" y="298" width="200" height="56" rx="10" fill="#0f2a24" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+        <text x="780" y="318" text-anchor="middle" font-weight="700" fill="#e8ecf5">HR_LOCATIONS_ALL_F_VL ✅</text>
+        <text x="780" y="334" text-anchor="middle" fill="#ff9db0">not LOCATION_DETAILS_F.LOCATION_NAME ❌</text>
+      </g>
+    </svg>`,
+    sql: `-- ===== المحاولة 1: فشلت =====
+-- SELECT ... pac.status ...
+-- ❌ ORA-00904: "PAC"."STATUS": invalid identifier
+-- ✅ الاسم الصح: pac.checklist_status
+
+-- ===== المحاولة 2: فشلت =====
+-- ... pldf.location_name FROM per_location_details_f pldf ...
+-- ❌ ORA-00904: "PLDF"."LOCATION_NAME": invalid identifier
+-- ✅ الحل: استخدم الـ View hr_locations_all_f_vl بدل الجدول الأساسي
+
+-- ===== المحاولة 3: فشلت =====
+-- ... pgf.name FROM per_grades_f pgf ... (ونفس المشكلة مع per_jobs_f و hr_all_positions_f)
+-- ❌ ORA-00904: "PGF"."NAME": invalid identifier
+-- ✅ الحل: استخدم per_grades_f_vl / per_jobs_f_vl / hr_all_positions_f_vl
+
+-- ===== بعد تصحيح الأعمدة التلاتة: الكويري بقى سليم لكن "No records to display" =====
+-- السبب مش في الكود ده — شاشة Journeys بتخزن التخصيص في Search Index الأول،
+-- ولازم تشغّل Scheduled Process (زي Process Events) الأول عشان يرحّل البيانات
+-- لجدول PER_ALLOCATED_CHECKLISTS الحقيقي قبل ما أي SQL يقدر يشوفها.
+
+-- ===== ✅ الكويري النهائي بعد تصحيح الأعمدة (شغّل الـ Process الأول، وقفّل الفلاتر تحت لتقرير حقيقي) =====
+SELECT
+    papf.person_number                   AS "Person Number",
+    ppnf.full_name                       AS "Person Name",
+    pea.email_address                    AS "Email Address",
+    ast.per_system_status                AS "Assignment Status",
+    xle.name                             AS "Legal Employer",
+    bu.bu_name                           AS "Business Unit",
+    hou.name                             AS "Department",
+    hapf.name                            AS "Position",
+    pjf.name                             AS "Job",
+    pgf.name                             AS "Grade",
+    pldf.location_name                   AS "Location",
+    mgr_name.full_name                   AS "Line Manager",
+    ppos.date_start                      AS "Hire Date",
+    TO_CHAR(pac.allocation_date, 'YYYY') AS "Year",
+    pac.checklist_name                   AS "Journey Name",
+    pac.checklist_status                 AS "Journey Status",
+    pac.allocation_date                  AS "Assigned Date"
+FROM
+    per_allocated_checklists_vl pac
+-- الموظف مربوط بتاريخ تخصيص الرحلة نفسه (مش SYSDATE) عشان يجيب بياناته وقت الإسناد بالظبط
+LEFT JOIN
+    per_all_people_f papf                ON pac.person_id = papf.person_id
+                                        AND pac.allocation_date BETWEEN papf.effective_start_date AND papf.effective_end_date
+LEFT JOIN
+    per_person_names_f ppnf              ON pac.person_id = ppnf.person_id
+                                        AND ppnf.name_type = 'GLOBAL'
+                                        AND pac.allocation_date BETWEEN ppnf.effective_start_date AND ppnf.effective_end_date
+-- التعيين الأساسي بس (E أو C) عشان مايتكررش الصف
+LEFT JOIN
+    per_all_assignments_m paam           ON pac.person_id = paam.person_id
+                                        AND paam.assignment_type IN ('E','C')
+                                        AND paam.primary_flag = 'Y'
+                                        AND pac.allocation_date BETWEEN paam.effective_start_date AND paam.effective_end_date
+LEFT JOIN
+    per_periods_of_service ppos          ON pac.person_id = ppos.person_id
+                                        AND ppos.date_start <= pac.allocation_date
+LEFT JOIN
+    per_assignment_status_types ast      ON paam.assignment_status_type_id = ast.assignment_status_type_id
+LEFT JOIN
+    per_email_addresses pea              ON papf.person_id = pea.person_id
+                                        AND pea.email_type = 'WRTG'
+LEFT JOIN
+    xle_entity_profiles xle              ON paam.legal_entity_id = xle.legal_entity_id
+LEFT JOIN
+    fun_all_business_units_v bu          ON paam.business_unit_id = bu.bu_id
+LEFT JOIN
+    hr_organization_units_f_tl hou       ON paam.organization_id = hou.organization_id
+                                        AND hou.language = USERENV('LANG')
+                                        AND pac.allocation_date BETWEEN hou.effective_start_date AND hou.effective_end_date
+-- ✅ الحل: Views جاهزة (_VL) بدل الجداول الأساسية اللي مالهاش NAME مباشر
+LEFT JOIN
+    per_jobs_f_vl pjf                    ON paam.job_id = pjf.job_id
+                                        AND pac.allocation_date BETWEEN pjf.effective_start_date AND pjf.effective_end_date
+LEFT JOIN
+    hr_all_positions_f_vl hapf           ON paam.position_id = hapf.position_id
+                                        AND pac.allocation_date BETWEEN hapf.effective_start_date AND hapf.effective_end_date
+LEFT JOIN
+    per_grades_f_vl pgf                  ON paam.grade_id = pgf.grade_id
+                                        AND pac.allocation_date BETWEEN pgf.effective_start_date AND pgf.effective_end_date
+LEFT JOIN
+    hr_locations_all_f_vl pldf           ON paam.location_id = pldf.location_id
+                                        AND pac.allocation_date BETWEEN pldf.effective_start_date AND pldf.effective_end_date
+LEFT JOIN
+    per_assignment_supervisors_f pasf    ON paam.assignment_id = pasf.assignment_id
+                                        AND pasf.manager_type = 'LINE'
+                                        AND pac.allocation_date BETWEEN pasf.effective_start_date AND pasf.effective_end_date
+LEFT JOIN
+    per_person_names_f mgr_name          ON pasf.manager_id = mgr_name.person_id
+                                        AND mgr_name.name_type = 'GLOBAL'
+                                        AND pac.allocation_date BETWEEN mgr_name.effective_start_date AND mgr_name.effective_end_date
+WHERE
+    -- ⚠️ دي الفلاتر الحقيقية المطلوبة — سيبها مفعّلة في تقرير حقيقي، وافتحها مؤقتًا (1=1) بس وقت التشخيص
+    pac.checklist_name = 'Code of Conduct Agreement'
+    AND TO_CHAR(pac.allocation_date, 'YYYY') = '2026'
+ORDER BY
+    papf.person_number ASC`,
+    breakdown: [
+      {label:"pac.status ❌ → pac.checklist_status ✅", explain:"أول خطأ ORA-00904 — عمود حالة الرحلة في الجدول مسمّى CHECKLIST_STATUS مش STATUS. اسم بديهي متوقع لكنه غلط، وده بيتكرر كتير في جداول أوراكل الأحدث."},
+      {label:"pldf.location_name على per_location_details_f ❌ → hr_locations_all_f_vl ✅", explain:"الجدول الأساسي لتفاصيل المواقع مالوش عمود LOCATION_NAME مباشر. الحل العملي بدل ما تعمل join يدوي على جدول ترجمة: تستخدم الـ View الجاهزة hr_locations_all_f_vl اللي بتدمج الاسم المترجم من الأساس."},
+      {label:"pgf.name / pjf.name / hapf.name ❌ → الـ Views _VL ✅", explain:"نفس المشكلة اتكررت في 3 جداول مختلفة (الدرجات، الوظائف، الشواغر) — كلها جداول _F خام من غير عمود NAME. الحل الموحّد: استبدال الجداول التلاتة بنسخها _VL (per_grades_f_vl، per_jobs_f_vl، hr_all_positions_f_vl)."},
+      {label:"كل الـ JOINs اتحولت لـ LEFT JOIN بدل INNER JOIN", explain:"بيانات الموظفين التجريبيين غالبًا ناقصة (مفيش مدير مسجل، مفيش بريد إلكتروني...). لو الربط INNER، أي عمود ناقص بيسقط الصف كله من النتيجة النهائية. LEFT JOIN بيضمن ظهور الموظف والرحلة حتى لو باقي التفاصيل رجعت فاضية (NULL)."},
+      {label:"الربط بـ pac.allocation_date مش TRUNC(SYSDATE)", explain:"بدل ما تجيب بيانات الموظف 'دلوقتي'، الكويري بيجيب بياناته يوم ما اتخصصله الرحلة بالظبط — أدق وأصح لتقرير تاريخي، لأن القسم أو الدرجة ممكن يتغيروا بعد كده."},
+      {label:"'No records to display' مش نفسه ORA-00904 أو ORA-00942", explain:"لما الكويري بيتنفذ من غير أي رسالة خطأ ويرجع فاضي، المشكلة مش في بناء الجملة (Syntax) ولا في صلاحيات الجداول (زي ORA-00942) — المشكلة إن مفيش صفوف حقيقية مطابقة لشروط الـ JOIN/WHERE. خطوة التشخيص الصح: فك الفلاتر تدريجيًا (WHERE 1=1) لحد ما تلاقي أول نقطة بترجع فيها بيانات، بدل ما تشك في الكويري نفسه من الأول."},
+      {label:"✅ تريكة المزامنة: Scheduled Process (Process Events)", explain:"السبب الحقيقي وراء الصفوف الفاضية هنا: الرحلة اللي اتعملت من واجهة Journeys كانت متخزنة في مؤشر بحث سريع (Search Index)، ومحتاجة عملية خلفية معينة (اسمها في البيئة دي Process Events، وممكن تلاقيها باسم تاني زي Allocate Checklists and Tasks في بيئة مختلفة) عشان ترحّل البيانات لجدول PER_ALLOCATED_CHECKLISTS الفعلي. من غير ما تشغّل الـ Process ده، أي كويري SQL — مهما كان سليم 100% — مش هيلاقي حاجة يرجّعها."},
+      {label:"WHERE checklist_name = 'Code of Conduct Agreement' AND ... '2026'", explain:"دي الفلاتر النهائية المطلوبة فعليًا في التقرير — لازم تتفعّل تاني بعد التشخيص وتشغيل الـ Process، وإلا التقرير هيجيب كل الرحلات لكل الموظفين في كل السنين مش بس اللي طلبتها."},
     ]
   }
 ];
