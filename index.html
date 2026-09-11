@@ -1386,6 +1386,8 @@ const TABLES = [
   {name:"FND_LOOKUP_VALUES", module:"common", suffix:"none", desc:"جدول الـ decode العام لأي كود (الحالة الاجتماعية، الجنس...).", tip:"أي عمود يرجع كود مش واضح المعنى، غالباً محتاج join مع الجدول ده."},
   {name:"FND_USER", module:"common", suffix:"none", desc:"حساب المستخدم في السيستم، مرتبط بالشخص عن طريق person_id.", tip:""},
   {name:"PER_ABSENCE_ENTRIES", module:"common", suffix:"none", desc:"سجلات الغياب (مرضي، إجازة سنوية، إجازة بدون مرتب).", tip:""},
+  {name:"ANC_PER_ABS_ENTRIES", module:"common", suffix:"none", desc:"الجدول الحقيقي لطلبات الإجازات في موديول Absence Management (الاسم التجاري: Absences) — بيحمل START_DATE/END_DATE وحالة الطلب.", tip:"⚠️ الأعمدة المتاحة فعليًا هي DURATION (عمود واحد) و ABSENCE_STATUS_CD و APPROVAL_STATUS_CD — لو شُفت كويري بيستخدم ABSENCE_DURATION_HOURS أو ABSENCE_DURATION_DAYS كعمودين منفصلين، تأكد منهم بنفسك الأول (SELECT * ... WHERE ROWNUM=1) لأن ده مش مؤكد إنه اسم صحيح في كل البيئات."},
+  {name:"ANC_ABSENCE_TYPES_F_TL", module:"common", suffix:"TL", desc:"اسم نوع الإجازة (Annual, Sick...) باللغة — جدول ترجمة منفصل لتعريف أنواع الإجازات.", tip:"لازم AND language = USERENV('LANG') وإلا هترجع صف مكرر لكل لغة متاحة."},
   {name:"PER_CONTACT_RELATIONSHIPS", module:"common", suffix:"none", desc:"جهات الاتصال الطارئة والمعالين.", tip:""},
   {name:"PER_IMAGES", module:"common", suffix:"none", desc:"صور الموظفين الشخصية.", tip:""},
 
@@ -2535,6 +2537,135 @@ ORDER BY
       {label:"'No records to display' مش نفسه ORA-00904 أو ORA-00942", explain:"لما الكويري بيتنفذ من غير أي رسالة خطأ ويرجع فاضي، المشكلة مش في بناء الجملة (Syntax) ولا في صلاحيات الجداول (زي ORA-00942) — المشكلة إن مفيش صفوف حقيقية مطابقة لشروط الـ JOIN/WHERE. خطوة التشخيص الصح: فك الفلاتر تدريجيًا (WHERE 1=1) لحد ما تلاقي أول نقطة بترجع فيها بيانات، بدل ما تشك في الكويري نفسه من الأول."},
       {label:"✅ تريكة المزامنة: Scheduled Process (Process Events)", explain:"السبب الحقيقي وراء الصفوف الفاضية هنا: الرحلة اللي اتعملت من واجهة Journeys كانت متخزنة في مؤشر بحث سريع (Search Index)، ومحتاجة عملية خلفية معينة (اسمها في البيئة دي Process Events، وممكن تلاقيها باسم تاني زي Allocate Checklists and Tasks في بيئة مختلفة) عشان ترحّل البيانات لجدول PER_ALLOCATED_CHECKLISTS الفعلي. من غير ما تشغّل الـ Process ده، أي كويري SQL — مهما كان سليم 100% — مش هيلاقي حاجة يرجّعها."},
       {label:"WHERE checklist_name = 'Code of Conduct Agreement' AND ... '2026'", explain:"دي الفلاتر النهائية المطلوبة فعليًا في التقرير — لازم تتفعّل تاني بعد التشخيص وتشغيل الـ Process، وإلا التقرير هيجيب كل الرحلات لكل الموظفين في كل السنين مش بس اللي طلبتها."},
+    ]
+  },
+  {
+    titleAr: "تقرير طلبات الإجازات مربوطة بالموظف (Absence Requests Report)",
+    titleEn: "Employee Absence / Leave Requests Report",
+    aliases: {papf:"PER_ALL_PEOPLE_F", ppnf:"PER_PERSON_NAMES_F", paam:"PER_ALL_ASSIGNMENTS_M", abs_entries:"ANC_PER_ABS_ENTRIES", abs_types:"ANC_ABSENCE_TYPES_F_TL", dept:"HR_ORGANIZATION_UNITS_F_TL", job:"PER_JOBS_F"},
+    warning: "قبل ما تشغّل الكويري ده على بيئتك: المصادر الموثّقة الحقيقية لجدول <code>ANC_PER_ABS_ENTRIES</code> (مقالات وكويريهات حقيقية منشورة عن نفس الجدول) بتقول إن فيه عمود واحد بس اسمه <code>DURATION</code>، من غير تقسيم لعمودين منفصلين <code>ABSENCE_DURATION_HOURS</code> و <code>ABSENCE_DURATION_DAYS</code> زي المكتوب تحت — يحتمل إنهم يرجّعوا <code>ORA-00904</code> على بيئتك. جرّب الأول: <code>SELECT * FROM anc_per_abs_entries WHERE ROWNUM = 1</code> وشوف الأعمدة الحقيقية المتاحة قبل ما تعتمد على الكويري بحاله الحالي.",
+    intro: "تقرير بيربط بيانات الموظف الأساسية (الاسم، القسم، الوظيفة) بطلبات إجازاته الفعلية من موديول Absence Management — مفيد لأي حد عايز يشوف مين قدّم إجازة، نوعها إيه، ومعتمدة ولا لسه. الكويري ده جالك جاهز من مصدر خارجي زي ما هو، وبيوضّح كمان استخدام عملي لـ LEFT JOIN مع القسم والوظيفة (زي ما شرحنا في كارت LEFT JOIN فوق) عشان موظف مالوش قسم أو وظيفة متسجلة صح ميختفيش من التقرير.",
+    benefitsTitle: "💼 ليه بيتعمل؟ (فوايده لأصحاب العمل وللـ HR)",
+    benefits: [
+      {title:"تتبّع طلبات الإجازة يوم بيوم", desc:"الـ HR بيحتاج يعرف مين قدّم إجازة، من امتى لحد امتى، ونوعها إيه (سنوية، مرضي...) عشان يخطط تغطية الشغل والحضور والانصراف."},
+      {title:"ربط الإجازة بمكانها التنظيمي", desc:"معرفة القسم والوظيفة بتاعة كل طلب إجازة بتساعد المدراء يشوفوا هل قسم معين فيه ضغط غياب زيادة عن المعتاد في فترة معينة."},
+      {title:"⚠️ نقطة تصميم مهمة: LEFT JOIN للقسم والوظيفة", desc:"الكويري عامل الربط مع dept وjob بـ LEFT JOIN مقصودة — لو موظف (أو متعاقد) مالوش قسم أو وظيفة متسجلة صح في وقت الإجازة، هو برضه هيظهر في التقرير وعمود القسم/الوظيفة هيرجع NULL بدل ما يختفي الصف كله. ده تطبيق مباشر لنفس القاعدة اللي شرحناها في كارت LEFT JOIN فوق في صفحة أوامر SQL."},
+    ],
+    legend: [
+      {color:'#4fd1c5', label:'الربط الأساسي (JOIN) — لو مالقاش تطابق يختفي الصف'},
+      {color:'#ff5c7a', label:'الربط الاختياري (LEFT JOIN) — القسم والوظيفة'},
+      {color:'#ffb454', label:'⚠️ عمود محتاج تتأكد منه بنفسك (DURATION)'},
+    ],
+    diagram: `<svg viewBox="0 0 1200 420" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <marker id="arrowAbsJoin" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#4fd1c5"/>
+        </marker>
+        <marker id="arrowAbsLeft" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+          <path d="M0,0 L8,4 L0,8 Z" fill="#ff5c7a"/>
+        </marker>
+      </defs>
+
+      <line x1="600" y1="72" x2="380" y2="130" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowAbsJoin)"/>
+      <line x1="600" y1="72" x2="820" y2="130" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowAbsJoin)"/>
+      <line x1="600" y1="184" x2="600" y2="222" stroke="#4fd1c5" stroke-width="2.4" marker-end="url(#arrowAbsJoin)"/>
+      <line x1="600" y1="278" x2="600" y2="316" stroke="#4fd1c5" stroke-width="2" marker-end="url(#arrowAbsJoin)"/>
+      <line x1="820" y1="184" x2="900" y2="316" stroke="#ff5c7a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowAbsLeft)"/>
+      <line x1="820" y1="184" x2="1100" y2="316" stroke="#ff5c7a" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrowAbsLeft)"/>
+
+      <rect x="480" y="16" width="240" height="56" rx="12" fill="#131a2c" fill-opacity="0.9" stroke="#e8ecf5" stroke-width="1.8"/>
+      <text x="600" y="40" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="12.5" font-weight="700" fill="#e8ecf5">PER_ALL_PEOPLE_F</text>
+      <text x="600" y="57" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9.5" fill="#93a0bd">papf — نقطة الانطلاق</text>
+
+      <rect x="260" y="130" width="240" height="52" rx="12" fill="#0f2a24" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+      <text x="380" y="152" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="11.5" font-weight="700" fill="#e8ecf5">PER_PERSON_NAMES_F</text>
+      <text x="380" y="168" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#93a0bd">ppnf — NAME_TYPE='GLOBAL'</text>
+
+      <rect x="700" y="130" width="240" height="52" rx="12" fill="#0f2a24" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+      <text x="820" y="152" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="11.5" font-weight="700" fill="#e8ecf5">PER_ALL_ASSIGNMENTS_M</text>
+      <text x="820" y="168" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#93a0bd">paam — PRIMARY_FLAG='Y'</text>
+
+      <rect x="480" y="222" width="240" height="56" rx="12" fill="#1a1430" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.8"/>
+      <text x="600" y="246" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="12" font-weight="700" fill="#e8ecf5">ANC_PER_ABS_ENTRIES</text>
+      <text x="600" y="262" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#ffb454">⚠️ راجع أعمدة DURATION</text>
+
+      <rect x="480" y="316" width="240" height="52" rx="12" fill="#1a1430" fill-opacity="0.9" stroke="#4fd1c5" stroke-width="1.6"/>
+      <text x="600" y="338" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="11" font-weight="700" fill="#e8ecf5">ANC_ABSENCE_TYPES_F_TL</text>
+      <text x="600" y="354" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#93a0bd">abs_types — اسم نوع الإجازة</text>
+
+      <rect x="790" y="316" width="220" height="52" rx="12" fill="#2a0f18" fill-opacity="0.9" stroke="#ff5c7a" stroke-width="1.6"/>
+      <text x="900" y="338" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="10.5" font-weight="700" fill="#e8ecf5">HR_ORGANIZATION_UNITS_F_TL</text>
+      <text x="900" y="354" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#ff9db0">dept — LEFT JOIN</text>
+
+      <rect x="1000" y="316" width="180" height="52" rx="12" fill="#2a0f18" fill-opacity="0.9" stroke="#ff5c7a" stroke-width="1.6"/>
+      <text x="1090" y="338" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="11" font-weight="700" fill="#e8ecf5">PER_JOBS_F</text>
+      <text x="1090" y="354" text-anchor="middle" font-family="Fira Code, Consolas, monospace" font-size="9" fill="#ff9db0">job — LEFT JOIN</text>
+    </svg>`,
+    sql: `SELECT 
+    papf.person_number AS "Employee Number",
+    ppnf.display_name AS "Employee Name",
+    paam.effective_start_date AS "Hire Date",
+    -- اسم القسم (Department)
+    dept.name AS "Department",
+    -- كود الوظيفة
+    job.job_code AS "Position Code",
+    -- بيانات الإجازة المستخرجة من شاشة التقارير
+    abs_entries.created_by AS "Submitted By",
+    abs_types.name AS "Leave Type",
+    abs_entries.start_date AS "Start Date",
+    abs_entries.end_date AS "End Date",
+    -- ⚠️ الأعمدة دي محتاجة تأكيد — راجع تحذير الكارت فوق
+    abs_entries.absence_duration_hours AS "Duration Hours",
+    abs_entries.absence_duration_days AS "Duration Days",
+    abs_entries.absence_status_cd AS "Status"
+FROM 
+    per_all_people_f papf
+JOIN 
+    per_person_names_f ppnf 
+    ON papf.person_id = ppnf.person_id 
+    AND ppnf.name_type = 'GLOBAL'
+JOIN 
+    per_all_assignments_m paam 
+    ON papf.person_id = paam.person_id 
+    AND paam.assignment_type IN ('E', 'C')
+    AND paam.primary_flag = 'Y'
+-- ربط جدول طلبات الإجازات
+JOIN 
+    anc_per_abs_entries abs_entries 
+    ON papf.person_id = abs_entries.person_id
+-- ربط جدول أنواع الإجازات لجلب المسمى
+JOIN 
+    anc_absence_types_f_tl abs_types 
+    ON abs_entries.absence_type_id = abs_types.absence_type_id 
+    AND abs_types.language = USERENV('LANG')
+-- ربط القسم (Department)
+LEFT JOIN 
+    hr_organization_units_f_tl dept 
+    ON paam.organization_id = dept.organization_id 
+    AND dept.language = USERENV('LANG')
+-- ربط جدول الوظائف الأساسي
+LEFT JOIN 
+    per_jobs_f job 
+    ON paam.job_id = job.job_id
+-- فلاتر التاريخ القياسية لضمان السجلات النشطة فقط
+WHERE 
+    TRUNC(SYSDATE) BETWEEN papf.effective_start_date AND papf.effective_end_date
+    AND TRUNC(SYSDATE) BETWEEN ppnf.effective_start_date AND ppnf.effective_end_date
+    AND TRUNC(SYSDATE) BETWEEN paam.effective_start_date AND paam.effective_end_date
+    AND TRUNC(SYSDATE) BETWEEN abs_types.effective_start_date AND abs_types.effective_end_date
+    AND (dept.effective_start_date IS NULL OR TRUNC(SYSDATE) BETWEEN dept.effective_start_date AND dept.effective_end_date)
+    AND (job.effective_start_date IS NULL OR TRUNC(SYSDATE) BETWEEN job.effective_start_date AND job.effective_end_date)
+ORDER BY 
+    papf.person_number, 
+    abs_entries.start_date DESC;`,
+    breakdown: [
+      {label:"anc_per_abs_entries abs_entries — الجدول الحقيقي للإجازات", explain:"ده جدول Absence Management الفعلي في أوراكل فيوجن (اسمه في الواجهة \"Absences\")، مش جدول PER_ABSENCE_ENTRIES القديم/العام الموجود في قسم الجداول. الربط هنا بـ PERSON_ID مباشرة (من غير شرط تاريخ عادي، لأن الجدول ده مش date-tracked بنفس منطق الـ _F العادي)."},
+      {label:"⚠️ absence_duration_hours / absence_duration_days", explain:"دي أضعف نقطة في الكويري ده. المصادر الحقيقية المتاحة عن anc_per_abs_entries (كويريهات منشورة فعليًا من مستشارين اشتغلوا على الجدول ده) بتقول إن فيه عمود واحد بس اسمه DURATION، مش عمودين منفصلين للساعات والأيام. جرّب الكويري وتأكد بنفسك، ولو رجع ORA-00904 استبدل السطرين دول بـ abs_entries.duration بس."},
+      {label:"anc_absence_types_f_tl abs_types — اسم نوع الإجازة", explain:"زي أي جدول _TL في أوراكل، لازم شرط AND language = USERENV('LANG') وإلا هترجع صف مكرر لكل لغة متاحة على النظام."},
+      {label:"LEFT JOIN hr_organization_units_f_tl dept / per_jobs_f job", explain:"القسم والوظيفة اتربطوا بـ LEFT JOIN مقصودة مش JOIN عادي — عشان موظف (أو متعاقد نوع 'C') مالوش قسم أو وظيفة مسجلة صح وقت الإجازة برضه يظهر في التقرير، وعمود القسم/الوظيفة يرجع NULL بدل ما يشيل الصف كله. تطبيق مباشر لقاعدة LEFT JOIN اللي شرحناها في قسم أوامر SQL فوق."},
+      {label:"abs_entries.created_by AS \"Submitted By\"", explain:"CREATED_BY عمود قياسي (WHO column) موجود على أغلب جداول أوراكل ويسجّل مين أنشأ السجل، بس لاحظ إنه بيرجع الـ Username/الـ ID بتاع المستخدم في السيستم مش اسم مقروء — لو عايز اسم حقيقي محتاج Join إضافي على جدول المستخدمين (FND_USER) أو PER_ALL_PEOPLE_F لو الـ Username مطابق لرقم موظف."},
+      {label:"paam.assignment_type IN ('E', 'C')", explain:"بيشمل الموظفين الدائمين (E) والمتعاقدين (C) — لو عايز الموظفين الدائمين بس، شيل 'C' من القايمة."},
+      {label:"شروط التاريخ الأخيرة في WHERE", explain:"لاحظ إن شروط dept و job معمولة بصيغة (col IS NULL OR TRUNC(SYSDATE) BETWEEN...) بدل الشرط العادي — ده لازم لأنهم LEFT JOIN، فلو الصف مطابقتش (NULL)، شرط التاريخ العادي كان هيرفض الصف كله برغم إن ده مش القصد."},
     ]
   }
 ];
@@ -3782,6 +3913,39 @@ const ADVICE = [
       <p>بالطريقة دي بتعرف بالظبط أي جدول من التلاتة اللي حسابك ممنوع منه، بدل ما تفترض إن الكويري كله غلط.</p>
 
       <div class="tip">💡 الحل النهائي لو الجدول فعلاً ممنوع منك: مفيش طريقة تلف حواليه بـ SQL — لازم يا إما تطلب صلاحية إضافية من مسؤول النظام، يا إما تستخدم <strong>OTBI</strong> بدل BI Publisher. الـ OTBI (Subject Area زي "Workforce Management - Worker Assignment Real Time") بيقرا من نفس البيانات لكن عن طريق صلاحيات جاهزة مبنية مسبقًا، فبيتجاوز مشكلة الصلاحيات المباشرة على الجداول الخام غالبًا.</div>
+    `
+  },
+  {
+    icon:"🧑‍💼",
+    title:"شغل الـ HCM Functional Consultant إيه بالظبط؟ وأهم مناطق الـ Navigator",
+    body: `
+      <h4>مش برمجة — إعداد وتهيئة (Configuration)</h4>
+      <p>شغل الكونسلتنت الوظيفي (Functional) في الأساس هو إنه يترجم سياسات الموارد البشرية بتاعة الشركة لإعدادات فعلية جوه شاشات أوراكل — مفيش كود في الغالب، إلا في حالات خاصة زي الـ Fast Formula وبعض الـ extensions. الكونسلتنت الكويس مش بس عارف فين يدوس، هو فاهم الـ <strong>business process</strong> اللي وراه: ليه الشركة محتاجة الخطوة دي، وإزاي يترجم متطلب العميل لإعداد حقيقي.</p>
+
+      <h4>أهم مناطق الـ Navigator اللي بيشتغل عليها</h4>
+      <ul>
+        <li><strong>Workforce Structures (هيكل الشركة):</strong> أول حاجة بتتبني في أي implementation — الكيانات القانونية (Legal Entities)، الأقسام (Departments)، الوظائف (Jobs/Positions)، مواقع العمل (Locations)، والـ Grades. كل حاجة تانية في السيستم بتتبني على الأساس ده.</li>
+        <li><strong>My Client Groups → Person Management:</strong> عمليات دورة حياة الموظف (Actions) — تعيين موظف جديد (Hire)، نقل، ترقية، إنهاء خدمة (Termination)، ومحكومة بإعدادات كتير من ورا الكواليس.</li>
+        <li><strong>Absence Management:</strong> أنواع الإجازات (Absence Types)، خطط الأرصدة (Accrual Plans)، وقواعد الاستحقاق — نفس المنطقة اللي شغالين عليها الكويريهات في تبويب "🗂️ تقارير SQL جاهزة".</li>
+        <li><strong>Compensation:</strong> خطط الرواتب، الـ Salary Basis، خطط الـ Compensation والـ Bonuses.</li>
+        <li><strong>Payroll:</strong> عناصر الأجر (Elements)، قواعد الحساب، الـ Payroll Definitions — من أعقد المناطق ومحتاجة فهم عميق لقانون العمل المحلي (زي GOSI والنظام السعودي).</li>
+        <li><strong>Talent Management:</strong> تقييم الأداء (Performance)، خطط التعاقب الوظيفي (Succession Planning)، الأهداف (Goals).</li>
+        <li><strong>Benefits:</strong> برامج التأمين والمزايا للموظفين.</li>
+        <li><strong>Approval Management (BPM Worklist):</strong> تصميم مسارات الموافقات — مين يوافق على إيه قبل ما الإجراء يتنفذ فعلياً.</li>
+        <li><strong>Reports and Analytics / OTBI:</strong> بناء التقارير والـ Analyses — المنطقة اللي إحنا شغالين فيها فعلياً.</li>
+        <li><strong>Setup and Maintenance:</strong> "لوحة التحكم" الحقيقية — كل إعدادات الـ Offerings والـ Functional Areas بتتحط هنا.</li>
+      </ul>
+
+      <h4>التخصصات في السوق — محدش بيتقن كل حاجة بنفس العمق</h4>
+      <ul>
+        <li><strong>Core HR / Person Management:</strong> الأساس اللي أي حد داخل المجال لازم يعرفه، وأسهل نقطة بداية.</li>
+        <li><strong>Absence &amp; Time Management:</strong> تخصص قائم بذاته، بعض الشركات بتدور على حد متخصص فيه لوحده.</li>
+        <li><strong>Compensation &amp; Benefits:</strong> تخصص منفصل تاني، خصوصاً في الشركات الكبيرة.</li>
+        <li><strong>Payroll:</strong> غالباً أعلى أجراً وأكتر طلباً في السوق لأنه معقد ومحتاج فهم قوانين عمل محلية — لو هتركز على حاجة واحدة بعمق، دي غالباً أفضل استثمار.</li>
+        <li><strong>Talent Management:</strong> أصغر نسبياً من ناحية الطلب في السوق مقارنة بالباقي.</li>
+      </ul>
+
+      <div class="tip">💡 العمق الحقيقي مش بييجي من إنك تتفرج على كل شاشة لوحدها، هو بييجي من إنك تاخد سيناريو كامل وتمشي فيه لحد الآخر — مثلاً: عيّن موظف جديد → حدد له إجازاته → اعمله Compensation Plan → شوف إزاي البيانات دي بتظهر في تقرير SQL/OTBI في الآخر.</div>
     `
   },
 ];
