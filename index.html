@@ -791,6 +791,78 @@
     line-height:1.7;
   }
 
+  .lesson-tag{
+    margin:10px 2px 0;
+    font-size:13px;
+    font-weight:800;
+    color:var(--accent);
+  }
+  .advice-card.open .advice-body.long{max-height:9000px;}
+  .hcm-map-scroll{overflow-x:auto;margin:6px 0 6px;padding-bottom:6px;}
+  .hcm-map{
+    direction:ltr;
+    display:grid;
+    grid-template-columns:repeat(5,minmax(128px,1fr));
+    gap:10px;
+    min-width:700px;
+    align-items:start;
+  }
+  .hcm-col{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.07);
+    border-radius:12px;
+    padding:8px;
+  }
+  .hcm-col-head{
+    background:#2f8f5b;
+    color:#fff;
+    font-size:12.5px;
+    font-weight:800;
+    text-align:center;
+    line-height:1.4;
+    padding:9px 6px;
+    border-radius:8px;
+    font-family:"Segoe UI","Tahoma",sans-serif;
+  }
+  .hcm-col-head small{display:block;font-family:inherit;font-weight:600;font-size:11px;opacity:.9;direction:rtl;}
+  .hcm-cell{
+    background:rgba(79,209,197,.12);
+    border:1px solid rgba(79,209,197,.3);
+    color:#d9f5f1;
+    font-size:11.5px;
+    font-weight:600;
+    text-align:center;
+    line-height:1.4;
+    padding:7px 5px;
+    border-radius:7px;
+  }
+  .hcm-cell.core{
+    background:rgba(255,107,61,.2);
+    border-color:rgba(255,107,61,.6);
+    color:#ffd9cc;
+    font-weight:800;
+  }
+  .advice-body table.mini{
+    width:100%;
+    border-collapse:collapse;
+    margin:6px 0 14px;
+    font-size:13px;
+  }
+  .advice-body table.mini th,.advice-body table.mini td{
+    border:1px solid rgba(255,255,255,.1);
+    padding:8px 10px;
+    text-align:right;
+    line-height:1.75;
+    color:#c7cfe3;
+    vertical-align:top;
+  }
+  .advice-body table.mini th{background:rgba(255,255,255,.06);color:var(--text);font-weight:800;}
+  .advice-body .en{direction:ltr;unicode-bidi:embed;font-family:"Fira Code","JetBrains Mono","Consolas","Courier New",monospace;font-size:12px;color:var(--accent2);}
+  .table-scroll{overflow-x:auto;}
+
   .controls{
     max-width:1100px;
     margin:18px auto 0;
@@ -1210,6 +1282,7 @@
     <div class="page-nav-btn" data-view="commands">🧮 أهم أوامر SQL</div>
     <div class="page-nav-btn" data-view="fastformula">⚡ Fast Formula</div>
     <div class="page-nav-btn" data-view="advice">🧭 نصايح الطريق</div>
+    <div class="page-nav-btn" data-view="consultant">🎓 تعلم استشاري</div>
   </div>
 </div>
 
@@ -1278,6 +1351,12 @@
 <div id="view-advice" class="view">
   <div class="section-title"><h2>🧭 نصايح الطريق</h2><div class="line"></div></div>
   <div class="advice" id="adviceContainer"></div>
+</div>
+
+<div id="view-consultant" class="view">
+  <div class="section-title"><h2>🎓 تعلم استشاري</h2><div class="line"></div></div>
+  <p class="commands-intro">هنا بنبص على أوراكل HCM بعين الاستشاري مش بعين المبرمج: كل موديول بيحل مشكلة إيه عند العميل، مين بيستخدمه، وبيتربط بإيه. كل درس مبني على سلايد من كورسات أوراكل الرسمية ومشروح بأمثلة من الواقع.</p>
+  <div class="advice" id="consultantContainer"></div>
 </div>
 
 <footer>
@@ -3965,6 +4044,338 @@ ADVICE.forEach((a,i)=>{
   adviceContainerEl.appendChild(card);
 });
 adviceContainerEl.addEventListener('click', (e)=>{
+  const header = e.target.closest('.advice-header');
+  if(!header) return;
+  header.closest('.advice-card').classList.toggle('open');
+});
+
+// تعلم استشاري — كل درس: عنوان + مجموعة كروت قابلة للفتح
+const CONSULTANT = [
+  {
+    lesson:"الدرس 1: خريطة موديولات Oracle HCM Cloud",
+    cards:[
+      {
+        icon:"🗺️",
+        title:"الصورة الكبيرة: السلايد دي بتقول إيه؟",
+        body: `
+          <p>السلايد دي من كورس أوراكل الرسمي <strong>Configure Enterprise Structures (إصدار 19D)</strong>، وهي أول حاجة أي استشاري HCM لازم يحفظها: <strong>خريطة المنتج كله</strong>. أوراكل HCM مش برنامج واحد، هو <strong>5 عائلات (Pillars)</strong> وكل عائلة جواها موديولات بتتباع وبتتطبق لوحدها.</p>
+          <div class="hcm-map-scroll">
+            <div class="hcm-map">
+              <div class="hcm-col">
+                <div class="hcm-col-head">Global Human Resources<small>الموارد البشرية الأساسية</small></div>
+                <div class="hcm-cell core">Core Human Resources</div>
+                <div class="hcm-cell">Workforce Directory</div>
+                <div class="hcm-cell">Workforce Modeling</div>
+                <div class="hcm-cell">Workforce Predictions</div>
+                <div class="hcm-cell">HR Help Desk</div>
+              </div>
+              <div class="hcm-col">
+                <div class="hcm-col-head">Workforce Rewards<small>الفلوس والمزايا</small></div>
+                <div class="hcm-cell">Global Payroll and Localizations</div>
+                <div class="hcm-cell">Global Payroll Interface</div>
+                <div class="hcm-cell">Benefits</div>
+                <div class="hcm-cell">Compensation</div>
+              </div>
+              <div class="hcm-col">
+                <div class="hcm-col-head">Workforce Management<small>الوقت والغياب</small></div>
+                <div class="hcm-cell">Absence Management</div>
+                <div class="hcm-cell">Time and Labor</div>
+              </div>
+              <div class="hcm-col">
+                <div class="hcm-col-head">Talent Management<small>المواهب والتطوير</small></div>
+                <div class="hcm-cell">OTAC Onboarding, Recruiting</div>
+                <div class="hcm-cell">Recruiting</div>
+                <div class="hcm-cell">Learning</div>
+                <div class="hcm-cell">Career Development</div>
+                <div class="hcm-cell">Goal Management</div>
+                <div class="hcm-cell">Performance Management</div>
+                <div class="hcm-cell">Profile Management</div>
+                <div class="hcm-cell">Succession Management</div>
+                <div class="hcm-cell">Talent Review</div>
+              </div>
+              <div class="hcm-col">
+                <div class="hcm-col-head">Work Life<small>حياة الموظف</small></div>
+                <div class="hcm-cell">My Competitions</div>
+                <div class="hcm-cell">My Reputation</div>
+                <div class="hcm-cell">My Volunteering</div>
+                <div class="hcm-cell">My Wellness</div>
+              </div>
+            </div>
+          </div>
+          <p class="img-cap">إعادة رسم للسلايد — المربع البرتقالي (Core HR) هو اللي الكورس ده بيشرحه.</p>
+
+          <h4>إزاي تقرا الخريطة</h4>
+          <ul>
+            <li><strong>الأخضر فوق = العائلة (Pillar / Product Family):</strong> تصنيف تسويقي وتنظيمي. العميل بيقول "أنا عاوز Talent" أو "أنا عاوز Payroll".</li>
+            <li><strong>الأزرق تحت = الموديول (Module / Product):</strong> ده اللي بيتشترى رخصته وبيتعمله Implementation فعلاً.</li>
+            <li><strong>البرتقالي = Core HR:</strong> مش ملوّن بالصدفة. ده <strong>الأساس اللي كل الباقي واقف عليه</strong> — مفيش ولا موديول تاني يشتغل من غيره.</li>
+          </ul>
+
+          <h4>تشبيه يثبّت الفكرة</h4>
+          <p>تخيل عمارة: <strong>Core HR هو الأساسات والدور الأرضي</strong> (مين الموظف؟ شغال فين؟ مديره مين؟ درجته إيه؟). باقي الموديولات شقق فوق: شقة المرتبات، شقة الإجازات، شقة التقييم. تقدر تبني شقة وتسيب التانية، بس مستحيل تبني أي شقة من غير أساسات.</p>
+          <div class="tip">💡 علشان كده أي مشروع Oracle HCM بيبدأ بـ Core HR (وجواه الـ Enterprise Structures: Enterprise → Legal Entity → Business Unit → Department → Job → Position → Grade → Location)، وده بالظبط موضوع الكورس اللي السلايد منه.</div>
+        `
+      },
+      {
+        icon:"🏛️",
+        title:"العائلة 1: Global Human Resources (الأساس)",
+        body: `
+          <p>دي العائلة اللي بتجاوب على سؤال: <strong>"مين شغال عندنا وفين؟"</strong></p>
+
+          <h4>1) Core Human Resources <span class="en">(Global HR)</span></h4>
+          <p>السجل الرسمي للموظف والهيكل التنظيمي. فيه: بيانات الشخص، علاقة العمل، الـ Assignment (الوظيفة، القسم، المدير، الدرجة، الموقع)، وكل حركات دورة حياة الموظف: <strong>Hire → Transfer → Promote → Terminate</strong>.</p>
+          <p><strong>مثال:</strong> شركة عيّنت "أحمد" محاسب في قسم المالية بفرع القاهرة يوم 1 يناير. الـ HR بيفتح شاشة <span class="en">Hire an Employee</span> ويدخل بياناته. في الخلفية اتكتب صف في <span class="en">PER_ALL_PEOPLE_F</span> وصف في <span class="en">PER_ALL_ASSIGNMENTS_M</span> وصف في <span class="en">PER_PERIODS_OF_SERVICE</span>. بعد 6 شهور اترقى → صف جديد في الـ Assignment بتاريخ جديد (Date-Effective) والقديم بيفضل محفوظ.</p>
+
+          <h4>2) Workforce Directory</h4>
+          <p>دليل الموظفين والـ Org Chart. أي موظف يدوّر على زميله، يشوف رقمه وإيميله ومديره والتسلسل الإداري.</p>
+          <p><strong>مثال:</strong> موظف جديد عاوز يعرف مين مسؤول المشتريات في فرع إسكندرية → بيكتب الاسم أو الوظيفة في الـ Directory ويشوف الكارت بتاعه ومكانه في الهيكل. مفيش إدخال بيانات هنا — ده <strong>عرض</strong> لبيانات Core HR.</p>
+
+          <h4>3) Workforce Modeling</h4>
+          <p>أداة "ماذا لو؟" لإعادة الهيكلة. المدير بيرسم سيناريو تنظيمي جديد ويشوف أثره <strong>قبل</strong> ما ينفذه فعلاً.</p>
+          <p><strong>مثال:</strong> مدير عاوز يدمج قسمين وينقل 12 موظف تحت مدير واحد. بيعمل Model، يشوف عدد الموظفين والتكلفة بعد الدمج، ولو اتوافق عليه السيستم ينفذ الحركات كلها مرة واحدة بدل 12 عملية Transfer يدوي.</p>
+
+          <h4>4) Workforce Predictions</h4>
+          <p>تحليلات تنبؤية: السيستم بيحسب من البيانات التاريخية احتمال إن موظف <strong>يستقيل</strong> (Attrition Risk) أو مستوى أدائه المتوقع.</p>
+          <p><strong>مثال:</strong> موظفة أداؤها عالي، ماخدتش زيادة من سنتين، ومديرها اتغير 3 مرات → السيستم يديها "خطر استقالة مرتفع" ويظهر ده للمدير علشان يتصرف.</p>
+
+          <h4>5) HR Help Desk</h4>
+          <p>نظام تذاكر (Tickets) بين الموظف وإدارة الـ HR. الموظف بيفتح Service Request، وبتتوزع على المختص وبتتتابع لحد ما تتقفل.</p>
+          <p><strong>مثال:</strong> "مرتبي الشهر ده ناقص 500 جنيه" → تذكرة → بتروح لفريق الـ Payroll → رد وإغلاق، وكل ده متسجل ومتقاس (SLA).</p>
+
+          <div class="tip">💡 بعين الاستشاري: Core HR <strong>إجباري</strong> في أي مشروع. الأربعة التانيين اختياريين، والـ Directory غالباً بييجي معاه من غير شغل كتير.</div>
+        `
+      },
+      {
+        icon:"💰",
+        title:"العائلة 2: Workforce Rewards (الفلوس والمزايا)",
+        body: `
+          <p>بتجاوب على سؤال: <strong>"الموظف بياخد إيه مقابل شغله؟"</strong></p>
+
+          <h4>1) Global Payroll and Localizations</h4>
+          <p>محرك حساب المرتبات. <strong>Global Payroll</strong> هو المحرك نفسه (Elements، Fast Formulas، Payroll Run، Payslip). و<strong>Localization</strong> هي حزمة القوانين الجاهزة لكل دولة (ضرائب، تأمينات، تقارير حكومية).</p>
+          <p><strong>مثال:</strong> أحمد أساسي 10,000 + بدل انتقال 1,000 − تأمينات − ضريبة = الصافي. كل بند من دول اسمه <strong>Element</strong>، وطريقة حسابه مكتوبة في <strong>Fast Formula</strong>. آخر الشهر الـ Payroll Run بيحسب لكل الموظفين ويطلع الـ Payslip.</p>
+          <p>أوراكل عندها Localization جاهزة لدول زي السعودية والإمارات والكويت وأمريكا وبريطانيا. الدول اللي ملهاش Localization (ومصر منهم في أغلب الإصدارات) الاستشاري بيبني قواعدها بإيده بالـ Elements والـ Fast Formulas — وده سبب إن شغل الـ Payroll أغلى شغل في السوق.</p>
+
+          <h4>2) Global Payroll Interface</h4>
+          <p>للعميل اللي <strong>مش هيحسب المرتبات على أوراكل</strong> وعنده مزوّد خارجي (زي ADP أو شركة محلية). الموديول ده بيجهّز ملف فيه بيانات الموظفين وتغييراتهم ويبعته للنظام الخارجي.</p>
+          <p><strong>مثال:</strong> شركة عالمية الـ HR بتاعها كله على أوراكل، بس مرتبات فرع ألمانيا عند مكتب خارجي. كل شهر الـ Interface يطلّع ملف بالتعيينات الجديدة وتغييرات المرتبات ويتبعت للمكتب.</p>
+          <div class="tip">⚠️ سؤال إنترفيو مشهور: الفرق بين الاتنين؟ — <strong>Global Payroll بيحسب</strong>، <strong>Payroll Interface بيبعت البيانات لحد تاني يحسب</strong>. العميل بياخد واحد منهم مش الاتنين لنفس الدولة.</div>
+
+          <h4>3) Benefits</h4>
+          <p>المزايا غير النقدية المباشرة: تأمين طبي، تأمين حياة، معاش، بدل تعليم أولاد. فيه: الخطط، مين مستحق (Eligibility)، فترة الاشتراك (Enrollment)، والتابعين (Dependents).</p>
+          <p><strong>مثال:</strong> أحمد اتجوز → ده اسمه <strong>Life Event</strong> → السيستم يفتحله نافذة 30 يوم يضيف مراته على التأمين الطبي ويرقّي الخطة من فردي لعائلي، والقسط الزيادة يتخصم أوتوماتيك في الـ Payroll.</p>
+
+          <h4>4) Compensation</h4>
+          <p>إدارة <strong>قرار</strong> المرتب مش حسابه: الزيادات السنوية، البونص، الأسهم، وميزانية كل مدير.</p>
+          <p><strong>مثال:</strong> الشركة قررت زيادة سنوية بميزانية 8%. كل مدير بيفتح <span class="en">Workforce Compensation Worksheet</span> ويوزع الميزانية على فريقه حسب التقييم، وبعد الاعتمادات المرتبات الجديدة بتتحدث.</p>
+          <div class="tip">💡 الفرق اللي بيلخبط المبتدئين: <strong>Compensation</strong> بيحدد أحمد <em>المفروض</em> ياخد كام (10,000 → 11,000). <strong>Payroll</strong> بيحسب هو <em>فعلياً</em> هيقبض كام الشهر ده بعد الخصومات والغياب.</div>
+        `
+      },
+      {
+        icon:"⏱️",
+        title:"العائلة 3: Workforce Management (الوقت والغياب)",
+        body: `
+          <p>بتجاوب على سؤال: <strong>"الموظف اشتغل قد إيه وغاب قد إيه؟"</strong></p>
+
+          <h4>1) Absence Management</h4>
+          <p>كل أنواع الغياب: سنوية، مرضية، وضع، حج، بدون مرتب. المفاهيم الأساسية:</p>
+          <ul>
+            <li><strong>Absence Type:</strong> نوع الإجازة اللي الموظف بيختاره.</li>
+            <li><strong>Absence Plan:</strong> القاعدة اللي وراه — رصيد بيتراكم (Accrual) أو استحقاق (Qualification).</li>
+            <li><strong>Accrual:</strong> الرصيد بيزيد إزاي (مثلاً 1.75 يوم كل شهر = 21 يوم في السنة).</li>
+            <li><strong>Carryover:</strong> المتبقي بيترحّل للسنة الجاية ولا بيسقط.</li>
+          </ul>
+          <p><strong>مثال:</strong> أحمد رصيده 21 يوم. طلب 5 أيام من الموبايل → راحت لمديره (Approval) → اتوافق → الرصيد بقى 16. لو طلب إجازة بدون مرتب، الأيام بتتخصم أوتوماتيك في الـ Payroll.</p>
+
+          <h4>2) Time and Labor</h4>
+          <p>تسجيل ساعات الشغل الفعلية: Time Cards، الأوفر تايم، الورديات، وربط أجهزة البصمة.</p>
+          <p><strong>مثال:</strong> عامل في مصنع ورديته 8 ساعات واشتغل 10. الـ Time Card سجّل 10 → قاعدة (Time Rule) قسمتهم 8 عادي + 2 أوفر تايم بمعدل 1.35 → راحت للـ Payroll تتصرف.</p>
+
+          <div class="tip">💡 الفرق: <strong>Absence = الوقت اللي الموظف مش موجود فيه</strong>، <strong>Time and Labor = الوقت اللي هو موجود وشغال فيه</strong>. والاتنين بيصبّوا في الآخر في الـ Payroll.</div>
+        `
+      },
+      {
+        icon:"🌟",
+        title:"العائلة 4: Talent Management (المواهب والتطوير)",
+        body: `
+          <p>أكبر عمود في السلايد، وبيجاوب على: <strong>"إزاي نجيب الناس الصح، نطورهم، ونحافظ عليهم؟"</strong> — الموديولات مترتبة تقريباً بترتيب رحلة الموظف:</p>
+
+          <h4>1) OTAC Onboarding, Recruiting</h4>
+          <p><strong>OTAC = Oracle Talent Acquisition Cloud</strong>، وده الاسم الجديد لمنتج <strong>Taleo</strong> اللي أوراكل اشترته — نظام توظيف وتهيئة قديم ومنفصل تقنياً عن Fusion. موجود في السلايد لأن في 2019 عملاء كتير كانوا لسه عليه.</p>
+
+          <h4>2) Recruiting <span class="en">(ORC)</span></h4>
+          <p><strong>Oracle Recruiting Cloud</strong> — نظام التوظيف المبني جوه Fusion نفسه، وهو اللي بيتباع دلوقتي. فيه: طلب التعيين (Requisition)، موقع الوظائف (Career Site)، المرشحين، المقابلات، والعرض (Offer).</p>
+          <p><strong>مثال:</strong> مدير المالية محتاج محاسب → يعمل Requisition → تتنشر على موقع الشركة → 50 واحد يقدموا → فلترة ومقابلات → عرض لأحمد → يوافق → يتحول لموظف في Core HR <strong>من غير ما حد يكتب بياناته تاني</strong>.</p>
+
+          <h4>3) Learning</h4>
+          <p>نظام إدارة التعلم (LMS): كورسات، فيديوهات، تدريب إجباري، شهادات.</p>
+          <p><strong>مثال:</strong> كل موظف جديد يتعيّنله أوتوماتيك كورس "السلامة المهنية" ولازم يخلصه خلال 30 يوم، والـ HR يطلع تقرير بمين مخلصش.</p>
+
+          <h4>4) Career Development</h4>
+          <p>الموظف يشوف مساره الوظيفي: أنا فين، عاوز أوصل لفين، وناقصني إيه.</p>
+          <p><strong>مثال:</strong> أحمد محاسب وعاوز يبقى مدير مالي. السيستم يقارن مهاراته بمتطلبات الوظيفة ويطلعله الفجوة (مثلاً ناقص شهادة CMA) ويعمله خطة تطوير.</p>
+
+          <h4>5) Goal Management</h4>
+          <p>تحديد الأهداف السنوية ومتابعتها، ونزولها من الشركة للإدارة للموظف (Cascading).</p>
+          <p><strong>مثال:</strong> هدف الشركة "تقليل المصاريف 10%" → هدف مدير المالية "مراجعة عقود الموردين" → هدف أحمد "قفل الحسابات الشهرية في 5 أيام بدل 8".</p>
+
+          <h4>6) Performance Management</h4>
+          <p>دورة التقييم: تقييم ذاتي → تقييم المدير → مناقشة → درجة نهائية.</p>
+          <p><strong>مثال:</strong> آخر السنة أحمد يقيّم نفسه، مديره يقيّمه على الأهداف (جاية من Goals) والكفاءات (جاية من Profiles)، والدرجة النهائية بتروح لـ Compensation تحدد زيادته.</p>
+
+          <h4>7) Profile Management</h4>
+          <p>"السيرة الذاتية الداخلية": مهارات، شهادات، لغات، كفاءات. فيه نوعين: <strong>Person Profile</strong> (اللي عند الموظف) و<strong>Model Profile</strong> (اللي الوظيفة محتاجاه).</p>
+          <p><strong>مثال:</strong> الشركة محتاجة حد بيتكلم ألماني ومعاه PMP لمشروع جديد → بحث في الـ Profiles يطلع 3 موظفين في ثواني.</p>
+          <div class="tip">💡 ده الموديول "الخفي" في Talent — مش بيبان للعميل بس <strong>Goals و Performance و Career و Succession و Talent Review كلهم بيقروا منه</strong>. لازم يتظبط الأول.</div>
+
+          <h4>8) Succession Management</h4>
+          <p>خطط الإحلال: مين هيمسك المناصب الحرجة لو صاحبها مشي؟</p>
+          <p><strong>مثال:</strong> المدير المالي هيطلع معاش بعد سنتين. بيتعمل Succession Plan فيها 3 مرشحين: واحد "جاهز دلوقتي"، واحد "جاهز بعد سنة"، واحد "بعد 3 سنين".</p>
+
+          <h4>9) Talent Review</h4>
+          <p>اجتماع الإدارة العليا لمراجعة المواهب، وأشهر أداة فيه <strong>الـ 9-Box Grid</strong>: الأداء على محور والإمكانات (Potential) على المحور التاني.</p>
+          <p><strong>مثال:</strong> أحمد أداء عالي + إمكانات عالية → المربع اللي فوق على اليمين (Star) → يتحط في خطة الإحلال وياخد أولوية في التدريب.</p>
+        `
+      },
+      {
+        icon:"🧘",
+        title:"العائلة 5: Work Life (حياة الموظف)",
+        body: `
+          <p>موديولات "اجتماعية" هدفها رفع ارتباط الموظف بالشركة (Engagement) مش إدارة عمليات HR رسمية:</p>
+          <ul>
+            <li><strong>My Competitions:</strong> مسابقات داخلية بين الموظفين أو الفرق. مثال: مسابقة "أكتر فريق يمشي خطوات في الشهر".</li>
+            <li><strong>My Reputation:</strong> بيقيس حضور الموظف وتأثيره على السوشيال ميديا المهنية ويساعده يبني سمعته (Personal Brand).</li>
+            <li><strong>My Volunteering:</strong> التطوع والعمل الخيري. مثال: الشركة تعلن يوم تنظيف شاطئ، الموظفين يسجلوا وساعاتهم تتحسب.</li>
+            <li><strong>My Wellness:</strong> أهداف صحية وربط بأجهزة اللياقة (Wearables). مثال: هدف 8,000 خطوة يومياً.</li>
+          </ul>
+          <div class="tip">⚠️ مهم جداً: السلايد من <strong>2019</strong>. موديولات Work Life دي أوراكل وقفت تطويرها وشالت أغلبها في الإصدارات اللي بعد كده، وعمرها ما كان عليها طلب حقيقي في المشاريع. اعرف إنها كانت موجودة وخلاص — <strong>متضيعش وقت تذاكرها</strong>. راجع التوثيق الرسمي للإصدار الحالي قبل ما تقول لعميل إنها متاحة.</div>
+        `
+      },
+      {
+        icon:"🔗",
+        title:"قصة واحدة تربط كل الموديولات: رحلة أحمد",
+        body: `
+          <p>أحسن طريقة تحفظ بيها الخريطة إنك تمشي مع موظف واحد من أول يوم لآخر يوم:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>#</th><th>اللي حصل</th><th>الموديول</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>مدير المالية طلب محاسب، وأحمد قدّم واتقبل</td><td>Recruiting</td></tr>
+              <tr><td>2</td><td>أحمد اتعيّن: قسم المالية، درجة G5، مديره سارة</td><td>Core HR</td></tr>
+              <tr><td>3</td><td>زمايله لقوه في دليل الشركة والـ Org Chart</td><td>Workforce Directory</td></tr>
+              <tr><td>4</td><td>اتعيّنله كورس "سياسات الشركة" إجباري</td><td>Learning</td></tr>
+              <tr><td>5</td><td>سجّل شهادته ومهاراته</td><td>Profile Management</td></tr>
+              <tr><td>6</td><td>اشترك في التأمين الطبي وضاف أسرته</td><td>Benefits</td></tr>
+              <tr><td>7</td><td>بيسجّل حضوره وعمل ساعتين أوفر تايم</td><td>Time and Labor</td></tr>
+              <tr><td>8</td><td>أخد 5 أيام سنوية</td><td>Absence Management</td></tr>
+              <tr><td>9</td><td>آخر الشهر قبض: أساسي + أوفر تايم − تأمين − ضريبة</td><td>Global Payroll</td></tr>
+              <tr><td>10</td><td>مرتبه كان ناقص، فتح تذكرة</td><td>HR Help Desk</td></tr>
+              <tr><td>11</td><td>اتحطتله أهداف السنة</td><td>Goal Management</td></tr>
+              <tr><td>12</td><td>آخر السنة اتقيّم "ممتاز"</td><td>Performance Management</td></tr>
+              <tr><td>13</td><td>أخد زيادة 12% وبونص</td><td>Compensation</td></tr>
+              <tr><td>14</td><td>الإدارة حطته في مربع النجوم</td><td>Talent Review</td></tr>
+              <tr><td>15</td><td>اترشح خليفة للمدير المالي</td><td>Succession Management</td></tr>
+              <tr><td>16</td><td>اتعملتله خطة تطوير علشان يوصل</td><td>Career Development</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <h4>الخلاصة اللي لازم تطلع بيها</h4>
+          <ul>
+            <li>البيانات <strong>بتتدخل مرة واحدة</strong> وبتتنقل: Recruiting → Core HR → الباقي.</li>
+            <li>كل الطرق <strong>بتبدأ من Core HR</strong> (الـ Person والـ Assignment).</li>
+            <li>أغلب الطرق <strong>بتنتهي في Payroll</strong>: الغياب، الوقت، المزايا، والزيادات كلها بتتحول في الآخر لأرقام في المرتب.</li>
+            <li>موديولات Talent <strong>بتغذّي بعض</strong>: Profiles → Goals → Performance → Compensation / Talent Review → Succession → Career.</li>
+          </ul>
+        `
+      },
+      {
+        icon:"🎯",
+        title:"بعين الاستشاري: إزاي تستخدم الخريطة دي في الشغل",
+        body: `
+          <h4>1) العميل بيشتري موديولات، مش "أوراكل HCM"</h4>
+          <p>أول سؤال في أي مشروع: <strong>"إيه الموديولات اللي في الـ Scope؟"</strong> — لأن ده بيحدد مدة المشروع، حجم الفريق، والتكلفة. مشروع Core HR + Absence ممكن 3–4 شهور، ولو اتضاف Payroll المدة ممكن تتضاعف.</p>
+
+          <h4>2) ترتيب التطبيق (Phasing) المعتاد</h4>
+          <ol>
+            <li><strong>Phase 1:</strong> Core HR + Absence (+ Payroll لو مطلوب) — الأساس اللي الشركة مينفعش تشتغل من غيره.</li>
+            <li><strong>Phase 2:</strong> Time and Labor + Benefits + Compensation.</li>
+            <li><strong>Phase 3:</strong> Talent (Profiles الأول، بعدين Goals و Performance، بعدين Recruiting و Learning، وآخر حاجة Succession و Talent Review).</li>
+          </ol>
+          <p>الترتيب ده مش قانون، بس ده المنطق: <strong>اللي بيعتمد على غيره بييجي بعده</strong>.</p>
+
+          <h4>3) التخصصات في السوق</h4>
+          <ul>
+            <li><strong>Functional Consultant:</strong> بيتخصص في عمود أو اتنين (مثلاً "Core HR + Absence" أو "Payroll" أو "Talent"). محدش بيعرف الخمسة كلهم بعمق.</li>
+            <li><strong>Technical Consultant:</strong> بيخدم كل الموديولات بالتقارير (BIP / OTBI)، الـ HDL، الـ Fast Formulas، والـ Integrations — وده مسارك الحالي.</li>
+          </ul>
+
+          <h4>4) كل موديول ليه بادئة جداول (ودي فايدتها ليك كتكنيكال)</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>الموديول</th><th>البادئة</th><th>أمثلة جداول</th></tr></thead>
+            <tbody>
+              <tr><td>Core HR</td><td><span class="en">PER_ / HR_</span></td><td><span class="en">PER_ALL_PEOPLE_F, PER_ALL_ASSIGNMENTS_M</span></td></tr>
+              <tr><td>Payroll</td><td><span class="en">PAY_</span></td><td><span class="en">PAY_ELEMENT_ENTRIES_F, PAY_RUN_RESULTS</span></td></tr>
+              <tr><td>Absence</td><td><span class="en">ANC_</span></td><td><span class="en">ANC_PER_ABS_ENTRIES, ANC_ABSENCE_TYPES_F</span></td></tr>
+              <tr><td>Time and Labor</td><td><span class="en">HWM_</span></td><td><span class="en">HWM_TM_REC</span></td></tr>
+              <tr><td>Benefits</td><td><span class="en">BEN_</span></td><td><span class="en">BEN_PRTT_ENRT_RSLT</span></td></tr>
+              <tr><td>Compensation</td><td><span class="en">CMP_</span></td><td><span class="en">CMP_SALARY</span></td></tr>
+              <tr><td>Recruiting</td><td><span class="en">IRC_</span></td><td><span class="en">IRC_REQUISITIONS_B, IRC_CANDIDATES</span></td></tr>
+              <tr><td>Learning</td><td><span class="en">WLF_</span></td><td><span class="en">WLF_LEARNING_ITEMS_F</span></td></tr>
+              <tr><td>Profiles</td><td><span class="en">HRT_</span></td><td><span class="en">HRT_PROFILES_B, HRT_PROFILE_ITEMS</span></td></tr>
+              <tr><td>Goals</td><td><span class="en">HRG_</span></td><td><span class="en">HRG_GOALS</span></td></tr>
+              <tr><td>Performance</td><td><span class="en">HRA_</span></td><td><span class="en">HRA_EVALUATIONS</span></td></tr>
+              <tr><td>Succession</td><td><span class="en">HRM_</span></td><td><span class="en">HRM_PLANS</span></td></tr>
+              <tr><td>Talent Review</td><td><span class="en">HRR_</span></td><td>—</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>لما تشوف جدول بادئته <span class="en">ANC_</span> تعرف فوراً إنه بتاع الإجازات حتى لو أول مرة تشوفه. أسماء الجداول اتأكد منها من توثيق أوراكل (Tables and Views for HCM) قبل ما تبني عليها.</p>
+
+          <h4>5) أسئلة تسألها في أول ورشة مع العميل</h4>
+          <ul>
+            <li>إيه الموديولات اللي اشتريتوا رخصتها؟ وإيه اللي داخل في المرحلة الأولى؟</li>
+            <li>المرتبات هتتحسب على أوراكل ولا عند مزوّد خارجي؟ (Payroll ولا Payroll Interface)</li>
+            <li>شغالين في كام دولة؟ (بيحدد الـ Localizations والـ Legal Entities)</li>
+            <li>عندكم أجهزة بصمة؟ (بيحدد محتاجين Time and Labor ولا لأ)</li>
+            <li>التوظيف دلوقتي على إيه؟ (Taleo قديم ولا هتبدأوا على ORC)</li>
+          </ul>
+
+          <h4>اختبر نفسك</h4>
+          <ol>
+            <li>ليه Core HR هو المربع الوحيد الملوّن برتقالي؟</li>
+            <li>عميل قال "عاوز نظام الزيادات السنوية" — ده Compensation ولا Payroll؟</li>
+            <li>موظف غاب يوم بدون إذن واتخصم منه — إيه الموديولات اللي اشتركت في ده؟</li>
+            <li>إيه الموديول اللي لازم يتظبط قبل Performance و Succession؟</li>
+          </ol>
+          <p><strong>الإجابات:</strong> (1) لأنه الأساس اللي كل الموديولات بتعتمد عليه وهو موضوع الكورس. (2) Compensation — هو اللي بيدير قرار الزيادة، و Payroll بينفذها. (3) Time and Labor أو Absence سجّل الغياب ← Payroll خصم. (4) Profile Management.</p>
+        `
+      },
+    ]
+  },
+];
+
+const consultantContainerEl = document.getElementById('consultantContainer');
+CONSULTANT.forEach(l=>{
+  const tag = document.createElement('div');
+  tag.className = 'lesson-tag';
+  tag.textContent = l.lesson;
+  consultantContainerEl.appendChild(tag);
+  l.cards.forEach(a=>{
+    const card = document.createElement('div');
+    card.className = 'advice-card';
+    card.innerHTML = `
+      <div class="advice-header">
+        <div class="advice-icon">${a.icon}</div>
+        <div class="advice-title">${a.title}</div>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="advice-body long">${a.body}</div>
+    `;
+    consultantContainerEl.appendChild(card);
+  });
+});
+consultantContainerEl.addEventListener('click', (e)=>{
   const header = e.target.closest('.advice-header');
   if(!header) return;
   header.closest('.advice-card').classList.toggle('open');
