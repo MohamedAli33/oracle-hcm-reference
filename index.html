@@ -4511,14 +4511,8 @@ const CONSULTANT = [
         icon:"🏁",
         title:"اللي بعد كده + اختبر نفسك",
         body: `
-          <h4>المراحل اللي بتكمل بعد الـ Setup</h4>
-          <ol>
-            <li><strong>Data Migration:</strong> نقل بيانات الموظفين من النظام القديم بالـ HDL — بتتجرب على Test كذا مرة قبل Production.</li>
-            <li><strong>UAT:</strong> العميل يجرب بنفسه ويوقّع.</li>
-            <li><strong>Training:</strong> تدريب المستخدمين.</li>
-            <li><strong>Cutover و Go-Live:</strong> النقل النهائي وبداية التشغيل.</li>
-            <li><strong>Hypercare / Support:</strong> دعم مكثف أول كام أسبوع.</li>
-          </ol>
+          <h4>اللي بعد كده</h4>
+          <p>بعد ما السيستم يتبني على Test بييجي النص التاني من المشروع: الـ CRP، الـ UAT، نقل البيانات، الـ Go-Live، والدعم — وده كله مشروح بالتفصيل في <strong>الدرس 3</strong>.</p>
 
           <h4>مثال واحد ماشي في كل المراحل</h4>
           <div class="table-scroll">
@@ -4543,6 +4537,608 @@ const CONSULTANT = [
             <li>ليه بنظبط على Test قبل Production؟</li>
           </ol>
           <p><strong>الإجابات:</strong> (1) As-Is الوضع الحالي في الـ Analysis، To-Be الوضع المستقبلي في الـ Design. (2) علشان يبقى مرجع ثابت وأي جديد بعده يبقى Change Request. (3) إن العميل يمشي على الـ Standard، وبعدها Workaround، وآخر حاجة Customization. (4) لأن الغلط على Production بيأثر على بيانات حقيقية وفيه إعدادات مبتتمسحش.</p>
+        `
+      },
+    ]
+  },
+  {
+    lesson:"الدرس 3: من الـ CRP للتسليم — Validation و Transition و Go-Live",
+    cards:[
+      {
+        icon:"🤝",
+        title:"الصورة الكبيرة: المشروع بيتسلّم على مراحل، مش مرة واحدة",
+        body: `
+          <p>الدرس اللي فات وقف عند بناء السيستم على Test. الدرس ده عن النص التاني: <strong>إزاي العميل يستلم المشروع منك</strong>. والفكرة الأساسية إن التسليم مش لحظة واحدة في الآخر — هو <strong>سلسلة بوابات (Gates)</strong>، كل بوابة العميل بيشوف فيها حاجة ويوقّع عليها قبل ما نعدّي للي بعدها.</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>#</th><th>البوابة</th><th>العميل بيستلم إيه</th><th>بيوقّع على إيه</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td><strong>CRP</strong></td><td>عرض عملي للحل</td><td>"التصميم ده هو اللي عاوزينه"</td></tr>
+              <tr><td>2</td><td><strong>UAT</strong> (Validation)</td><td>سيستم كامل يجربه بإيده</td><td>"السيستم شغال صح وجاهز"</td></tr>
+              <tr><td>3</td><td><strong>User Guide + Training</strong></td><td>المعرفة: إزاي يشغّل السيستم</td><td>"اتدربنا واستلمنا الدليل"</td></tr>
+              <tr><td>4</td><td><strong>Production Setup</strong> (Transition)</td><td>البيئة الحقيقية جاهزة ببياناته</td><td>"البيانات المنقولة مطابقة"</td></tr>
+              <tr><td>5</td><td><strong>Go-Live</strong></td><td>التشغيل الفعلي</td><td>قرار Go / No-Go</td></tr>
+              <tr><td>6</td><td><strong>Post Go-Live Support</strong></td><td>دعم لحد ما يقف على رجله</td><td>إقفال المشروع (Project Closure)</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <h4>ليه التسليم على مراحل؟</h4>
+          <ul>
+            <li><strong>مفيش مفاجآت في الآخر:</strong> لو العميل شاف السيستم لأول مرة يوم الـ Go-Live وطلع مش عاجبه، المشروع كله اتحرق.</li>
+            <li><strong>كل توقيع بيقفل باب:</strong> اللي اتوافق عليه في الـ CRP مينفعش يتفتح تاني في الـ UAT إلا كـ Change Request.</li>
+            <li><strong>المسؤولية بتتنقل بالتدريج</strong> من فريق الاستشاريين لفريق العميل، لحد ما في الآخر العميل يبقى هو صاحب السيستم.</li>
+            <li>في أغلب العقود <strong>الدفعات مربوطة بالتوقيعات دي</strong> (Milestones).</li>
+          </ul>
+          <div class="tip">💡 احفظها كده: <strong>CRP = العميل بيتفرج. UAT = العميل بيجرب. Go-Live = العميل بيشتغل. Support = العميل بيستقل.</strong></div>
+        `
+      },
+      {
+        icon:"🖥️",
+        title:"1) CRP1 — Conference Room Pilot",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <p><strong>Conference Room Pilot</strong> = "تجربة في قاعة الاجتماعات". بنجمع المستخدمين الأساسيين (Key Users) في قاعة، والاستشاري بيمشي قدامهم على السيستم في <strong>العمليات كاملة من أولها لآخرها</strong> — مش شاشات متفرقة.</p>
+
+          <h4>ليه فيه رقم (CRP1)؟</h4>
+          <p>لأنها بتتكرر، وكل مرة السيستم بيبقى أقرب للشكل النهائي:</p>
+          <ul>
+            <li><strong>CRP1:</strong> أول عرض. غالباً على إعدادات مبدئية أو قياسية وببيانات عينة. الهدف: العميل يشوف الحل ويأكد إن التصميم مفهوم صح.</li>
+            <li><strong>CRP2:</strong> بعد تعديل الملاحظات، وعلى إعدادات العميل الفعلية وعينة من بياناته، وفيها حلول الـ Gaps (Fast Formulas، تقارير).</li>
+            <li><strong>CRP3</strong> (في المشاريع الكبيرة): العملية كاملة عبر الموديولات مع الـ Integrations.</li>
+          </ul>
+          <p>عدد الجولات بيختلف من مشروع للتاني — مشروع صغير ممكن يكتفي بواحدة أو اتنين.</p>
+
+          <h4>مثال</h4>
+          <p>في CRP1 للإجازات: الاستشاري دخل كموظف وطلب إجازة ← دخل كمدير ووافق ← ورّى الرصيد اتخصم. مديرة الـ HR قالت: "تمام، بس عندنا الإجازة المرضية أكتر من 3 أيام لازم تتوافق من الـ HR كمان". دي ملاحظة اتسجلت وهتتعدل قبل CRP2.</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <ul>
+            <li>نكتشف سوء الفهم <strong>بدري جداً</strong>، قبل ما نبني كل حاجة عليه.</li>
+            <li>العميل بيبدأ يحس إن السيستم بتاعه (Buy-in) بدل ما يتفاجئ بيه.</li>
+            <li>بتطلّع متطلبات كانت مستخبية — العميل مبيعرفش هو عاوز إيه لحد ما يشوف.</li>
+          </ul>
+          <p><strong>المخرج:</strong> قائمة ملاحظات (Issues / Feedback Log) وتوقيع على نتيجة الـ CRP.</p>
+          <div class="tip">⚠️ الفرق عن الـ Demo: في الـ <strong>Demo</strong> بنوري السيستم بيعمل إيه عموماً على شركة وهمية. في الـ <strong>CRP</strong> بنوري <em>شركتك أنت</em> هتشتغل إزاي عليه.</div>
+        `
+      },
+      {
+        icon:"✅",
+        title:"2) Validation Phase و UAT (User Acceptance Testing)",
+        body: `
+          <h4>Validation Phase يعني إيه؟</h4>
+          <p>مرحلة <strong>التحقق</strong>: بنثبت إن اللي اتبنى مطابق للي اتوقّع عليه في التصميم. وأهم حاجة فيها الـ UAT.</p>
+
+          <h4>UAT = User Acceptance Testing (اختبار قبول المستخدم)</h4>
+          <p>مستخدمين العميل الحقيقيين <strong>بيجربوا السيستم بإيديهم</strong> على بيئة Test، بسيناريوهات من شغلهم اليومي وببيانات شبه حقيقية، ويقرروا: نقبله ولا لأ.</p>
+
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th></th><th>CRP</th><th>UAT</th></tr></thead>
+            <tbody>
+              <tr><td><strong>مين اللي ماسك الماوس؟</strong></td><td>الاستشاري</td><td>مستخدم العميل</td></tr>
+              <tr><td><strong>الهدف</strong></td><td>نأكد التصميم</td><td>نقبل السيستم</td></tr>
+              <tr><td><strong>السيستم</strong></td><td>لسه بيتبني</td><td>خلصان</td></tr>
+              <tr><td><strong>النتيجة</strong></td><td>ملاحظات وتعديلات</td><td>توقيع قبول (Sign-off)</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>بتمشي إزاي؟</h4>
+          <ol>
+            <li>المستخدم بينفذ الـ <strong>Test Script</strong> خطوة بخطوة (الكارت الجاي).</li>
+            <li>أي حاجة مطلعتش زي المتوقع بتتسجل <strong>Defect</strong> بدرجة خطورة: Critical / High / Medium / Low.</li>
+            <li>الاستشاري بيصلّح، والمستخدم <strong>بيعيد الاختبار (Retest)</strong>.</li>
+            <li>لما الـ Critical والـ High يتقفلوا ← العميل يوقّع <strong>UAT Sign-off</strong>.</li>
+          </ol>
+
+          <h4>مثال</h4>
+          <p>موظفة الـ HR جربت تعيّن موظف بعقد مؤقت ولقت إن تاريخ نهاية العقد مش إجباري. ده Defect من درجة Medium: اتسجل، الاستشاري خلّى الحقل إجباري، وهي جربت تاني وقفلته.</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <ul>
+            <li>الاستشاري بيختبر إن السيستم <strong>شغال</strong>. المستخدم بس اللي يقدر يحكم إنه <strong>مناسب لشغله</strong>.</li>
+            <li>الـ UAT Sign-off هو <strong>الإذن الرسمي</strong> إننا نروح Production — من غيره مفيش Go-Live.</li>
+            <li>هو كمان أحسن تدريب عملي للمستخدمين قبل التشغيل.</li>
+          </ul>
+          <div class="tip">💡 مش كل ملاحظة في الـ UAT تبقى Defect. لو السيستم بيعمل اللي مكتوب في المستند الموقّع والعميل عاوز حاجة تانية ← دي <strong>Change Request</strong> مش غلطة. التفرقة دي من أهم مهارات الاستشاري.</div>
+        `
+      },
+      {
+        icon:"📝",
+        title:"3) Test Script و TE.040",
+        body: `
+          <h4>Test Script يعني إيه؟</h4>
+          <p>مستند فيه <strong>سيناريوهات اختبار مكتوبة خطوة بخطوة</strong>: المستخدم يعمل إيه بالظبط، يدخل بيانات إيه، والمفروض يشوف إيه. الاختبار مش "ادخل جرّب وقولنا رأيك".</p>
+
+          <h4>TE.040 يعني إيه؟</h4>
+          <p>كود المستند في منهجية أوراكل: <strong>TE</strong> = Testing، و<strong>TE.040</strong> هو <strong>System Test Script</strong> — سكريبت اختبار العمليات كاملة. وفي نفس العيلة سكريبتات لاختبار الوحدة ولاختبار التكامل بين الأنظمة. في مشاريع كتير نفس قالب الـ TE.040 بيتستخدم كسكريبت للـ UAT.</p>
+
+          <h4>شكله من جوه</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>#</th><th>الخطوة</th><th>البيانات</th><th>النتيجة المتوقعة</th><th>الفعلية</th><th>Pass / Fail</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>ادخل كموظف وافتح Add Absence</td><td>User: ahmed.test</td><td>الشاشة تفتح والرصيد يظهر 21</td><td></td><td></td></tr>
+              <tr><td>2</td><td>اختار إجازة سنوية 5 أيام</td><td>من 1 لـ 5 مارس</td><td>المدة تتحسب 5 أيام</td><td></td><td></td></tr>
+              <tr><td>3</td><td>اضغط Submit</td><td>—</td><td>الطلب يروح للمدير</td><td></td><td></td></tr>
+              <tr><td>4</td><td>ادخل كمدير ووافق</td><td>User: sara.test</td><td>الحالة Approved</td><td></td><td></td></tr>
+              <tr><td>5</td><td>ارجع كموظف وشوف الرصيد</td><td>—</td><td>الرصيد بقى 16</td><td></td><td></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>عمود "الفعلية" و "Pass / Fail" المستخدم بيملاهم وهو بيجرب، وفي الآخر بيوقّع على السكريبت.</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <ul>
+            <li><strong>تغطية:</strong> نضمن إن كل متطلب في الـ RD.011 اتجرب، مش بس اللي افتكرناه.</li>
+            <li><strong>إثبات:</strong> السكريبت الموقّع هو الدليل إن العميل جرّب وقبل.</li>
+            <li><strong>تكرار:</strong> نفس السكريبت يتعاد بعد أي تصليح، وبعد كل تحديث ربع سنوي من أوراكل (Regression Test).</li>
+            <li><strong>وضوح:</strong> المستخدم عارف يعمل إيه ومش محتاج الاستشاري جنبه.</li>
+          </ul>
+          <div class="tip">💡 اكتب سيناريوهات <strong>سلبية</strong> كمان: موظف رصيده 3 أيام وطلب 5 ← المتوقع إن السيستم يرفض. السيستم لازم يمنع الغلط، مش بس يعدّي الصح.</div>
+        `
+      },
+      {
+        icon:"📘",
+        title:"4) User Guide: دليل المستخدم",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <p>مستند بيشرح <strong>للمستخدم النهائي</strong> إزاي يعمل شغله على السيستم: خطوة بخطوة، بصور من <strong>شاشات العميل نفسه</strong> بعد الإعدادات — مش توثيق أوراكل العام.</p>
+          <p>غالباً بيتقسم حسب الدور: دليل للموظف (Self Service)، دليل للمدير، دليل لموظف الـ HR، دليل لمسؤول الـ Payroll.</p>
+
+          <h4>مثال</h4>
+          <p>"إزاي تطلب إجازة": (1) من الصفحة الرئيسية اضغط Me ← Time and Absences. (2) اضغط Add Absence. (3) اختار نوع الإجازة... — ومع كل خطوة Screenshot وسهم على الزرار.</p>
+
+          <h4>بنعمله ليه؟</h4>
+          <ul>
+            <li>ده <strong>تسليم المعرفة</strong>. السيستم من غير ناس تعرف تشغّله ملوش قيمة.</li>
+            <li>هو المادة اللي <strong>التدريب</strong> بيتبني عليها. والشائع أسلوب <strong>Train the Trainer</strong>: الاستشاري يدرّب الـ Key Users وهما يدرّبوا باقي الشركة.</li>
+            <li>بيقلل التذاكر والأسئلة بعد الـ Go-Live.</li>
+            <li>بيفضل مرجع للموظفين الجداد بعد ما الاستشاريين يمشوا.</li>
+          </ul>
+
+          <h4>الفرق بينه وبين الـ Test Script</h4>
+          <ul>
+            <li><strong>Test Script:</strong> بيقول "اعمل كذا <em>والمفروض</em> تشوف كذا" — هدفه نتأكد إن السيستم صح. بيتستخدم وقت الاختبار.</li>
+            <li><strong>User Guide:</strong> بيقول "<em>علشان تعمل</em> كذا امشي كده" — هدفه المستخدم يتعلم. بيتستخدم كل يوم.</li>
+          </ul>
+          <div class="tip">💡 بيتكتب <strong>بعد</strong> ما الإعدادات تثبت (بعد الـ UAT أو في آخره) — لو اتكتب بدري، كل تعديل في الشاشات هيخليك تعيد الصور كلها.</div>
+        `
+      },
+      {
+        icon:"🚚",
+        title:"5) Transition Phase و Production Setup",
+        body: `
+          <h4>Transition Phase يعني إيه؟</h4>
+          <p>مرحلة <strong>الانتقال</strong>: بننقل الشركة من النظام القديم للجديد. كل اللي فات كان على Test — هنا بنجهّز البيئة الحقيقية. والخطة التفصيلية بتاعتها اسمها <strong>Cutover Plan</strong>: مين هيعمل إيه، بأنهي ترتيب، وفي أنهي ساعة.</p>
+
+          <h4>Production Setup: بنعمل إيه بالظبط؟</h4>
+          <ol>
+            <li><strong>نقل الإعدادات:</strong> اللي اتعمل واتجرب على Test بيتعاد على Production — جزء بيتنقل كـ Configuration Package (Export / Import من Setup and Maintenance)، وجزء بيتعمل بالإيد من مستند الإعدادات.</li>
+            <li><strong>نقل شغل التكنيكال:</strong> التقارير (BIP / OTBI)، الـ Fast Formulas، الـ Integrations — وده دورك أنت.</li>
+            <li><strong>نقل البيانات (Data Migration):</strong> رفع بيانات الموظفين الحقيقية بالـ HDL: الأشخاص، الـ Assignments، المرتبات، أرصدة الإجازات الافتتاحية.</li>
+            <li><strong>المستخدمين والصلاحيات:</strong> إنشاء الـ Users وإعطاء كل واحد الـ Role بتاعه.</li>
+            <li><strong>المطابقة (Reconciliation):</strong> العميل يقارن: عدد الموظفين في القديم = عددهم في الجديد؟ إجمالي المرتبات واحد؟ ويوقّع.</li>
+            <li><strong>Smoke Test:</strong> تجربة سريعة إن الحاجات الأساسية شغالة على Production.</li>
+          </ol>
+
+          <h4>مثال</h4>
+          <p>الشركة 1,200 موظف. ملف الـ HDL اترفع على Production ← تقرير SQL طلّع 1,200 موظف نشط وإجمالي الأساسي مطابق لكشف الشهر اللي فات ← مديرة الـ HR وقّعت على المطابقة.</p>
+
+          <h4>بنعملها ليه كمرحلة لوحدها؟</h4>
+          <ul>
+            <li>علشان Production يتبني <strong>نضيف</strong>: من غير موظفين تجريبيين ولا إعدادات اتجربت واتلغت.</li>
+            <li>نقل البيانات أخطر خطوة في المشروع — غلطة فيها يعني موظف من غير مرتب أو برصيد غلط. علشان كده بتتعمل <strong>بروفات (Mock Migrations)</strong> على Test كذا مرة قبلها.</li>
+            <li>فيه <strong>فترة تجميد (Freeze)</strong>: العميل بيوقف التعديل في النظام القديم علشان البيانات متتغيرش وإحنا بننقلها.</li>
+          </ul>
+          <div class="tip">⚠️ القاعدة: <strong>مفيش حاجة بتتعمل على Production لأول مرة</strong>. كل خطوة في الـ Cutover Plan لازم تكون اتعملت قبل كده على Test ونجحت.</div>
+        `
+      },
+      {
+        icon:"🚀",
+        title:"6) Go Live: يوم التشغيل",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <p>اللحظة اللي الشركة <strong>بتبدأ تشتغل فعلياً</strong> على أوراكل، والنظام القديم بيتقفل (أو يبقى للقراءة بس).</p>
+
+          <h4>قرار Go / No-Go</h4>
+          <p>قبل اليوم ده بيتعمل اجتماع بين إدارة المشروع والعميل، وبيتراجع Checklist:</p>
+          <ul>
+            <li>الـ UAT اتوقّع عليه؟ مفيش Defects خطيرة مفتوحة؟</li>
+            <li>البيانات اتنقلت واتطابقت؟</li>
+            <li>المستخدمين اتدربوا واستلموا الـ User Guide؟</li>
+            <li>الصلاحيات جاهزة؟ فريق الدعم مستعد؟</li>
+            <li>فيه <strong>خطة رجوع (Rollback Plan)</strong> لو حصلت مشكلة كبيرة؟</li>
+          </ul>
+          <p>لو كله تمام ← <strong>Go</strong>. لو فيه حاجة أساسية ناقصة ← <strong>No-Go</strong> والتاريخ يتأجل. تأجيل أسبوع أرخص بكتير من Go-Live فاشل.</p>
+
+          <h4>بيتحدد إمتى؟</h4>
+          <p>غالباً <strong>أول شهر أو أول سنة مالية</strong>، أو أول فترة Payroll — علشان الحسابات تبدأ نضيفة. وبيتجنبوا أوقات الضغط (آخر السنة، موسم التقييم).</p>
+
+          <h4>لو فيه Payroll: الـ Parallel Run</h4>
+          <p>قبل الـ Go-Live بيتحسب المرتب على <strong>النظامين مع بعض</strong> لشهر أو أكتر وتتقارن النتايج موظف بموظف. لو أحمد صافيه في القديم 9,450 وفي أوراكل 9,450 ← تمام. لو فيه فرق لازم يتفسّر قبل ما نكمل.</p>
+
+          <h4>مثال</h4>
+          <p>Go-Live يوم 1 يناير: الموظفين بيدخلوا يطلبوا إجازاتهم من أوراكل، الـ HR بيعيّن من أوراكل، والنظام القديم اتقفل يوم 31 ديسمبر.</p>
+          <div class="tip">💡 بعض الشركات بتعمل <strong>Phased Go-Live</strong>: تبدأ بفرع واحد أو موديول واحد، وبعدين تعمّم. أقل مخاطرة بس بياخد وقت أطول.</div>
+        `
+      },
+      {
+        icon:"🛟",
+        title:"7) Post Go-Live Support (Hypercare)",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <p>فترة <strong>دعم مكثف</strong> بعد التشغيل — غالباً من شهر لتلات شهور حسب العقد. فريق المشروع بيفضل موجود ومتفرغ لأي مشكلة. اسمها الشائع <strong>Hypercare</strong>.</p>
+
+          <h4>بيحصل فيها إيه؟</h4>
+          <ul>
+            <li>حل المشاكل اللي بتظهر مع الاستخدام الحقيقي (المستخدمين بيعملوا حاجات محدش جربها في الـ UAT).</li>
+            <li>مساعدة المستخدمين اللي لسه بيتعودوا.</li>
+            <li>متابعة <strong>أول دورة لكل حاجة</strong>: أول Payroll Run، أول إقفال شهر، أول تراكم أرصدة.</li>
+            <li>تعديلات صغيرة وتقارير إضافية بتتطلب بعد ما الناس تبدأ تشتغل.</li>
+            <li><strong>نقل المعرفة (Knowledge Transfer)</strong> لفريق العميل أو لفريق الدعم الدائم.</li>
+          </ul>
+
+          <h4>مثال</h4>
+          <p>تاني أسبوع بعد الـ Go-Live: مدير اشتكى إن طلبات إجازات فريقه مش بتوصله. طلع إن الموظفين دول اتنقلوا من غير مدير في الـ Assignment. اتصلّحت بملف HDL صغير في نفس اليوم — ومن غير Hypercare كانت هتقعد أسابيع.</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <ul>
+            <li>أول أسابيع هي <strong>أخطر فترة</strong>: لو المستخدمين اتحرقوا من السيستم في الأول، هيرجعوا للإكسيل ومش هيثقوا فيه تاني.</li>
+            <li>مهما كان الـ UAT كويس، الواقع بيطلّع حالات محدش فكر فيها.</li>
+            <li>علشان العميل <strong>ميتسابش لوحده</strong> فجأة.</li>
+          </ul>
+
+          <h4>نهاية المشروع: التسليم النهائي</h4>
+          <p>في آخر الفترة بيتسلّم للعميل ملف المشروع كامل (مستندات التصميم، الإعدادات، سكريبتات الاختبار، الـ User Guides، قائمة التقارير والـ Formulas)، ويتوقّع <strong>Project Closure</strong>. بعدها السيستم بيتنقل لـ <strong>عقد دعم (Support / AMS)</strong> أو لفريق العميل الداخلي.</p>
+          <div class="tip">💡 شغل الدعم بعد الـ Go-Live هو أكتر مكان بيبدأ منه التكنيكال الجونيور: تقارير جديدة، تصليح بيانات بالـ HDL، تعديل Fast Formulas. وهو أحسن مدرسة لأنك بتشوف مشاكل حقيقية.</div>
+        `
+      },
+      {
+        icon:"🧩",
+        title:"الرحلة كلها في جدول واحد + اختبر نفسك",
+        body: `
+          <h4>المشروع من أوله لآخره (الدرس 2 + الدرس 3)</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>#</th><th>الخطوة</th><th>البيئة</th><th>المستند / المخرج</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Analysis</td><td>Demo</td><td>وصف الوضع الحالي (As-Is)</td></tr>
+              <tr><td>2</td><td>Design</td><td>Demo</td><td>RD.011 موقّع</td></tr>
+              <tr><td>3</td><td>Configuration</td><td>Test</td><td>مستند الإعدادات</td></tr>
+              <tr><td>4</td><td>CRP1 / CRP2</td><td>Test</td><td>قائمة ملاحظات + توقيع</td></tr>
+              <tr><td>5</td><td>UAT (Validation)</td><td>Test</td><td>Test Scripts (TE.040) موقّعة + UAT Sign-off</td></tr>
+              <tr><td>6</td><td>Training</td><td>Test</td><td>User Guide</td></tr>
+              <tr><td>7</td><td>Production Setup (Transition)</td><td>Production</td><td>Cutover Plan + توقيع مطابقة البيانات</td></tr>
+              <tr><td>8</td><td>Go-Live</td><td>Production</td><td>قرار Go / No-Go</td></tr>
+              <tr><td>9</td><td>Post Go-Live Support</td><td>Production</td><td>Project Closure</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>الترتيب ده هو الشكل المعتاد، بس كل شركة استشارات ليها منهجيتها — ممكن تلاقي الـ CRP قبل الـ Configuration الكامل، أو التدريب قبل الـ UAT. المهم تفهم <strong>كل خطوة موجودة ليه</strong>.</p>
+
+          <h4>اختبر نفسك</h4>
+          <ol>
+            <li>إيه الفرق بين CRP و UAT؟</li>
+            <li>العميل في الـ UAT قال "عاوز خانة جديدة مكانتش في التصميم" — ده Defect؟</li>
+            <li>إيه اللي لازم يكون موجود قبل قرار الـ Go؟</li>
+            <li>ليه بنعمل Mock Migration على Test؟</li>
+            <li>الفرق بين Test Script و User Guide؟</li>
+          </ol>
+          <p><strong>الإجابات:</strong> (1) في الـ CRP الاستشاري بيعرض والعميل بيأكد التصميم، وفي الـ UAT المستخدم بيجرب بنفسه ويقبل السيستم. (2) لأ، ده Change Request لأنه خارج المستند الموقّع. (3) UAT Sign-off، بيانات منقولة ومتطابقة، مستخدمين متدربين، صلاحيات جاهزة، وخطة رجوع. (4) لأن نقل البيانات أخطر خطوة ومينفعش تتعمل على Production لأول مرة. (5) الأول للتأكد إن السيستم صح، والتاني لتعليم المستخدم يشتغل.</p>
+        `
+      },
+    ]
+  },
+  {
+    lesson:"الدرس 4: Core HR من جوه البرنامج",
+    cards:[
+      {
+        icon:"❤️",
+        title:"معنى الكلمة: يعني إيه Core HR؟",
+        body: `
+          <h4>المعنى الحرفي</h4>
+          <ul>
+            <li><strong>Core</strong> = اللُّب، القلب، الجزء الأساسي اللي في النص (زي قلب التفاحة).</li>
+            <li><strong>HR</strong> = Human Resources = الموارد البشرية.</li>
+          </ul>
+          <p>يعني <strong>Core HR = "قلب الموارد البشرية"</strong> أو "الموارد البشرية الأساسية". واسمه الرسمي عند أوراكل <strong>Global Human Resources</strong> (وبيتكتب اختصاراً Global HR)، والناس في السوق بتقول Core HR.</p>
+
+          <h4>المعنى في الشغل</h4>
+          <p>هو الجزء من البرنامج اللي بيجاوب على 3 أسئلة عن أي موظف:</p>
+          <ol>
+            <li><strong>مين هو؟</strong> (بياناته الشخصية)</li>
+            <li><strong>شغال فين وبإيه؟</strong> (الشركة، القسم، الوظيفة، الدرجة، المدير)</li>
+            <li><strong>حصله إيه من يوم ما اتعيّن؟</strong> (تعيين، نقل، ترقية، استقالة)</li>
+          </ol>
+
+          <h4>تشبيه</h4>
+          <p>زمان كل موظف كان ليه <strong>ملف ورق في دولاب شؤون العاملين</strong>: فيه صورة بطاقته، عقده، قرار تعيينه، قرارات ترقياته. والدولاب نفسه متقسم أدراج حسب الإدارات. <strong>Core HR هو الدولاب ده كله على الكمبيوتر</strong>: الأدراج = الهيكل التنظيمي، والملفات = سجلات الموظفين.</p>
+
+          <h4>ليه اسمه Core؟</h4>
+          <p>لأن <strong>كل الموديولات التانية بتقرا منه</strong>. الـ Payroll محتاج يعرف الموظف في أنهي شركة ودرجته إيه. الـ Absence محتاج يعرف تاريخ تعيينه علشان يحسب رصيده. الـ Performance محتاج يعرف مديره مين. مفيش ولا واحد منهم يشتغل لو Core HR فاضي.</p>
+          <div class="tip">💡 جوه Core HR فيه 3 حاجات كبيرة، وهنمشي عليهم واحدة واحدة: <strong>(1) الهياكل</strong> — شكل الشركة. <strong>(2) الأشخاص</strong> — بيانات الموظفين. <strong>(3) الحركات</strong> — اللي بيحصل للموظف مع الوقت.</div>
+        `
+      },
+      {
+        icon:"🏢",
+        title:"1) الهياكل: نبني شكل الشركة قبل ما ندخّل ولا موظف",
+        body: `
+          <p>قبل ما تعيّن أي حد لازم "الأدراج" تكون موجودة. دي بتتعمل مرة في أول المشروع من <span class="en">Setup and Maintenance</span>. نمشي بمثال: <strong>مجموعة النيل</strong>، عندها شركتين في مصر وشركة في السعودية.</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>الهيكل</th><th>يعني إيه</th><th>مثال من مجموعة النيل</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Enterprise</strong></td><td>المجموعة كلها — أعلى مستوى، وبيبقى واحد بس</td><td>مجموعة النيل</td></tr>
+              <tr><td><strong>Legal Entity / Legal Employer</strong></td><td>الشركة القانونية اللي ليها سجل تجاري وبتوقّع عقد الموظف</td><td>النيل للتجارة (مصر)، النيل للصناعة (مصر)، النيل السعودية</td></tr>
+              <tr><td><strong>Business Unit</strong></td><td>وحدة أعمال — تقسيمة إدارية بتتحكم في البيانات المرجعية والصلاحيات</td><td>BU مصر، BU السعودية</td></tr>
+              <tr><td><strong>Department</strong></td><td>القسم أو الإدارة</td><td>المالية، المبيعات، الـ IT</td></tr>
+              <tr><td><strong>Location</strong></td><td>المكان الفعلي بعنوانه</td><td>المقر الرئيسي – القاهرة، مصنع العاشر</td></tr>
+              <tr><td><strong>Job</strong></td><td>المسمى الوظيفي العام</td><td>محاسب، مهندس، مدير مبيعات</td></tr>
+              <tr><td><strong>Position</strong></td><td>"كرسي" محدد جوه قسم معين (اختياري)</td><td>محاسب أول – مالية القاهرة – كرسي واحد</td></tr>
+              <tr><td><strong>Grade</strong></td><td>الدرجة الوظيفية، وممكن يتربط بيها نطاق مرتب</td><td>G5، G6، G7</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>الفرق بين Job و Position (سؤال إنترفيو ثابت)</h4>
+          <ul>
+            <li><strong>Job</strong> = نوع الشغل: "محاسب". ممكن 50 واحد في الشركة يبقوا على نفس الـ Job.</li>
+            <li><strong>Position</strong> = خانة محددة في الهيكل: "محاسب أول في مالية القاهرة". ليها عدد مقاعد (Headcount)، ولو صاحبها مشي بتفضل موجودة وفاضية (Vacant).</li>
+          </ul>
+          <p>الشركات اللي عندها هيكل ثابت وميزانية وظائف (حكومة، بنوك) بتستخدم Positions. الشركات المرنة بتكتفي بالـ Jobs.</p>
+
+          <h4>مثال Grade</h4>
+          <p>الدرجة G5 نطاق مرتبها من 8,000 لـ 14,000. لو حد حاول يدي موظف G5 مرتب 20,000 السيستم ينبّه إنه برّه النطاق.</p>
+          <div class="tip">⚠️ الهياكل دي لازم تتصمم صح من الأول — خصوصاً الـ Legal Entity والـ Business Unit — لأن تغييرها بعد ما يبقى عليها موظفين صعب جداً. علشان كده ليها كورس كامل (Configure Enterprise Structures).</div>
+        `
+      },
+      {
+        icon:"🧑‍💼",
+        title:"2) الأشخاص: الموظف متسجل في السيستم إزاي؟",
+        body: `
+          <p>أوراكل مبيخزنش الموظف كصف واحد. بيخزنه على <strong>3 مستويات</strong> فوق بعض:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>المستوى</th><th>يعني إيه</th><th>مثال أحمد</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Person</strong></td><td>الإنسان نفسه — بياناته اللي مبتتغيرش بتغيّر شغله</td><td>أحمد محمد، Person Number 1001، مواليد 1995</td></tr>
+              <tr><td><strong>Work Relationship</strong></td><td>علاقته بشركة قانونية معينة: من إمتى لإمتى</td><td>موظف في "النيل للتجارة" من 1 يناير 2024</td></tr>
+              <tr><td><strong>Assignment</strong></td><td>تفاصيل شغله دلوقتي: بيعمل إيه وفين ومع مين</td><td>محاسب، قسم المالية، G5، القاهرة، مديرته سارة</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>ليه 3 مستويات؟</h4>
+          <ul>
+            <li>لو أحمد <strong>اترقى</strong>: الـ Person زي ما هو، الـ Work Relationship زي ما هو، بس الـ <strong>Assignment اتغير</strong>.</li>
+            <li>لو أحمد <strong>استقال ورجع بعد سنة</strong>: نفس الـ Person ونفس الرقم، بس <strong>Work Relationship جديدة</strong>. تاريخه القديم كله محفوظ.</li>
+            <li>لو أحمد شغال في <strong>شركتين من المجموعة</strong>: Person واحد وليه 2 Work Relationship.</li>
+          </ul>
+
+          <h4>بيانات الـ Person (اللي بتشوفها في شاشة Personal Information)</h4>
+          <ul>
+            <li>الاسم (وممكن بأكتر من لغة)، تاريخ الميلاد، النوع، الحالة الاجتماعية.</li>
+            <li>الرقم القومي (National Identifier)، جواز السفر، التأشيرة والإقامة.</li>
+            <li>العنوان، التليفونات، الإيميلات.</li>
+            <li>جهات الاتصال (Contacts): الزوجة والأولاد وشخص الطوارئ.</li>
+            <li>المستندات (Document Records): صورة البطاقة، الشهادة، العقد.</li>
+          </ul>
+
+          <h4>بيانات الـ Assignment (أهم شاشة في Core HR)</h4>
+          <ul>
+            <li>Business Unit، Legal Employer، Department، Location.</li>
+            <li>Job، Position، Grade.</li>
+            <li>المدير المباشر (Line Manager).</li>
+            <li>الحالة (Assignment Status): Active، Suspended، Inactive.</li>
+            <li>نوع العمل: Full-time / Part-time، دائم / مؤقت، ساعات العمل، فترة الاختبار.</li>
+          </ul>
+
+          <h4>أنواع الأشخاص (Person Types)</h4>
+          <ul>
+            <li><strong>Employee:</strong> موظف على قوة الشركة.</li>
+            <li><strong>Contingent Worker:</strong> متعاقد أو عمالة من شركة توريد — بيشتغل عندنا بس مش على الـ Payroll بتاعنا.</li>
+            <li><strong>Pending Worker:</strong> اتقبل ولسه مبدأش — بيتحول لموظف يوم الاستلام.</li>
+            <li><strong>Nonworker:</strong> حد ليه علاقة من غير ما يشتغل (متدرب بدون أجر، عضو مجلس إدارة).</li>
+          </ul>
+          <div class="tip">💡 المستويات دي هي نفسها الجداول اللي بتكتب عليها SQL: Person ← <span class="en">PER_ALL_PEOPLE_F</span>، Work Relationship ← <span class="en">PER_PERIODS_OF_SERVICE</span>، Assignment ← <span class="en">PER_ALL_ASSIGNMENTS_M</span>. لما تفهم الشاشة هتفهم الـ JOIN.</div>
+        `
+      },
+      {
+        icon:"🔄",
+        title:"3) الحركات (Actions): اللي بيحصل للموظف مع الوقت",
+        body: `
+          <p>أي تغيير على الموظف في Core HR اسمه <strong>Action</strong>، وكل Action ليه <strong>Action Reason</strong> (السبب). دي دورة حياة الموظف:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>الحركة</th><th>بتعمل إيه</th><th>مثال</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Hire</strong></td><td>تعيين موظف جديد — بتنشئ Person و Work Relationship و Assignment</td><td>تعيين أحمد محاسب يوم 1 يناير 2024</td></tr>
+              <tr><td><strong>Add Pending Worker</strong></td><td>تسجيل حد اتقبل ولسه مستلمش</td><td>أحمد وقّع العرض وهيبدأ الشهر الجاي</td></tr>
+              <tr><td><strong>Change Assignment</strong></td><td>تعديل عام في بيانات الشغل</td><td>تغيير ساعات العمل من 8 لـ 6</td></tr>
+              <tr><td><strong>Transfer</strong></td><td>نقل لقسم أو مكان تاني جوه نفس الشركة</td><td>من مالية القاهرة لمالية إسكندرية</td></tr>
+              <tr><td><strong>Promote</strong></td><td>ترقية: Job أو Grade أعلى</td><td>من محاسب G5 لمحاسب أول G6</td></tr>
+              <tr><td><strong>Change Manager</strong></td><td>تغيير المدير المباشر</td><td>سارة مشيت وبقى مديره خالد</td></tr>
+              <tr><td><strong>Global Transfer</strong></td><td>نقل دائم لشركة قانونية تانية في المجموعة</td><td>من النيل للتجارة (مصر) للنيل السعودية</td></tr>
+              <tr><td><strong>Global Temporary Assignment</strong></td><td>انتداب مؤقت لشركة تانية وراجع</td><td>6 شهور في فرع السعودية</td></tr>
+              <tr><td><strong>Termination</strong></td><td>إنهاء الخدمة</td><td>استقالة — السبب: عرض أفضل</td></tr>
+              <tr><td><strong>Rehire</strong></td><td>إعادة تعيين موظف سابق</td><td>أحمد رجع بعد سنة بنفس رقمه</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>أهم فكرة في Core HR كله: التاريخ (Date Effectivity)</h4>
+          <p>السيستم <strong>مبيمسحش القديم</strong>. كل تغيير بيتسجل بتاريخ سريان، والقديم بيفضل محفوظ:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>من</th><th>لـ</th><th>الوظيفة</th><th>الدرجة</th><th>الحركة</th></tr></thead>
+            <tbody>
+              <tr><td>1 يناير 2024</td><td>30 يونيو 2025</td><td>محاسب</td><td>G5</td><td>Hire</td></tr>
+              <tr><td>1 يوليو 2025</td><td>لأجل غير مسمى</td><td>محاسب أول</td><td>G6</td><td>Promote</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>فتقدر تسأل السيستم: "أحمد كان إيه يوم 1 مارس 2025؟" ويجاوب: محاسب G5. وتقدر كمان تسجّل ترقية <strong>بتاريخ مستقبلي</strong> وهي تسري لوحدها يوم ما التاريخ ييجي.</p>
+
+          <h4>Update ولا Correct؟</h4>
+          <ul>
+            <li><strong>Update:</strong> حصل تغيير حقيقي ← صف جديد بتاريخ جديد والقديم يفضل. (أحمد اترقى.)</li>
+            <li><strong>Correct:</strong> البيانات كانت متدخلة غلط ← تعديل على نفس الصف من غير تاريخ جديد. (اتكتب G4 بالغلط وهي G5.)</li>
+          </ul>
+
+          <h4>الاعتمادات (Approvals)</h4>
+          <p>أغلب الحركات مبتتنفذش على طول. المدير يطلب ترقية ← تروح لمدير المدير ← تروح للـ HR ← بعد الموافقة الأخيرة البيانات تتحدث. ومين يوافق على إيه ده بيتظبط كإعدادات.</p>
+          <div class="tip">⚠️ دي أصل أشهر غلطة في تقارير الـ SQL: لو نسيت شرط التاريخ (<span class="en">TRUNC(SYSDATE) BETWEEN effective_start_date AND effective_end_date</span>) أحمد هيطلعلك مرتين — مرة محاسب ومرة محاسب أول.</div>
+        `
+      },
+      {
+        icon:"🖱️",
+        title:"فين ده كله في البرنامج؟ (الشاشات)",
+        body: `
+          <p>لما تفتح أوراكل HCM هتلاقي تابات رئيسية فوق، وCore HR متوزع عليها حسب <strong>مين اللي داخل</strong>:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>التاب</th><th>لمين</th><th>بيعمل منه إيه في Core HR</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Me</strong></td><td>الموظف نفسه (Employee Self Service)</td><td>يشوف ويعدّل بياناته: العنوان، التليفون، جهات الاتصال، المستندات، ويشوف بيانات شغله</td></tr>
+              <tr><td><strong>My Team</strong></td><td>المدير (Manager Self Service)</td><td>يشوف فريقه، يطلب ترقية أو نقل أو تغيير مدير أو إنهاء خدمة</td></tr>
+              <tr><td><strong>My Client Groups</strong></td><td>موظف الـ HR</td><td>كل حاجة: Hire an Employee، Person Management، Promote، Transfer، Terminate، Document Records، الهياكل</td></tr>
+              <tr><td><strong>Setup and Maintenance</strong></td><td>الاستشاري</td><td>الإعدادات: الهياكل، الـ Lookups، الـ Actions والأسباب، الاعتمادات</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>مثال: تعيين أحمد من الشاشة خطوة بخطوة</h4>
+          <ol>
+            <li><span class="en">My Client Groups → Hire an Employee</span>.</li>
+            <li><strong>When and Why:</strong> تاريخ التعيين 1 يناير 2024، الشركة (Legal Employer): النيل للتجارة، الـ Action: Hire، السبب: New Position.</li>
+            <li><strong>Personal Details:</strong> الاسم، تاريخ الميلاد، الرقم القومي.</li>
+            <li><strong>Communication و Addresses:</strong> الإيميل، التليفون، العنوان.</li>
+            <li><strong>Employment Details:</strong> Business Unit، Department: المالية، Job: محاسب، Grade: G5، Location: القاهرة.</li>
+            <li><strong>Managers:</strong> المدير المباشر: سارة.</li>
+            <li><strong>Salary:</strong> الأساسي 10,000.</li>
+            <li><strong>Submit</strong> ← الطلب يروح للاعتماد ← بعد الموافقة أحمد بقى موظف وليه Person Number.</li>
+          </ol>
+          <p>أسماء الشاشات وترتيب الخطوات بيتغير شوية من إصدار للتاني (أوراكل بتحدّث الواجهة كل 3 شهور)، بس المحتوى واحد.</p>
+
+          <h4>حاجات تانية جوه Core HR هتقابلها</h4>
+          <ul>
+            <li><strong>Document Records:</strong> أرشيف مستندات الموظف، وممكن يبقى للمستند تاريخ انتهاء (إقامة، رخصة) والسيستم ينبّه قبله.</li>
+            <li><strong>Checklists / Journeys:</strong> قائمة مهام تتفتح أوتوماتيك مع حركة معينة — مثلاً مع التعيين: "استلم اللابتوب، وقّع السياسات، افتح حساب بنكي".</li>
+            <li><strong>Seniority Dates:</strong> حساب مدة الخدمة.</li>
+            <li><strong>Work Schedules:</strong> مواعيد وأيام العمل والإجازات الرسمية.</li>
+            <li><strong>Security:</strong> مين يشوف مين — موظف HR فرع إسكندرية يشوف موظفين فرعه بس.</li>
+          </ul>
+        `
+      },
+      {
+        icon:"🗄️",
+        title:"من الشاشة للجدول: Core HR بعين التكنيكال",
+        body: `
+          <p>كل حاجة شفتها في الشاشات ليها جدول. دي الخريطة:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>اللي في الشاشة</th><th>الجدول</th></tr></thead>
+            <tbody>
+              <tr><td>الشخص (الرقم، تاريخ البداية)</td><td><span class="en">PER_ALL_PEOPLE_F</span></td></tr>
+              <tr><td>تاريخ الميلاد وبيانات ثابتة</td><td><span class="en">PER_PERSONS</span></td></tr>
+              <tr><td>الاسم</td><td><span class="en">PER_PERSON_NAMES_F</span></td></tr>
+              <tr><td>الرقم القومي</td><td><span class="en">PER_NATIONAL_IDENTIFIERS</span></td></tr>
+              <tr><td>الإيميل / التليفون</td><td><span class="en">PER_EMAIL_ADDRESSES / PER_PHONES</span></td></tr>
+              <tr><td>Work Relationship</td><td><span class="en">PER_PERIODS_OF_SERVICE</span></td></tr>
+              <tr><td>Assignment</td><td><span class="en">PER_ALL_ASSIGNMENTS_M</span></td></tr>
+              <tr><td>المدير</td><td><span class="en">PER_ASSIGNMENT_SUPERVISORS_F</span></td></tr>
+              <tr><td>القسم والشركة القانونية</td><td><span class="en">HR_ALL_ORGANIZATION_UNITS_F</span></td></tr>
+              <tr><td>Job</td><td><span class="en">PER_JOBS_F</span></td></tr>
+              <tr><td>Position</td><td><span class="en">HR_ALL_POSITIONS_F</span></td></tr>
+              <tr><td>Grade</td><td><span class="en">PER_GRADES_F</span></td></tr>
+              <tr><td>Location</td><td><span class="en">HR_LOCATIONS_ALL</span></td></tr>
+              <tr><td>الحركات (Actions)</td><td><span class="en">PER_ACTION_OCCURRENCES</span></td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>الجداول دي مشروحة بالتفصيل في تاب <strong>الجداول</strong>. واتأكد من الأسماء من توثيق أوراكل (Tables and Views for HCM) قبل ما تبني عليها.</p>
+
+          <h4>شغل التكنيكال في Core HR</h4>
+          <ul>
+            <li><strong>تقارير:</strong> كشف الموظفين، التعيينات والاستقالات في الشهر، الـ Headcount لكل قسم، المستندات اللي هتنتهي.</li>
+            <li><strong>HDL:</strong> رفع الموظفين في أول المشروع بملف <span class="en">Worker.dat</span>، والهياكل بملفات زي <span class="en">Job.dat</span> و <span class="en">Grade.dat</span> و <span class="en">Location.dat</span>.</li>
+            <li><strong>Integrations:</strong> إرسال بيانات الموظفين لأنظمة تانية (بصمة، بريد إلكتروني، ERP).</li>
+          </ul>
+
+          <h4>إيه اللي <em>مش</em> Core HR؟</h4>
+          <ul>
+            <li><strong>حساب</strong> المرتب والـ Payslip ← Payroll. (Core HR بيعرف الأساسي كام، بس مبيحسبش الصافي.)</li>
+            <li>طلب الإجازات والأرصدة ← Absence.</li>
+            <li>الحضور والانصراف ← Time and Labor.</li>
+            <li>التقييم والأهداف ← Talent.</li>
+            <li>التأمين الطبي ← Benefits.</li>
+          </ul>
+
+          <h4>اختبر نفسك</h4>
+          <ol>
+            <li>يعني إيه كلمة Core؟ وليه الموديول اتسمى كده؟</li>
+            <li>إيه المستويات التلاتة اللي الموظف متخزن عليها؟</li>
+            <li>أحمد اترقى — أنهي مستوى اتغير؟</li>
+            <li>الفرق بين Job و Position؟</li>
+            <li>الفرق بين Update و Correct؟</li>
+          </ol>
+          <p><strong>الإجابات:</strong> (1) القلب أو الأساس، لأن كل الموديولات بتعتمد على بياناته. (2) Person ثم Work Relationship ثم Assignment. (3) الـ Assignment بس. (4) الـ Job مسمى عام، والـ Position خانة محددة في قسم معين ليها عدد مقاعد. (5) Update بيضيف صف جديد بتاريخ جديد لتغيير حقيقي، و Correct بيصلّح غلطة في نفس الصف.</p>
+        `
+      },
+    ]
+  },
+  {
+    lesson:"الدرس 5: حاجات بتقابلها في البرنامج",
+    cards:[
+      {
+        icon:"🎛️",
+        title:"General Preferences: الإعدادات اللي بتظهر لما تضغط على صورتك",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <p><strong>General Preferences</strong> = "التفضيلات العامة". دي إعدادات شخصية <strong>لحسابك أنت بس</strong>، بتحدد السيستم يتعرضلك بأنهي شكل. مبتغيرش أي بيانات ولا بتأثر على أي مستخدم تاني.</p>
+          <p><strong>بتوصلها من:</strong> صورتك فوق ← <span class="en">Settings and Actions</span> ← <span class="en">Set Preferences</span>.</p>
+
+          <h4>فيها إيه؟</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>القسم</th><th>بيتحكم في إيه</th><th>مثال</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Regional</strong></td><td>شكل التاريخ والوقت والأرقام والعملة والمنطقة الزمنية</td><td>التاريخ يظهر 31/12/2025 بدل 12/31/2025</td></tr>
+              <tr><td><strong>Language</strong></td><td>لغة الواجهة</td><td>تحوّل عربي فالشاشة كلها تبقى من اليمين للشمال</td></tr>
+              <tr><td><strong>Accessibility</strong></td><td>وضع قارئ الشاشة، التباين العالي، حجم الخط</td><td>تكبير الخط لو الشاشة صغيرة</td></tr>
+              <tr><td><strong>Password</strong></td><td>تغيير كلمة السر</td><td>—</td></tr>
+              <tr><td><strong>Proxies</strong></td><td>تفويض حد يشتغل مكانك</td><td>مدير مسافر يفوّض زميله يوافق على الطلبات بداله</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>أسماء الأقسام ممكن تختلف شوية حسب الإصدار، فاللي ظاهر عندك هو المرجع.</p>
+
+          <h4>تفاصيل Regional (أهم قسم)</h4>
+          <ul>
+            <li><strong>Territory:</strong> البلد. لما تختاره بيظبط باقي الخانات على المعتاد فيه.</li>
+            <li><strong>Date Format:</strong> ترتيب اليوم والشهر والسنة.</li>
+            <li><strong>Time Format:</strong> 12 ساعة أو 24.</li>
+            <li><strong>Number Format:</strong> الفاصلة العشرية وفاصلة الآلاف — زي 10,000.50 أو 10.000,50.</li>
+            <li><strong>Currency:</strong> العملة الافتراضية للعرض.</li>
+            <li><strong>Time Zone:</strong> المنطقة الزمنية اللي بتتعرض بيها الأوقات.</li>
+          </ul>
+
+          <h4>ليه تهمك كاستشاري؟</h4>
+          <ul>
+            <li><strong>الشكل بس اللي بيتغير، مش القيمة:</strong> التاريخ متخزن في الداتابيز بنفس الطريقة، والـ SQL بتاعك مبيتأثرش.</li>
+            <li><strong>مصدر لخبطة مشهور:</strong> مستخدم يقول "التاريخ غلط"، ويطلع إنه شايف 03/04/2025 وفاهمها 3 أبريل، وهي عنده 4 مارس بسبب الـ Date Format.</li>
+            <li><strong>في الاختبار:</strong> لو الـ Test Script مكتوب بصيغة تاريخ وحسابك على صيغة تانية، هتدخّل تواريخ غلط من غير ما تاخد بالك. وحّد الصيغة مع الفريق من الأول.</li>
+            <li><strong>اللغة:</strong> لو العميل هيشتغل عربي، جرّب الشاشات والتقارير وأنت محوّل عربي، لأن فيه حاجات بتبان مختلفة.</li>
+            <li><strong>التقارير ليها إعدادات لوحدها:</strong> BI Publisher ليه صفحة My Account فيها لغة ومنطقة زمنية للتقارير، منفصلة عن دي. لو تقرير طالع بصيغة غير اللي في الشاشة، بص هناك (واتأكد منها في إصدارك).</li>
+          </ul>
+
+          <h4>الفرق بينها وبين Setup and Maintenance</h4>
+          <ul>
+            <li><strong>General Preferences:</strong> ليك أنت بس، وأي مستخدم يقدر يغيرها لنفسه.</li>
+            <li><strong>Setup and Maintenance:</strong> إعدادات الشركة كلها، وبيعملها الاستشاري بصلاحيات خاصة.</li>
+          </ul>
+          <div class="tip">💡 أول ما تستلم حساب على أي بيئة جديدة: ادخل هنا واظبط الـ Date Format والـ Time Zone واللغة. دقيقة واحدة بتوفّر عليك لخبطة أسابيع.</div>
         `
       },
     ]
