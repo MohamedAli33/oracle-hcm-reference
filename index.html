@@ -863,6 +863,72 @@
   .advice-body .en{direction:ltr;unicode-bidi:embed;font-family:"Fira Code","JetBrains Mono","Consolas","Courier New",monospace;font-size:12px;color:var(--accent2);}
   .table-scroll{overflow-x:auto;}
 
+  .gl-grid{grid-template-columns:repeat(auto-fill, minmax(270px,1fr));}
+  .gl-card{gap:7px;padding:14px 16px;}
+  .gl-card:hover{transform:none;}
+  .gl-card[hidden]{display:none;}
+  .gl-job{
+    margin:2px 0 0;
+    padding:8px 11px;
+    font-size:12.5px;
+    font-weight:500;
+    line-height:1.8;
+    color:#c7cfe3;
+    background:rgba(139,125,255,.09);
+    border-inline-start:3px solid var(--accent3);
+    border-radius:8px;
+  }
+  .gl-job strong{color:var(--accent3);font-weight:800;}
+  .gl-head{
+    direction:ltr;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0;
+  }
+  .gl-head .cmd-name{
+    font-family:"Segoe UI","Tahoma",sans-serif;
+    font-size:15.5px;
+    flex:1;
+    min-width:0;
+    overflow-wrap:anywhere;
+  }
+  .gl-speak{
+    flex-shrink:0;
+    width:34px;
+    height:34px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    border:1px solid rgba(79,209,197,.35);
+    background:rgba(79,209,197,.1);
+    color:var(--accent2);
+    cursor:pointer;
+    padding:0;
+    transition:background .15s ease, transform .15s ease, border-color .15s ease;
+  }
+  .gl-speak svg{width:17px;height:17px;pointer-events:none;}
+  .gl-speak:hover{background:rgba(79,209,197,.22);border-color:var(--accent2);}
+  .gl-speak:focus-visible{outline:2px solid var(--accent2);outline-offset:2px;}
+  .gl-speak:active{transform:scale(.92);}
+  .gl-speak.speaking{
+    background:var(--accent2);
+    color:#0f1420;
+    border-color:var(--accent2);
+  }
+  .gl-note,.gl-empty{
+    max-width:1100px;
+    margin:16px auto 0;
+    padding:0 20px;
+    font-size:13.5px;
+    font-weight:600;
+    color:var(--muted);
+  }
+  .gl-empty{text-align:center;margin-top:40px;font-size:15px;}
+  @media (prefers-reduced-motion: reduce){
+    .gl-speak{transition:none;}
+  }
+
   .controls{
     max-width:1100px;
     margin:18px auto 0;
@@ -1283,6 +1349,7 @@
     <div class="page-nav-btn" data-view="fastformula">⚡ Fast Formula</div>
     <div class="page-nav-btn" data-view="advice">🧭 نصايح الطريق</div>
     <div class="page-nav-btn" data-view="consultant">🎓 تعلم استشاري</div>
+    <div class="page-nav-btn" data-view="glossary">📖 المسميات</div>
   </div>
 </div>
 
@@ -1357,6 +1424,20 @@
   <div class="section-title"><h2>🎓 تعلم استشاري</h2><div class="line"></div></div>
   <p class="commands-intro">هنا بنبص على أوراكل HCM بعين الاستشاري مش بعين المبرمج: كل موديول بيحل مشكلة إيه عند العميل، مين بيستخدمه، وبيتربط بإيه. كل درس مبني على سلايد من كورسات أوراكل الرسمية ومشروح بأمثلة من الواقع.</p>
   <div class="advice" id="consultantContainer"></div>
+</div>
+
+<div id="view-glossary" class="view">
+  <div class="section-title"><h2>📖 المسميات</h2><div class="line"></div></div>
+  <p class="commands-intro">أشهر المصطلحات اللي هتسمعها كاستشاري Oracle HCM في الاجتماعات والمستندات والشاشات — كل مصطلح: معناه بالعربي وشرح في سطر. اضغط على السماعة 🔊 جنب أي اسم علشان تسمع نطقه بالإنجليزي.</p>
+  <div class="controls">
+    <div class="search-box">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#93a0bd" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input id="glossarySearch" type="text" placeholder="دوّر على مصطلح بالإنجليزي أو بالعربي... مثال: UAT, assignment, ترقية">
+    </div>
+  </div>
+  <p class="gl-note" id="glossaryNoVoice" hidden>المتصفح ده مبيدعمش النطق الصوتي — جرّب Chrome أو Edge.</p>
+  <div id="glossaryContainer"></div>
+  <div class="gl-empty" id="glossaryEmpty" hidden>مفيش مصطلح مطابق 🔍</div>
 </div>
 
 <footer>
@@ -5141,6 +5222,253 @@ const CONSULTANT = [
           <div class="tip">💡 أول ما تستلم حساب على أي بيئة جديدة: ادخل هنا واظبط الـ Date Format والـ Time Zone واللغة. دقيقة واحدة بتوفّر عليك لخبطة أسابيع.</div>
         `
       },
+      {
+        icon:"🛠️",
+        title:"Setup and Maintenance و Functional Setup Manager: أهميتهم إيه؟",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <ul>
+            <li><strong>Setup and Maintenance</strong> (الإعداد والصيانة): <strong>منطقة العمل</strong> اللي بتفتحها في السيستم علشان تظبط الإعدادات.</li>
+            <li><strong>Functional Setup Manager</strong> (مدير الإعداد الوظيفي، اختصاره <strong>FSM</strong>): <strong>الأداة</strong> اللي شغالة ورا المنطقة دي وبتنظّم كل الإعدادات.</li>
+          </ul>
+          <p>في الشغل الاسمين بيتقالوا على نفس الحاجة: "ادخل الـ FSM" = "ادخل Setup and Maintenance".</p>
+          <p><strong>بتتفتح منين:</strong> اضغط على صورتك ← <span class="en">Setup and Maintenance</span> (أو من الـ Navigator). ومحتاج صلاحية استشاري تطبيق، زي الـ Role اللي اسمه <span class="en">Application Implementation Consultant</span>.</p>
+
+          <h4>الإعدادات متنظمة جواها إزاي؟</h4>
+          <p>4 مستويات من الكبير للصغير:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>المستوى</th><th>يعني إيه</th><th>مثال من HCM</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Offering</strong></td><td>باقة وظائف كبيرة</td><td>Workforce Deployment</td></tr>
+              <tr><td><strong>Functional Area</strong></td><td>قسم جوه الباقة</td><td>Workforce Structures</td></tr>
+              <tr><td><strong>Feature</strong></td><td>ميزة اختيارية تفعّلها أو لأ (Opt In)</td><td>استخدام الـ Positions</td></tr>
+              <tr><td><strong>Task</strong></td><td>مهمة إعداد واحدة بتفتح شاشة</td><td>Manage Jobs، Manage Grades، Manage Locations</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>تشبيه: الـ Offering زي <strong>كتاب</strong>، الـ Functional Area زي <strong>فصل</strong>، والـ Task زي <strong>صفحة</strong> فيها حاجة واحدة تعملها.</p>
+
+          <h4>أهميتها: ليه هي أهم مكان للاستشاري؟</h4>
+          <ul>
+            <li><strong>مكان واحد لكل الإعدادات:</strong> مش محتاج تحفظ مكان كل شاشة إعداد. كله من هنا.</li>
+            <li><strong>ترتيب صح:</strong> المهام مترتبة حسب الاعتماديات — مينفعش تعمل Department قبل ما يكون فيه Legal Entity، وهي بتمشّيك بالترتيب.</li>
+            <li><strong>بتوريك المطلوب بس:</strong> بتفعّل الـ Offerings والـ Features اللي العميل اشتراها، فتظهرلك المهام بتاعتها بس بدل آلاف المهام.</li>
+            <li><strong>بحث عن أي مهمة:</strong> تكتب اسم المهمة في البحث وتوصلها على طول.</li>
+            <li><strong>نقل الإعدادات بين البيئات:</strong> منها بتعمل Export للإعدادات من Test و Import على Production بدل ما تعيد كل حاجة بالإيد.</li>
+            <li><strong>متابعة المشروع:</strong> تقدر تعمل Implementation Project، توزّع المهام على الفريق، وتتابع حالة كل مهمة.</li>
+          </ul>
+          <div class="tip">💡 الخلاصة: المستخدم العادي شغله في <strong>Me و My Team و My Client Groups</strong>. الاستشاري شغله في <strong>Setup and Maintenance</strong>. دي "ورشتك".</div>
+
+          <h4>بتشتغل فيها إزاي خطوة بخطوة؟</h4>
+          <ol>
+            <li>افتح <span class="en">Setup and Maintenance</span>.</li>
+            <li>من القايمة فوق اختار الـ <strong>Offering</strong> (مثلاً Workforce Deployment).</li>
+            <li>أول مرة بس: اضغط <span class="en">Change Feature Opt In</span> وفعّل الـ Functional Areas والـ Features المطلوبة.</li>
+            <li>اختار الـ <strong>Functional Area</strong> من الشمال (مثلاً Workforce Structures).</li>
+            <li>هتظهر قايمة الـ <strong>Tasks</strong> — وتقدر تبدّل بين Required Tasks و All Tasks.</li>
+            <li>اضغط على المهمة (مثلاً <span class="en">Manage Jobs</span>) ← تفتح شاشة الإعداد ← Create ← دخّل البيانات ← Save.</li>
+          </ol>
+          <p>لو عارف اسم المهمة: استخدم <strong>أيقونة البحث عن المهام</strong> واكتب الاسم مباشرة — ده اللي بتعمله 90% من الوقت بعد ما تتعود.</p>
+
+          <h4>مثال</h4>
+          <p>العميل عاوز يضيف وظيفة جديدة "محلل بيانات": Setup and Maintenance ← ابحث عن <span class="en">Manage Jobs</span> ← Create ← الاسم والكود وتاريخ البداية ← Save. الوظيفة بقت تظهر في شاشة التعيين.</p>
+
+          <h4>مهام هتستخدمها كتير في HCM</h4>
+          <ul>
+            <li><span class="en">Manage Enterprise HCM Information</span> — إعدادات المؤسسة العامة.</li>
+            <li><span class="en">Manage Legal Entity</span> / <span class="en">Manage Business Unit</span>.</li>
+            <li><span class="en">Manage Departments</span> / <span class="en">Manage Locations</span>.</li>
+            <li><span class="en">Manage Jobs</span> / <span class="en">Manage Positions</span> / <span class="en">Manage Grades</span>.</li>
+            <li><span class="en">Manage Common Lookups</span> — قوايم القيم.</li>
+            <li><span class="en">Manage Actions</span> / <span class="en">Manage Action Reasons</span>.</li>
+          </ul>
+          <p class="img-cap">أسماء المهام والقوايم ممكن تختلف شوية حسب الإصدار — البحث عن المهمة بالاسم هو أضمن طريقة.</p>
+        `
+      },
+      {
+        icon:"🆘",
+        title:"وقفت عليك حاجة؟ أشهر المواقع اللي بتحل المشكلة",
+        body: `
+          <h4>أولاً: مصادر أوراكل الرسمية (الأساس)</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>الموقع</th><th>فيه إيه</th><th>تروحله إمتى</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Oracle Help Center</strong><br><span class="en">docs.oracle.com/en/cloud/saas/human-resources</span></td><td>التوثيق الرسمي: كتب Implementing و Using لكل موديول، دليل HDL، دليل Fast Formula، و Tables and Views for HCM</td><td>أول مكان دايماً. مجاني ومن غير حساب</td></tr>
+              <tr><td><strong>My Oracle Support (MOS)</strong><br><span class="en">support.oracle.com</span></td><td>قاعدة معرفة فيها حلول لمشاكل وأخطاء محددة (كل مقال ليه Doc ID)، والـ Bugs المعروفة، ومنه بتفتح Service Request لأوراكل</td><td>لما يطلعلك Error أو السيستم بيتصرف غلط</td></tr>
+              <tr><td><strong>Cloud Customer Connect</strong><br><span class="en">community.oracle.com/customerconnect</span></td><td>المنتدى الرسمي: أسئلة وأجوبة من استشاريين وموظفي أوراكل، منتدى لكل موديول، و Report Sharing Center فيه تقارير و SQL جاهزة</td><td>سؤال "إزاي أعمل كذا؟" أو "حد قابل المشكلة دي؟"</td></tr>
+              <tr><td><strong>Release Readiness (What's New)</strong></td><td>الجديد في كل تحديث ربع سنوي (مثلاً 25A، 25B)</td><td>شاشة اتغيرت فجأة، أو عاوز تعرف ميزة جديدة</td></tr>
+              <tr><td><strong>Oracle MyLearn</strong><br><span class="en">mylearn.oracle.com</span></td><td>الكورسات الرسمية والشهادات</td><td>تتعلم موديول من الأول بشكل منظم</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <div class="tip">⚠️ My Oracle Support محتاج <strong>CSI Number</strong> (رقم دعم العميل) — بتاخده من شركتك أو من العميل. من غير شغل مش هتعرف تدخله. الباقي بيتفتح بحساب أوراكل مجاني أو من غير حساب.</div>
+
+          <h4>ثانياً: مواقع المجتمع (شرح عملي بأمثلة)</h4>
+          <ul>
+            <li><strong>Fusion HCM Knowledgebase</strong> <span class="en">(fusionhcmknowledgebase.com)</span>: مقالات عملية كتير عن الـ SQL والتقارير والـ HDL والـ Fast Formula في HCM بالذات.</li>
+            <li><strong>Apps2Fusion</strong> <span class="en">(apps2fusion.com)</span>: مقالات وكورسات قديمة ومعروفة عن Fusion تقني ووظيفي.</li>
+            <li><strong>YouTube:</strong> دور باسم الشاشة أو المهمة بالإنجليزي (مثلاً "Oracle HCM Cloud absence plan setup") — مفيد جداً لما تحب تشوف الخطوات قدامك.</li>
+            <li><strong>LinkedIn:</strong> تابع استشاريين HCM وجروبات Oracle HCM Cloud — بيتنشر فيها حلول وتجارب من مشاريع حقيقية، وبتعرف منها السوق.</li>
+          </ul>
+
+          <h4>ثالثاً: للـ SQL والتقني العام</h4>
+          <ul>
+            <li><strong>Ask TOM</strong> <span class="en">(asktom.oracle.com)</span>: أسئلة وأجوبة Oracle SQL من خبراء أوراكل.</li>
+            <li><strong>Stack Overflow:</strong> لأي مشكلة SQL عامة (مش خاصة بـ HCM).</li>
+            <li><strong>Oracle SQL Language Reference</strong> على docs.oracle.com: المرجع الرسمي لكل دالة.</li>
+          </ul>
+
+          <h4>أدور فين حسب نوع المشكلة؟</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>المشكلة</th><th>ابدأ من</th></tr></thead>
+            <tbody>
+              <tr><td>مش عارف أظبط إعداد معين</td><td>كتاب Implementing بتاع الموديول في Help Center</td></tr>
+              <tr><td>طلعلي Error برقم أو رسالة</td><td>انسخ الرسالة ودوّر بيها في My Oracle Support ثم Customer Connect</td></tr>
+              <tr><td>عاوز أعرف البيانات دي في أنهي جدول</td><td>Tables and Views for HCM، وبعدها Customer Connect</td></tr>
+              <tr><td>ملف HDL بيفشل</td><td>دليل HCM Data Loader + منتدى HDL في Customer Connect</td></tr>
+              <tr><td>Fast Formula مش شغالة</td><td>دليل Fast Formula + الأمثلة في Fusion HCM Knowledgebase</td></tr>
+              <tr><td>الكويري بتاعي بيطلع نتيجة غلط</td><td>راجع شروط التاريخ الأول، وبعدها Ask TOM أو Stack Overflow</td></tr>
+              <tr><td>السيستم نفسه فيه عيب (Bug)</td><td>My Oracle Support، ولو مفيش حل تفتح Service Request</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>ترتيب التصعيد (ده اللي الاستشاري الشاطر بيعمله)</h4>
+          <ol>
+            <li><strong>جرّب تاني على Test</strong> واتأكد إن المشكلة بتتكرر، واكتب الخطوات بالظبط.</li>
+            <li><strong>دوّر 20–30 دقيقة</strong> في التوثيق و Customer Connect و MOS.</li>
+            <li><strong>اسأل السينيور</strong> في فريقك — ومعاك اللي جربته واللي لقيته.</li>
+            <li><strong>اسأل في Customer Connect</strong> لو السؤال عام.</li>
+            <li><strong>افتح Service Request</strong> مع أوراكل لو شكلها عيب في المنتج.</li>
+          </ol>
+
+          <h4>نصايح بتفرق</h4>
+          <ul>
+            <li><strong>دوّر بالإنجليزي وبنص رسالة الخطأ</strong> بين علامتين تنصيص، وضيف "Fusion" أو "HCM Cloud" علشان متطلعلكش نتايج EBS القديم.</li>
+            <li><strong>بص على تاريخ المقال:</strong> أوراكل بتتحدث كل 3 شهور، وحل من 2018 ممكن ميبقاش شغال.</li>
+            <li><strong>ممنوع تنشر بيانات عميل:</strong> أسماء موظفين، مرتبات، أرقام قومية، اسم الشركة — امسحهم أو غيّرهم قبل ما تسأل في أي منتدى أو أداة AI.</li>
+            <li><strong>اكتب اللي اتعلمته:</strong> كل مشكلة حليتها سجّلها (زي الموقع ده). بعد سنة هيبقى عندك مرجع شخصي أحسن من أي منتدى.</li>
+            <li>لما تسأل حد: قول <strong>عاوز أعمل إيه، عملت إيه، وطلعلي إيه</strong>. السؤال الواضح بيتجاوب في دقايق.</li>
+          </ul>
+          <div class="tip">💡 أدوات الـ AI مفيدة تشرحلك مفهوم أو تراجع كويري، بس <strong>أسماء الجداول والأعمدة وخطوات الشاشات اتأكد منها من التوثيق الرسمي</strong> قبل ما تعتمد عليها عند عميل.</div>
+        `
+      },
+      {
+        icon:"🔐",
+        title:"Security Console: مهمتها إيه وبنعمل فيها إيه خطوة بخطوة",
+        body: `
+          <h4>يعني إيه؟</h4>
+          <p>توثيق أوراكل بيعرّفها إنها <strong>منطقة عمل إدارية سهلة بتتعمل منها أغلب مهام إدارة الأمان</strong>. بالبلدي: هي غرفة التحكم في <strong>مين يدخل السيستم، ويشوف إيه، ويقدر يعمل إيه</strong>.</p>
+          <ul>
+            <li><strong>مين يقدر يفتحها:</strong> لازم يكون معاك الـ Job Role اللي اسمه <span class="en">IT Security Manager</span>.</li>
+            <li><strong>بتتفتح منين:</strong> <span class="en">Navigator → Tools → Security Console</span>. وفيه مهام في Setup and Maintenance بتفتحها برضه، زي <span class="en">Create Implementation Users</span> و <span class="en">Manage Job Roles</span> و <span class="en">Manage Duties</span>.</li>
+          </ul>
+
+          <h4>لازم تفهم الأول: أنواع الـ Roles</h4>
+          <p>الصلاحيات في أوراكل مش بتتدي للمستخدم مباشرة — بتتدي لـ <strong>Role</strong>، والـ Role هو اللي بيتدي للمستخدم.</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>النوع</th><th>يعني إيه</th><th>مثال</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Job Role</strong></td><td>صلاحيات وظيفة معينة</td><td>Human Resource Specialist، Payroll Manager</td></tr>
+              <tr><td><strong>Abstract Role</strong></td><td>صلاحيات عامة مش مرتبطة بوظيفة</td><td>Employee، Line Manager</td></tr>
+              <tr><td><strong>Duty Role</strong></td><td>مجموعة مهام صغيرة بتتركب جوه Job Role</td><td>مهمة إدارة بيانات التعيين</td></tr>
+              <tr><td><strong>Data Role</strong> (خاص بـ HCM)</td><td>Job Role + تحديد <em>بيانات مين</em> اللي يشوفها</td><td>HR Specialist لفرع إسكندرية بس</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>الـ Roles الجاهزة من أوراكل الكود بتاعها بيبدأ بـ <span class="en">ORA_</span>.</p>
+
+          <h4>التابات اللي جواها</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>التاب</th><th>بتعمل منه إيه</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Roles</strong></td><td>تدوّر على Role، تشوف شجرته (مين وارث من مين)، تنسخه، تعدّله، تقارن بين اتنين، وتحاكي الـ Navigator بتاعه</td></tr>
+              <tr><td><strong>Users</strong></td><td>تدوّر على مستخدم، تشوف الـ Roles اللي معاه، تعمل Reset Password، تقفل الحساب أو تفتحه، وتنشئ Implementation User</td></tr>
+              <tr><td><strong>Analytics</strong></td><td>إحصائيات عن الـ Roles، ومين عنده صلاحية على جدول معين</td></tr>
+              <tr><td><strong>Certificates</strong></td><td>شهادات التشفير PGP و X.509 لتبادل الملفات مع أنظمة تانية (مهمة في الـ Integrations)</td></tr>
+              <tr><td><strong>User Categories</strong></td><td>تقسيم المستخدمين مجموعات، ولكل مجموعة: شكل اسم المستخدم، سياسة كلمة السر، والإشعارات</td></tr>
+              <tr><td><strong>Administration</strong></td><td>إعدادات عامة، ومنها متابعة حالة نسخ الـ Roles (Role Copy Status)</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>قبل أي حاجة: شغّل عملية الاستيراد</h4>
+          <p>الـ Security Console بتقرا من جداول خاصة بيها، ولازم تتملي الأول بعملية اسمها <span class="en">Import User and Role Application Security Data</span>:</p>
+          <ol>
+            <li><span class="en">Setup and Maintenance</span> ← Functional Area: <span class="en">Initial Users</span> ← Task: <span class="en">Import Users and Roles into Application Security</span>.</li>
+            <li>اضغط <strong>Submit</strong>.</li>
+            <li>أوراكل بتنصح إنها تتجدول تشتغل <strong>يومياً</strong>.</li>
+          </ol>
+          <div class="tip">⚠️ لو دوّرت على مستخدم أو Role جديد وملقتوش في الـ Console، أول حاجة تشك فيها إن العملية دي مشتغلتش.</div>
+
+          <h4>المهمة 1: تعمل Role خاص بالعميل (أشهر شغل في الـ Console)</h4>
+          <p>القاعدة من أوراكل: <strong>متعدّلش الـ Role الجاهز — انسخه وعدّل النسخة</strong>. الخطوات:</p>
+          <ol>
+            <li>في تاب <strong>Roles</strong> دوّر على الـ Role واختاره من النتايج.</li>
+            <li>اضغط السهم اللي جنبه واختار <strong>Copy Role</strong>.</li>
+            <li>في نافذة <strong>Copy Options</strong> اختار واحد:
+              <ul>
+                <li><strong>Copy top role:</strong> ينسخ الـ Role نفسه بس ويفضل وارث نفس الـ Duties الأصلية. ده اللي أوراكل بتنصح بيه في الأغلب.</li>
+                <li><strong>Copy top role and inherited roles:</strong> ينسخ الشجرة كلها. تستخدمه لما تحتاج تعدّل في الـ Duties نفسها.</li>
+              </ul>
+            </li>
+            <li>في صفحة <strong>Basic Information</strong> راجع الاسم والكود والوصف. الافتراضي إن الاسم بياخد لاحقة <span class="en">Custom</span> والكود <span class="en">_CUSTOM</span>، والـ <span class="en">ORA_</span> بتتشال.</li>
+            <li>عدّي على الصفحات لحد <strong>Summary and Impact Report</strong> ← <strong>Submit and Close</strong>.</li>
+            <li>تابع الحالة في <span class="en">Administration → Role Copy Status</span>. لما تبقى Complete تقدر تعدّل النسخة.</li>
+          </ol>
+          <p><strong>مثال:</strong> العميل عاوز موظف HR يشتغل على كل حاجة <em>ماعدا</em> إنهاء الخدمة. تنسخ <span class="en">Human Resource Specialist</span>، تشيل من النسخة الجزء الخاص بالـ Termination، وتدّي النسخة للموظفين.</p>
+          <div class="tip">⚠️ النسخة <strong>مبتتديش أوتوماتيك</strong> للمستخدمين اللي معاهم الأصل — لازم تتدي لهم.</div>
+
+          <h4>المهمة 2: Reset Password</h4>
+          <ol>
+            <li>تاب <strong>Users</strong> ← دوّر على المستخدم.</li>
+            <li>من قايمة <strong>Action</strong> اختار <strong>Reset Password</strong>.</li>
+            <li>اختار: السيستم يولّد كلمة سر أوتوماتيك، أو تدخلها بإيدك.</li>
+          </ol>
+          <p>لو اختيار الإدخال اليدوي مش ظاهر: لازم يتفعّل <span class="en">Administrator can manually reset password</span> في سياسة كلمة السر بتاعة الـ User Category.</p>
+
+          <h4>المهمة 3: قفل وفتح حساب</h4>
+          <ul>
+            <li><strong>قفل:</strong> من قايمة Action اختار <strong>Lock Account</strong>، أو افتح الحساب وعلّم على <strong>Locked</strong>.</li>
+            <li><strong>فتح:</strong> افتح صفحة تعديل الحساب وشيل علامة <strong>Locked</strong>.</li>
+          </ul>
+
+          <h4>المهمة 4: إنشاء Implementation User</h4>
+          <p>زرار <strong>Add User Account</strong> في تاب Users. أوراكل بتقول إنه <strong>معمول أساساً لمستخدمي التطبيق (الاستشاريين)</strong> — يعني أنت وزمايلك في المشروع. اسم المستخدم بيتولد أوتوماتيك حسب القاعدة المتظبطة.</p>
+          <div class="tip">💡 الموظفين العاديين <strong>مبيتعملوش من هنا</strong>: حسابهم بيتعمل من HCM نفسه مع التعيين، والـ Roles بتتدي لهم أوتوماتيك بقواعد (Role Provisioning Rules). الـ Console للاستثناءات والمتابعة.</div>
+
+          <h4>المهمة 5: "المستخدم ده مش شايف الشاشة — ليه؟"</h4>
+          <ol>
+            <li>تاب <strong>Users</strong> ← افتح المستخدم ← شوف الـ Roles اللي معاه.</li>
+            <li>تاب <strong>Roles</strong> ← افتح الـ Role وشوف شجرته: فيه الصلاحية المطلوبة ولا لأ.</li>
+            <li>استخدم <strong>Compare Roles</strong> تقارنه بـ Role مستخدم تاني شايف الشاشة.</li>
+            <li>استخدم <strong>Simulate Navigator</strong> تشوف القايمة هتظهر للـ Role ده إزاي.</li>
+          </ol>
+
+          <h4>المهمة 6: سياسة كلمة السر</h4>
+          <p>تاب <strong>User Categories</strong> ← افتح الـ Category ← <strong>Password Policy</strong>: مدة الصلاحية، درجة التعقيد، عدد المحاولات قبل القفل. والمستخدم بيبقى في Category واحدة بس.</p>
+
+          <h4>حاجات <em>مش</em> بتتعمل من الـ Console</h4>
+          <ul>
+            <li><strong>HCM Data Roles و Security Profiles:</strong> بتتشاف في الـ Console، بس بتتعمل من <span class="en">Manage Data Roles and Security Profiles</span>.</li>
+            <li><strong>إعطاء Roles للموظفين تلقائياً:</strong> من قواعد الـ Role Provisioning في HCM.</li>
+          </ul>
+
+          <h4>ليه تهمك كتكنيكال؟</h4>
+          <ul>
+            <li>التقرير بتاعك شغال عندك ومش شغال عند المستخدم ← غالباً Role ناقص.</li>
+            <li>الـ Integration محتاج مستخدم خاص بـ Roles محددة.</li>
+            <li>تشفير ملفات الـ HDL والـ Extracts بيعدّي على تاب Certificates.</li>
+          </ul>
+
+          <p class="img-cap">المصادر (توثيق أوراكل الرسمي): What's the Security Console? — Securing HCM: Copy Job Role and Abstract Role، Security Console Role-Copy Options، Guidelines for Copying HCM Roles، Schedule the Import User and Role Application Security Data Process — Securing Applications: Overview of Security Console، Manage Application Users. أسماء الأزرار ممكن تختلف شوية حسب الإصدار.</p>
+        `
+      },
     ]
   },
 ];
@@ -5169,6 +5497,512 @@ consultantContainerEl.addEventListener('click', (e)=>{
   const header = e.target.closest('.advice-header');
   if(!header) return;
   header.closest('.advice-card').classList.toggle('open');
+});
+
+// المسميات — كل مصطلح: [الاسم بالإنجليزي, المعنى بالعربي, شرح في سطر, (اختياري) النص اللي يتنطق]
+const TERMS_GLOSSARY = [
+  {
+    cat:"أوراكل والكلاود", color:"#ff6b3d",
+    terms:[
+      ["Oracle Fusion","أوراكل فيوجن","اسم منظومة تطبيقات أوراكل السحابية اللي HCM جزء منها."],
+      ["HCM","إدارة رأس المال البشري","Human Capital Management — نظام الموارد البشرية كله.","H C M"],
+      ["ERP","تخطيط موارد المؤسسة","Enterprise Resource Planning — النظام اللي بيدير المالية والمشتريات والمخازن.","E R P"],
+      ["SaaS","برنامج كخدمة","Software as a Service — بتستخدم البرنامج من المتصفح باشتراك من غير ما تسطّب حاجة.","sass"],
+      ["Cloud","السحابة","السيستم شغال على سيرفرات أوراكل مش عند العميل."],
+      ["On-Premise","داخل مقر العميل","النظام القديم اللي بيتسطّب على سيرفرات الشركة نفسها، زي EBS."],
+      ["EBS","إي بي إس","E-Business Suite — نظام أوراكل القديم قبل Fusion. كتير من العملاء بينقلوا منه.","E B S"],
+      ["Module","موديول","جزء من النظام بيغطي وظيفة معينة، زي Payroll أو Absence."],
+      ["Environment","بيئة","نسخة كاملة من السيستم، زي Test أو Production. بيتقال عليها كمان Instance أو Pod."],
+      ["Instance","نسخة / بيئة","نفس معنى Environment."],
+      ["Production","بيئة التشغيل الفعلي","البيئة اللي عليها البيانات الحقيقية. بتتكتب اختصاراً Prod."],
+      ["Sandbox","صندوق التجارب","مساحة معزولة تعدّل فيها الشاشات وتجرب، وبعدين تنشر التعديل (Publish)."],
+      ["Release","إصدار","نسخة السيستم. أوراكل بتنزّل تحديث كل 3 شهور (زي 25A و 25B)."],
+      ["Quarterly Update","التحديث الربع سنوي","التحديث اللي بينزل أوتوماتيك كل 3 شهور على كل العملاء."],
+      ["Navigator","قايمة التنقل","القايمة الرئيسية اللي بتوصلك لكل الشاشات."],
+      ["Setup and Maintenance","الإعداد والصيانة","منطقة العمل اللي الاستشاري بيظبط منها كل إعدادات السيستم."],
+      ["Functional Setup Manager","مدير الإعداد الوظيفي","الأداة اللي ورا Setup and Maintenance: بترتّب الإعدادات في Offerings و Functional Areas و Tasks. بتتكتب FSM."],
+      ["Offering","عرض / باقة","مجموعة كبيرة من الوظائف في FSM، زي Workforce Deployment."],
+      ["Functional Area","منطقة وظيفية","قسم جوه الـ Offering، زي Workforce Structures."],
+      ["Task","مهمة إعداد","خطوة إعداد واحدة بتفتح شاشة معينة، زي Manage Jobs."],
+      ["Implementation Project","مشروع التطبيق (في FSM)","قايمة مهام إعداد بتختارها وتجمعها في مشروع جوه Setup and Maintenance."],
+    ]
+  },
+  {
+    cat:"المشروع والتسليم", color:"#8b7dff",
+    terms:[
+      ["Implementation","تطبيق / تنفيذ","مشروع تركيب وتظبيط السيستم عند العميل من أوله لآخره."],
+      ["Scope","نطاق العمل","اللي داخل في المشروع واللي براه."],
+      ["Statement of Work","بيان الأعمال","المستند التعاقدي اللي بيحدد الشغل المطلوب. بيتكتب SOW."],
+      ["Stakeholder","صاحب مصلحة","أي حد قراره أو شغله بيتأثر بالمشروع."],
+      ["Key User","مستخدم رئيسي","موظف من العميل فاهم الشغل كويس وبيمثّل قسمه في المشروع."],
+      ["Workshop","ورشة عمل","اجتماع بنجمع فيه المتطلبات من العميل."],
+      ["Requirement","متطلب","حاجة العميل عاوز السيستم يعملها."],
+      ["As-Is","الوضع الحالي","الشركة شغالة إزاي دلوقتي.","as is"],
+      ["To-Be","الوضع المستقبلي","الشركة هتشتغل إزاي على السيستم الجديد.","to be"],
+      ["Fit-Gap Analysis","تحليل التوافق والفجوات","مقارنة متطلبات العميل بقدرات أوراكل القياسية.","fit gap analysis"],
+      ["Gap","فجوة","متطلب أوراكل مبيغطيهوش بالإعدادات العادية."],
+      ["Workaround","حل بديل","طريقة تلف بيها حوالين مشكلة من غير تعديل في السيستم."],
+      ["Configuration","إعدادات / تهيئة","تظبيط خصائص موجودة في السيستم من غير كود."],
+      ["Customization","تخصيص","تعديل أو إضافة برّه القياسي. في الكلاود الأصح تقول Extension."],
+      ["Extension","امتداد","إضافة فوق السيستم القياسي، زي تقرير أو Fast Formula."],
+      ["Standard","القياسي","السيستم زي ما هو من أوراكل من غير تعديل."],
+      ["Best Practice","أفضل ممارسة","الطريقة المتعارف إنها الأحسن."],
+      ["Conference Room Pilot","عرض تجريبي في قاعة الاجتماعات","عرض عملي للحل قدام العميل. بيتكتب CRP."],
+      ["CRP","سي آر بي","اختصار Conference Room Pilot.","C R P"],
+      ["Unit Test","اختبار الوحدة","الاستشاري بيجرب شغله هو."],
+      ["SIT","اختبار تكامل النظام","System Integration Testing — تجربة الموديولات والأنظمة مع بعض.","S I T"],
+      ["UAT","اختبار قبول المستخدم","User Acceptance Testing — العميل يجرب بنفسه ويقبل.","U A T"],
+      ["Test Script","سكريبت اختبار","مستند فيه خطوات الاختبار والنتيجة المتوقعة."],
+      ["Defect","عيب","حاجة مطلعتش زي المتفق عليه في الاختبار."],
+      ["Change Request","طلب تغيير","طلب جديد برّه المتفق عليه، ليه وقت وتكلفة. بيتكتب CR."],
+      ["Sign-off","توقيع / اعتماد","موافقة العميل الرسمية على مرحلة أو مستند."],
+      ["Deliverable","مُخرَج","حاجة بتتسلّم للعميل: مستند، تقرير، إعداد."],
+      ["Milestone","محطة رئيسية","نقطة مهمة في خطة المشروع، غالباً مربوطة بدفعة."],
+      ["Data Migration","نقل البيانات","نقل بيانات الموظفين من النظام القديم للجديد."],
+      ["Reconciliation","مطابقة","مقارنة البيانات بعد النقل بالأصل علشان نتأكد إنها متطابقة."],
+      ["Cutover","الانتقال النهائي","الفترة اللي بنقفل فيها القديم ونشغّل الجديد."],
+      ["Go-Live","بدء التشغيل الفعلي","اليوم اللي الشركة بتبدأ تشتغل فيه على السيستم.","go live"],
+      ["Rollback","التراجع","خطة الرجوع للوضع القديم لو حصلت مشكلة كبيرة."],
+      ["Hypercare","دعم مكثف","أول أسابيع بعد التشغيل وفريق المشروع متفرغ للمشاكل."],
+      ["Knowledge Transfer","نقل المعرفة","تسليم الخبرة لفريق العميل. بيتكتب KT."],
+      ["Parallel Run","تشغيل متوازي","حساب المرتبات على النظامين ومقارنة النتايج قبل التشغيل."],
+    ]
+  },
+  {
+    cat:"هيكل الشركة", color:"#4fd1c5",
+    terms:[
+      ["Enterprise","المؤسسة","أعلى مستوى — المجموعة كلها."],
+      ["Legal Entity","كيان قانوني","شركة ليها سجل تجاري."],
+      ["Legal Employer","صاحب العمل القانوني","الشركة اللي عقد الموظف معاها."],
+      ["Business Unit","وحدة أعمال","تقسيمة إدارية للبيانات والصلاحيات. بتتكتب BU."],
+      ["Division","قطاع","تجميعة كبيرة من الأقسام."],
+      ["Department","قسم / إدارة","زي المالية والمبيعات."],
+      ["Location","موقع","المكان الفعلي بعنوانه."],
+      ["Job","وظيفة","المسمى الوظيفي العام، زي محاسب."],
+      ["Position","منصب","خانة محددة في قسم معين ليها عدد مقاعد."],
+      ["Grade","درجة وظيفية","المستوى، وممكن يتربط بيه نطاق مرتب."],
+      ["Headcount","عدد الموظفين","عدد الأفراد في قسم أو شركة."],
+      ["FTE","مكافئ الدوام الكامل","Full-Time Equivalent — موظف نص دوام يتحسب 0.5.","F T E"],
+      ["Organization Chart","الهيكل التنظيمي","رسمة مين بيتبع مين. بتتقال Org Chart."],
+      ["Hierarchy","تسلسل هرمي","ترتيب المستويات فوق بعض."],
+    ]
+  },
+  {
+    cat:"الموظف وحركاته", color:"#ff5c7a",
+    terms:[
+      ["Person","شخص","الإنسان نفسه ببياناته الشخصية."],
+      ["Worker","عامل","أي حد بيشتغل عند الشركة: موظف أو متعاقد."],
+      ["Employee","موظف","على قوة الشركة ومرتبه منها."],
+      ["Contingent Worker","عامل مؤقت / متعاقد","بيشتغل عندنا بس تبع جهة تانية."],
+      ["Pending Worker","عامل قيد الانتظار","اتقبل ولسه مستلمش الشغل."],
+      ["Work Relationship","علاقة العمل","علاقة الشخص بشركة قانونية معينة."],
+      ["Assignment","التكليف","تفاصيل شغله الحالي: القسم، الوظيفة، الدرجة، المدير."],
+      ["Line Manager","المدير المباشر","اللي الموظف بيرجعله وبيوافق على طلباته."],
+      ["Direct Report","مرؤوس مباشر","موظف بيتبع المدير مباشرة."],
+      ["Hire","تعيين","إدخال موظف جديد."],
+      ["Onboarding","التهيئة","خطوات استقبال الموظف الجديد."],
+      ["Probation","فترة الاختبار","أول شهور بعد التعيين."],
+      ["Transfer","نقل","تغيير القسم أو المكان."],
+      ["Promotion","ترقية","الانتقال لوظيفة أو درجة أعلى."],
+      ["Termination","إنهاء الخدمة","استقالة أو فصل أو معاش."],
+      ["Resignation","استقالة","الموظف هو اللي بيمشي."],
+      ["Rehire","إعادة تعيين","موظف سابق رجع."],
+      ["Offboarding","إجراءات نهاية الخدمة","تسليم العهد وإقفال الحسابات."],
+      ["Action","حركة","أي تغيير بيتسجل على الموظف."],
+      ["Action Reason","سبب الحركة","ليه الحركة دي حصلت."],
+      ["Effective Date","تاريخ السريان","التاريخ اللي التغيير بيبدأ منه."],
+      ["Date-Effective","مرتبط بالتاريخ","بيانات بتتخزن بتاريخ بداية ونهاية وبتحتفظ بالقديم.","date effective"],
+      ["Self Service","الخدمة الذاتية","الموظف أو المدير بيعمل طلباته بنفسه."],
+      ["National Identifier","الرقم القومي","رقم الهوية الرسمي للموظف."],
+      ["Seniority","الأقدمية","مدة خدمة الموظف."],
+    ]
+  },
+  {
+    cat:"المرتبات والإجازات والمزايا", color:"#f6ad55",
+    terms:[
+      ["Payroll","كشف المرتبات","حساب وصرف المرتبات."],
+      ["Element","عنصر","بند في المرتب: أساسي، بدل، خصم."],
+      ["Earnings","استحقاقات","اللي بيتضاف للموظف."],
+      ["Deduction","استقطاع","اللي بيتخصم من الموظف."],
+      ["Allowance","بدل","زي بدل الانتقال والسكن."],
+      ["Gross","الإجمالي","المرتب قبل الخصومات."],
+      ["Net","الصافي","اللي الموظف بيقبضه فعلاً."],
+      ["Payslip","قسيمة المرتب","بيان بتفاصيل المرتب الشهري."],
+      ["Payroll Run","تشغيل المرتبات","عملية حساب المرتبات للفترة."],
+      ["Retro","أثر رجعي","حساب فروق عن شهور فاتت.","retro"],
+      ["Costing","توزيع التكلفة","تحميل المرتب على مراكز التكلفة."],
+      ["Localization","التوطين","قوانين وضرائب وتقارير دولة معينة جاهزة في السيستم."],
+      ["Absence","غياب / إجازة","أي وقت الموظف مش موجود فيه."],
+      ["Absence Type","نوع الإجازة","سنوية، مرضية، وضع."],
+      ["Accrual","تراكم الرصيد","الرصيد بيزيد إزاي مع الوقت."],
+      ["Balance","رصيد","المتبقي للموظف."],
+      ["Carryover","ترحيل","نقل الرصيد المتبقي للسنة الجاية."],
+      ["Entitlement","استحقاق","اللي من حق الموظف ياخده."],
+      ["Eligibility","الأهلية","مين مستحق لحاجة معينة."],
+      ["Benefits","المزايا","تأمين طبي، معاش، وغيرها."],
+      ["Enrollment","الاشتراك","تسجيل الموظف في خطة مزايا."],
+      ["Dependent","مُعال","الزوجة والأولاد اللي على تأمين الموظف."],
+      ["Compensation","التعويضات","الزيادات والبونص وهيكل الأجور."],
+      ["Salary Basis","أساس المرتب","المرتب بيتحسب إزاي: شهري ولا بالساعة."],
+      ["Time Card","كارت الوقت","تسجيل ساعات الشغل."],
+      ["Overtime","وقت إضافي","الساعات فوق الدوام الرسمي."],
+      ["Shift","وردية","فترة العمل المحددة."],
+    ]
+  },
+  {
+    cat:"المواهب", color:"#63b3ed",
+    terms:[
+      ["Talent","المواهب","كل ما يخص تطوير الموظفين وتقييمهم."],
+      ["Recruiting","التوظيف","من فتح الوظيفة لحد التعيين."],
+      ["Requisition","طلب تعيين","طلب فتح وظيفة شاغرة."],
+      ["Candidate","مرشح","حد مقدّم على وظيفة."],
+      ["Offer","عرض وظيفي","العرض اللي بيتبعت للمرشح المقبول."],
+      ["Goal","هدف","المطلوب من الموظف يحققه."],
+      ["Performance","الأداء","تقييم شغل الموظف."],
+      ["Appraisal","تقييم","جلسة أو مستند التقييم السنوي."],
+      ["Competency","كفاءة / جدارة","مهارة أو سلوك مطلوب للوظيفة."],
+      ["Succession","الإحلال الوظيفي","تجهيز بديل للمناصب المهمة."],
+      ["Learning","التعلم","الكورسات والتدريب."],
+      ["Career Development","التطوير الوظيفي","مسار نمو الموظف."],
+    ]
+  },
+  {
+    cat:"مصطلحات تقنية", color:"#4fd1c5",
+    terms:[
+      ["HDL","محمّل بيانات HCM","HCM Data Loader — أداة رفع البيانات بالجملة بملفات نصية.","H D L"],
+      ["HSDL","محمّل البيانات بالجداول","HCM Spreadsheet Data Loader — رفع البيانات من إكسيل.","H S D L"],
+      ["BI Publisher","بي آي ببلشر","أداة التقارير اللي بتتبني على SQL. بتتكتب BIP.","B I Publisher"],
+      ["OTBI","تقارير تحليلية فورية","Oracle Transactional Business Intelligence — تقارير بالسحب والإفلات من غير SQL.","O T B I"],
+      ["Data Model","نموذج البيانات","الجزء اللي فيه الكويري في تقرير BI Publisher."],
+      ["Template","قالب","شكل التقرير النهائي."],
+      ["Subject Area","منطقة موضوع","مجموعة الأعمدة الجاهزة اللي بتبني منها تقرير OTBI."],
+      ["Fast Formula","المعادلة السريعة","لغة أوراكل لكتابة قواعد الحساب جوه السيستم."],
+      ["HCM Extract","مستخرج HCM","أداة لتطليع بيانات من السيستم في ملف لنظام تاني.","H C M extract"],
+      ["Integration","تكامل / ربط","ربط أوراكل بنظام تاني."],
+      ["Interface","واجهة ربط","نقطة تبادل البيانات بين نظامين."],
+      ["REST API","واجهة برمجية","طريقة الأنظمة بتكلم بيها أوراكل برمجياً.","rest A P I"],
+      ["Flexfield","حقل مرن","حقول إضافية تضيفها للشاشة من غير كود."],
+      ["DFF","حقل مرن وصفي","Descriptive Flexfield.","D F F"],
+      ["EFF","حقل مرن ممتد","Extensible Flexfield.","E F F"],
+      ["Lookup","قائمة قيم","قيم ثابتة بتظهر في قايمة منسدلة."],
+      ["Value Set","مجموعة قيم","القيم المسموح بيها في حقل."],
+      ["Scheduled Process","عملية مجدولة","برنامج بيشتغل في الخلفية في وقت محدد."],
+      ["Query","استعلام","جملة SQL بتجيب بيانات.","query"],
+      ["Table","جدول","مكان تخزين البيانات في الداتابيز."],
+      ["View","عرض","كويري محفوظ بتتعامل معاه كأنه جدول."],
+      ["Parameter","معامل / مُدخل","قيمة المستخدم بيدخلها قبل تشغيل التقرير."],
+      ["Bursting","توزيع التقرير","تقسيم تقرير واحد وإرساله لكل شخص الجزء بتاعه."],
+      ["Personalization","تخصيص الشاشة","تعديل شكل الصفحة: إخفاء حقل، تغيير اسم."],
+    ]
+  },
+  {
+    cat:"الأمان والاعتمادات", color:"#8b7dff",
+    terms:[
+      ["Role","دور","مجموعة صلاحيات بتتدي للمستخدم."],
+      ["Job Role","دور وظيفي","صلاحيات وظيفة معينة."],
+      ["Abstract Role","دور عام","صلاحيات مش مرتبطة بوظيفة، زي Employee."],
+      ["Duty Role","دور مهام","مجموعة مهام جوه دور وظيفي."],
+      ["Data Role","دور بيانات","دور وظيفي + بيانات مين اللي يشوفها."],
+      ["Privilege","امتياز / صلاحية","الإذن بعمل حاجة محددة."],
+      ["Security Profile","ملف أمان","بيحدد مجموعة البيانات المسموح بيها."],
+      ["Provisioning","منح الصلاحيات","إعطاء الأدوار للمستخدمين، غالباً أوتوماتيك."],
+      ["Approval","اعتماد / موافقة","موافقة المدير أو الـ HR على طلب."],
+      ["Workflow","سير العمل","خط سير الطلب من شخص لشخص."],
+      ["Delegation","تفويض","إعطاء حد تاني صلاحية يوافق مكانك."],
+      ["Audit","تدقيق / مراجعة","تتبّع مين غيّر إيه وإمتى."],
+    ]
+  },
+  {
+    cat:"الدعم والمشاكل", color:"#ff6b3d",
+    terms:[
+      ["Issue","مشكلة","أي حاجة واقفة أو مش شغالة."],
+      ["Bug","خلل برمجي","عيب في السيستم نفسه."],
+      ["Ticket","تذكرة","طلب دعم متسجل."],
+      ["Service Request","طلب خدمة","تذكرة بتتفتح مع أوراكل. بتتكتب SR."],
+      ["Root Cause","السبب الجذري","أصل المشكلة الحقيقي."],
+      ["Patch","رقعة / إصلاح","تحديث صغير بيصلّح عيب."],
+      ["Regression Test","اختبار انحدار","إعادة الاختبار بعد تعديل علشان نتأكد إن مفيش حاجة باظت."],
+      ["SLA","اتفاقية مستوى الخدمة","Service Level Agreement — الوقت المتفق عليه للرد والحل.","S L A"],
+      ["Escalation","تصعيد","رفع المشكلة لمستوى أعلى."],
+      ["Priority","الأولوية","ترتيب الأهمية."],
+      ["Severity","درجة الخطورة","تأثير المشكلة على الشغل."],
+      ["Downtime","وقت التوقف","الفترة اللي السيستم مش متاح فيها."],
+    ]
+  },
+];
+
+// مهمة كل مصطلح — المفتاح هو الاسم بالإنجليزي زي ما هو في TERMS_GLOSSARY
+const TERM_JOBS = {
+  "Oracle Fusion":"تجمع الـ HR والمالية والمشتريات في منظومة واحدة على الكلاود.",
+  "HCM":"يدير كل ما يخص الموظف من التعيين لنهاية الخدمة.",
+  "ERP":"يدير عمليات الشركة المالية والتشغيلية، وبيتربط بالـ HCM.",
+  "SaaS":"يخلّي العميل يشتغل فوراً من غير سيرفرات ولا صيانة.",
+  "Cloud":"أوراكل هي اللي بتشغّل وتحدّث وتأمّن السيستم بدل العميل.",
+  "On-Premise":"بيدّي الشركة تحكم كامل، بس عليها الصيانة والتحديث.",
+  "EBS":"مصدر البيانات اللي بننقل منه في مشاريع كتير.",
+  "Module":"يقسّم السيستم علشان العميل يشتري ويطبّق اللي محتاجه بس.",
+  "Environment":"تفصل التجربة عن الشغل الحقيقي.",
+  "Instance":"نفس مهمة الـ Environment.",
+  "Production":"يتشغّل عليها شغل الشركة اليومي الحقيقي.",
+  "Sandbox":"تجرّب فيه التعديل بأمان قبل ما المستخدمين يشوفوه.",
+  "Release":"يعرّفك أنت على أنهي نسخة وإيه المزايا المتاحة فيها.",
+  "Quarterly Update":"يضيف مزايا ويصلّح عيوب، ولازم تعيد الاختبار بعده.",
+  "Navigator":"توصّلك لأي شاشة مسموحة لك حسب صلاحياتك.",
+  "Setup and Maintenance":"المكان الواحد اللي بتتعمل منه كل إعدادات السيستم بالترتيب الصح.",
+  "Functional Setup Manager":"ينظّم الإعدادات، يرتّبها حسب الاعتماديات، وينقلها بين البيئات.",
+  "Offering":"تحدد أنهي جزء من السيستم هتفعّله وتظبطه.",
+  "Functional Area":"تجمّع المهام المتشابهة علشان تلاقيها بسهولة.",
+  "Task":"تودّيك مباشرة لشاشة الإعداد المطلوبة.",
+  "Implementation Project":"توزّع مهام الإعداد على الفريق، تتابع حالتها، وتنقل إعداداتها بين البيئات.",
+
+  "Implementation":"يحوّل السيستم من منتج عام لنظام شغال على مقاس العميل.",
+  "Scope":"يحدد حدود الشغل ويمنع المشروع يكبر من غير حساب.",
+  "Statement of Work":"المرجع التعاقدي عند أي خلاف على المطلوب.",
+  "Stakeholder":"لازم تبلّغه وتكسب موافقته لأنه بيأثر على نجاح المشروع.",
+  "Key User":"يشرح شغل قسمه، يختبر السيستم، ويدرّب زمايله.",
+  "Workshop":"نفهم منها شغل العميل ونطلّع المتطلبات.",
+  "Requirement":"الأساس اللي التصميم والاختبار بيتبنوا عليه.",
+  "As-Is":"نقطة البداية اللي بنفهم منها المشاكل الحالية.",
+  "To-Be":"الهدف اللي بنبني السيستم علشان نوصله.",
+  "Fit-Gap Analysis":"يحدد إيه جاهز في أوراكل وإيه محتاج حل إضافي.",
+  "Gap":"ينبّه إن فيه شغل زيادة: حل بديل أو Extension.",
+  "Workaround":"يحل المشكلة بسرعة ومن غير تكلفة تطوير.",
+  "Configuration":"يطوّع السيستم لقواعد الشركة.",
+  "Customization":"يغطي متطلب خاص ملوش حل قياسي.",
+  "Extension":"يسد الـ Gap من غير ما يتكسر مع التحديثات.",
+  "Standard":"الاختيار الأول دايماً لأنه مدعوم ومبيتأثرش بالتحديث.",
+  "Best Practice":"مرجع تنصح بيه العميل بدل ما يكرر أخطاء غيره.",
+  "Conference Room Pilot":"يأكد مع العميل إن التصميم صح قبل ما نكمّل البناء.",
+  "CRP":"نفس مهمة الـ Conference Room Pilot.",
+  "Unit Test":"يمسك الأخطاء قبل ما توصل للعميل.",
+  "SIT":"يتأكد إن البيانات بتعدّي صح بين الموديولات والأنظمة.",
+  "UAT":"ياخد قبول العميل الرسمي قبل التشغيل.",
+  "Test Script":"يوحّد طريقة الاختبار ويثبت إنه اتعمل.",
+  "Defect":"يتسجل ويتصلّح ويتعاد اختباره.",
+  "Change Request":"يحمي نطاق المشروع ويحسب تكلفة أي إضافة.",
+  "Sign-off":"يقفل المرحلة ويسمح ننتقل للي بعدها.",
+  "Deliverable":"دليل إن الشغل اتعمل، وعليه بتتحسب الدفعات.",
+  "Milestone":"يقيس تقدّم المشروع.",
+  "Data Migration":"يخلّي السيستم الجديد يبدأ ببيانات الشركة الحقيقية.",
+  "Reconciliation":"تثبت إن مفيش بيانات ضاعت أو اتغيرت في النقل.",
+  "Cutover":"ينظّم خطوات النقل بالساعة علشان مفيش حاجة تتنسي.",
+  "Go-Live":"اللحظة اللي الشركة بتتحول فيها للنظام الجديد.",
+  "Rollback":"شبكة الأمان لو التشغيل فشل.",
+  "Hypercare":"يثبّت السيستم ويطمّن المستخدمين في أخطر فترة.",
+  "Knowledge Transfer":"يخلّي العميل يقدر يكمّل من غير الاستشاريين.",
+  "Parallel Run":"يثبت إن حسابات المرتبات على النظام الجديد صح.",
+
+  "Enterprise":"يجمع كل شركات المجموعة تحت مظلة واحدة.",
+  "Legal Entity":"يحدد المسؤولية القانونية والضريبية.",
+  "Legal Employer":"يحدد مين المسؤول عن الموظف قانونياً وبأنهي قوانين.",
+  "Business Unit":"يفصل بيانات وصلاحيات كل وحدة عن التانية.",
+  "Division":"يساعد في التقارير على مستوى القطاعات.",
+  "Department":"يحدد الموظف تبع مين وتكلفته على مين.",
+  "Location":"يحدد مكان الشغل وعنوانه وإجازاته الرسمية.",
+  "Job":"يوحّد المسميات الوظيفية ويربطها بالدرجات.",
+  "Position":"يتحكم في عدد الوظائف المعتمدة والميزانية.",
+  "Grade":"يحدد المستوى ونطاق المرتب والمزايا.",
+  "Headcount":"مؤشر أساسي في تقارير الإدارة والميزانية.",
+  "FTE":"يقيس حجم العمالة الفعلي مش عدد الأفراد.",
+  "Organization Chart":"يوضّح خط الإدارة ومين بيتبع مين.",
+  "Hierarchy":"بتمشي عليه الاعتمادات والصلاحيات والتقارير.",
+
+  "Person":"السجل الأساسي اللي بيتربط بيه كل حاجة عن الفرد.",
+  "Worker":"مصطلح جامع بيتستخدم في الشاشات وملفات التحميل.",
+  "Employee":"بيتحسبله مرتب وإجازات ومزايا.",
+  "Contingent Worker":"بيتسجل علشان الصلاحيات والمتابعة، من غير مرتب.",
+  "Pending Worker":"يتجهزله كل حاجة قبل أول يوم شغل.",
+  "Work Relationship":"تحدد بداية ونهاية الخدمة في كل شركة.",
+  "Assignment":"أهم سجل: منه بتتحدد الصلاحيات والمرتب والتقارير.",
+  "Line Manager":"يوافق على الطلبات ويقيّم الأداء.",
+  "Direct Report":"يحدد مين بيظهر في فريق المدير.",
+  "Hire":"يبدأ دورة حياة الموظف في السيستم.",
+  "Onboarding":"يجهّز الموظف الجديد بسرعة ويضمن استكمال أوراقه.",
+  "Probation":"يتابع تاريخ انتهائها علشان قرار التثبيت.",
+  "Transfer":"يحدّث مكان الموظف مع حفظ تاريخه القديم.",
+  "Promotion":"تسجّل تقدّمه الوظيفي، وغالباً بتغيّر مرتبه.",
+  "Termination":"يوقف المرتب والصلاحيات ويحسب المستحقات.",
+  "Resignation":"سبب إنهاء خدمة بيأثر على المستحقات والتقارير.",
+  "Rehire":"يرجّع الموظف بنفس رقمه وتاريخه.",
+  "Offboarding":"يضمن إن الموظف سلّم كل اللي عليه.",
+  "Action":"يصنّف التغيير ويشغّل الاعتماد المناسب له.",
+  "Action Reason":"يدّي تفاصيل للتقارير، زي أسباب الاستقالات.",
+  "Effective Date":"يحدد التغيير يسري من إمتى.",
+  "Date-Effective":"يخلّيك تشوف البيانات في أي تاريخ: ماضي أو مستقبل.",
+  "Self Service":"يخفّف الشغل عن الـ HR ويسرّع الطلبات.",
+  "National Identifier":"يميّز الشخص ويمنع تكرار تسجيله.",
+  "Seniority":"بتتحسب عليها الإجازات والمكافآت ونهاية الخدمة.",
+
+  "Payroll":"يحسب مستحقات كل موظف ويجهّزها للصرف.",
+  "Element":"وحدة البناء اللي المرتب بيتركّب منها.",
+  "Earnings":"تزوّد إجمالي المرتب.",
+  "Deduction":"ينقّص من المرتب: ضرائب، تأمينات، سلف.",
+  "Allowance":"يعوّض الموظف عن مصاريف أو ظروف معينة.",
+  "Gross":"الأساس اللي بتتحسب عليه الضرائب والتأمينات.",
+  "Net":"المبلغ اللي بيتحوّل لحساب الموظف.",
+  "Payslip":"توضّح للموظف مرتبه اتحسب إزاي.",
+  "Payroll Run":"يطلّع نتايج المرتبات لكل الموظفين مرة واحدة.",
+  "Retro":"يصلّح أثر تغيير اتسجل متأخر.",
+  "Costing":"يودّي تكلفة المرتبات للحسابات المالية الصح.",
+  "Localization":"يوفّر بناء قواعد الدولة من الصفر.",
+  "Absence":"يسجّل الغياب ويأثر على الرصيد والمرتب.",
+  "Absence Type":"يحدد قواعد كل إجازة: مدفوعة ولا لأ، محتاجة مرفق ولا لأ.",
+  "Accrual":"يحسب رصيد الإجازات أوتوماتيك.",
+  "Balance":"يحدد الموظف يقدر ياخد كام يوم.",
+  "Carryover":"يطبّق سياسة الشركة على الرصيد في آخر السنة.",
+  "Entitlement":"يحدد الحد الأقصى المسموح للموظف.",
+  "Eligibility":"تطبّق القاعدة على الناس الصح بس.",
+  "Benefits":"يدير خطط المزايا واشتراكات الموظفين فيها.",
+  "Enrollment":"يفعّل الميزة للموظف ويبدأ الخصم.",
+  "Dependent":"بيتغطى بمزايا الموظف.",
+  "Compensation":"يدير قرارات الأجور وميزانياتها.",
+  "Salary Basis":"يربط المرتب بعنصر الـ Payroll وبنطاق الدرجة.",
+  "Time Card":"مصدر ساعات الشغل اللي بتروح للـ Payroll.",
+  "Overtime":"بيتحسب بمعدل أعلى ويتضاف للمرتب.",
+  "Shift":"تحدد مواعيد الحضور المتوقعة.",
+
+  "Talent":"يساعد الشركة تحافظ على أحسن ناسها وتطوّرهم.",
+  "Recruiting":"يجيب الشخص المناسب وينقل بياناته للـ HR.",
+  "Requisition":"ياخد الموافقة والميزانية قبل الإعلان عن الوظيفة.",
+  "Candidate":"بيتتبّع في مراحل الفرز والمقابلات.",
+  "Offer":"يوثّق الشروط المتفق عليها قبل التعيين.",
+  "Goal":"يوجّه شغل الموظف وبيتقيّم عليه.",
+  "Performance":"بيتحدد عليه الزيادة والترقية والتطوير.",
+  "Appraisal":"يوثّق نتيجة التقييم رسمياً.",
+  "Competency":"بيتقاس عليها الموظف ويتحدد منها احتياجه التدريبي.",
+  "Succession":"يضمن استمرار الشغل لو حد مهم مشي.",
+  "Learning":"يرفع مهارات الموظفين ويتابع التدريب الإجباري.",
+  "Career Development":"يوضّح للموظف مستقبله ويربطه بالشركة.",
+
+  "HDL":"يرفع ويحدّث آلاف السجلات مرة واحدة.",
+  "HSDL":"يخلّي المستخدم العادي يرفع بيانات من غير ملفات معقدة.",
+  "BI Publisher":"يطلّع تقارير بشكل رسمي مظبوط: PDF و Excel.",
+  "OTBI":"يخلّي المستخدم يعمل تقريره بنفسه.",
+  "Data Model":"يجيب البيانات اللي التقرير هيعرضها.",
+  "Template":"يحدد شكل وتنسيق المخرجات.",
+  "Subject Area":"توفّر عليك معرفة الجداول والـ Joins.",
+  "Fast Formula":"تنفّذ قواعد الشركة الخاصة اللي الإعدادات مبتكفيهاش.",
+  "HCM Extract":"يجهّز ملفات للبنوك والتأمينات والأنظمة الخارجية.",
+  "Integration":"يمنع إدخال نفس البيانات مرتين في نظامين.",
+  "Interface":"تحدد شكل البيانات الرايحة والجاية.",
+  "REST API":"تقرا وتكتب بيانات في أوراكل من برنامج تاني.",
+  "Flexfield":"يسجّل بيانات خاصة بالعميل مش موجودة في القياسي.",
+  "DFF":"يضيف حقول بسيطة على سجل موجود.",
+  "EFF":"يضيف مجموعات حقول ممكن تتكرر أكتر من مرة.",
+  "Lookup":"توحّد القيم وتمنع الكتابة الحرة.",
+  "Value Set":"تتحقق من صحة المدخلات.",
+  "Scheduled Process":"تنفّذ الشغل التقيل والمتكرر أوتوماتيك.",
+  "Query":"يستخرج البيانات اللي التقرير محتاجها.",
+  "Table":"مصدر بيانات أي كويري.",
+  "View":"يبسّط الكويريهات المعقدة.",
+  "Parameter":"يخلّي نفس التقرير يشتغل لحالات مختلفة.",
+  "Bursting":"يبعت لكل موظف أو مدير اللي يخصه بس، زي الـ Payslips.",
+  "Personalization":"يبسّط الشاشة للمستخدمين.",
+
+  "Role":"يحدد المستخدم يشوف إيه ويعمل إيه.",
+  "Job Role":"يدّي الموظف صلاحيات شغله.",
+  "Abstract Role":"يدّي الصلاحيات العامة زي الخدمة الذاتية.",
+  "Duty Role":"بيتركّب منه الدور الوظيفي.",
+  "Data Role":"يحدد نطاق البيانات مع الصلاحيات.",
+  "Privilege":"أصغر وحدة صلاحية في السيستم.",
+  "Security Profile":"يمنع المستخدم يشوف بيانات برّه نطاقه.",
+  "Provisioning":"يدّي ويسحب الأدوار مع التعيين والنقل وإنهاء الخدمة.",
+  "Approval":"يضمن رقابة على التغييرات قبل ما تتنفذ.",
+  "Workflow":"يوجّه الطلب للشخص الصح بالترتيب الصح.",
+  "Delegation":"يمنع الطلبات تقف وقت غياب المدير.",
+  "Audit":"يكشف الأخطاء والتلاعب ويلبّي متطلبات المراجعة.",
+
+  "Issue":"تتسجل وتتابع لحد ما تتحل.",
+  "Bug":"يتبلّغ لأوراكل علشان تصلّحه.",
+  "Ticket":"تتبّع المشكلة ومين مسؤول عنها.",
+  "Service Request":"تاخد بيه دعم رسمي من أوراكل.",
+  "Root Cause":"معرفته بتمنع المشكلة تتكرر.",
+  "Patch":"يحل مشكلة محددة من غير انتظار التحديث الكبير.",
+  "Regression Test":"يحمي الشغل القديم من آثار أي تغيير.",
+  "SLA":"تحدد التزامات فريق الدعم.",
+  "Escalation":"يحرّك المشاكل اللي واقفة.",
+  "Priority":"تحدد إيه يتحل الأول.",
+  "Severity":"تحدد مستوى الاستعجال.",
+  "Downtime":"بيتخطط له ويتبلّغ بيه المستخدمين.",
+};
+
+const glossaryContainerEl = document.getElementById('glossaryContainer');
+const glossaryEmptyEl = document.getElementById('glossaryEmpty');
+const canSpeak = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance !== 'undefined';
+if(!canSpeak) document.getElementById('glossaryNoVoice').hidden = false;
+const speakerIcon = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+
+TERMS_GLOSSARY.forEach(g=>{
+  const wrap = document.createElement('div');
+  wrap.className = 'cmd-category';
+  wrap.innerHTML = `<h3><span class="dot" style="background:${g.color}"></span><span></span></h3><div class="cmd-grid gl-grid"></div>`;
+  wrap.querySelector('h3 span:last-child').textContent = `${g.cat} (${g.terms.length})`;
+  const grid = wrap.querySelector('.gl-grid');
+  g.terms.forEach(([en, ar, desc, say])=>{
+    const card = document.createElement('div');
+    card.className = 'cmd-card gl-card';
+    const job = TERM_JOBS[en] || '';
+    card.dataset.search = `${en} ${ar} ${desc} ${job}`.toLowerCase();
+    card.innerHTML = `
+      <div class="gl-head">
+        <span class="cmd-name"></span>
+        ${canSpeak ? `<button class="gl-speak" type="button">${speakerIcon}</button>` : ''}
+      </div>
+      <p class="cmd-purpose"></p>
+      <p class="cmd-explain"></p>
+      ${job ? '<p class="gl-job"><strong>مهمتها:</strong> <span></span></p>' : ''}
+    `;
+    if(job) card.querySelector('.gl-job span').textContent = job;
+    card.querySelector('.cmd-name').textContent = en;
+    card.querySelector('.cmd-purpose').textContent = ar;
+    card.querySelector('.cmd-explain').textContent = desc;
+    const btn = card.querySelector('.gl-speak');
+    if(btn){
+      btn.dataset.say = say || en;
+      btn.setAttribute('aria-label', `انطق ${en}`);
+      btn.title = 'اسمع النطق';
+    }
+    grid.appendChild(card);
+  });
+  glossaryContainerEl.appendChild(wrap);
+});
+
+function pickEnglishVoice(){
+  const voices = speechSynthesis.getVoices();
+  return voices.find(v=>/^en[-_]US/i.test(v.lang)) || voices.find(v=>/^en/i.test(v.lang)) || null;
+}
+if(canSpeak){
+  speechSynthesis.getVoices();
+  glossaryContainerEl.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.gl-speak');
+    if(!btn) return;
+    speechSynthesis.cancel();
+    document.querySelectorAll('.gl-speak.speaking').forEach(b=>b.classList.remove('speaking'));
+    const u = new SpeechSynthesisUtterance(btn.dataset.say);
+    const voice = pickEnglishVoice();
+    if(voice) u.voice = voice;
+    u.lang = voice ? voice.lang : 'en-US';
+    u.rate = 0.85;
+    u.onend = u.onerror = ()=>btn.classList.remove('speaking');
+    btn.classList.add('speaking');
+    speechSynthesis.speak(u);
+  });
+}
+
+document.getElementById('glossarySearch').addEventListener('input', (e)=>{
+  const q = e.target.value.trim().toLowerCase();
+  let shown = 0;
+  glossaryContainerEl.querySelectorAll('.cmd-category').forEach(cat=>{
+    let inCat = 0;
+    cat.querySelectorAll('.gl-card').forEach(card=>{
+      const match = !q || card.dataset.search.includes(q);
+      card.hidden = !match;
+      if(match) inCat++;
+    });
+    cat.hidden = inCat === 0;
+    shown += inCat;
+  });
+  glossaryEmptyEl.hidden = shown !== 0;
 });
 
 // Page-level navigation (tables / tricks / compare / reports)
