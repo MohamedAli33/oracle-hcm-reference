@@ -4353,6 +4353,200 @@ const CONSULTANT = [
       },
     ]
   },
+  {
+    lesson:"الدرس 2: مراحل مشروع التطبيق (Implementation) — من التحليل للـ Setup",
+    cards:[
+      {
+        icon:"🧭",
+        title:"الصورة الكبيرة: المشروع بيمشي إزاي؟",
+        body: `
+          <p>أي مشروع أوراكل HCM بيمشي بنفس المنطق اللي بيمشي بيه مهندس بيبني بيت: <strong>يعاين الأرض ← يرسم ← يبني ← يختبر ← يسلّم</strong>. محدش بيفتح السيستم ويبدأ يظبط إعدادات من أول يوم.</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>المرحلة</th><th>السؤال اللي بتجاوب عليه</th><th>المخرج الأساسي</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Analysis</strong></td><td>الشركة شغالة إزاي <em>دلوقتي</em>؟</td><td>وصف الوضع الحالي (As-Is)</td></tr>
+              <tr><td><strong>Design</strong></td><td>الشركة <em>هتشتغل</em> إزاي على أوراكل؟</td><td>RD.011 — Future Process Model (To-Be)</td></tr>
+              <tr><td><strong>Configuration</strong></td><td>نبني التصميم ده في السيستم</td><td>سيستم متظبط + مستند الإعدادات</td></tr>
+              <tr><td><strong>Testing</strong></td><td>اللي اتبنى شغال صح؟</td><td>موافقة العميل (UAT Sign-off)</td></tr>
+              <tr><td><strong>Go-Live</strong></td><td>ننقل للتشغيل الفعلي</td><td>الشركة شغالة على Production</td></tr>
+            </tbody>
+          </table>
+          </div>
+          <p>المراحل دي جاية من منهجية أوراكل الرسمية <strong>OUM (Oracle Unified Method)</strong> واللي قبلها <strong>AIM</strong>. كل شركة استشارات بتسميها أسماء مختلفة شوية، بس الترتيب والمنطق واحد.</p>
+          <div class="tip">💡 القاعدة الذهبية: <strong>تكلفة الغلطة بتزيد كل ما اتأخر اكتشافها</strong>. غلطة في الـ Analysis تتصلح بسطر في مستند. نفس الغلطة بعد الـ Go-Live ممكن تبوّظ مرتبات شهر كامل.</div>
+        `
+      },
+      {
+        icon:"🔍",
+        title:"1) Analysis: نحلل كل حاجة موجودة في الشركة",
+        body: `
+          <h4>بنعمل إيه؟</h4>
+          <p>بنقعد مع العميل في <strong>ورش عمل (Workshops)</strong> ونفهم الوضع الحالي بالتفصيل — ده اسمه <strong>As-Is</strong>:</p>
+          <ul>
+            <li><strong>الهيكل:</strong> كام شركة قانونية؟ كام فرع؟ الأقسام والوظائف والدرجات.</li>
+            <li><strong>السياسات:</strong> لائحة الإجازات، قواعد الأوفر تايم، سلم المرتبات، البدلات.</li>
+            <li><strong>العمليات:</strong> التعيين بيتم إزاي؟ مين بيوافق على الإجازة؟ الترقية بتمشي على كام مستوى اعتماد؟</li>
+            <li><strong>الأنظمة والبيانات:</strong> شغالين على إيه دلوقتي (سيستم قديم، إكسيل)؟ البيانات نضيفة ولا لأ؟</li>
+            <li><strong>المشاكل (Pain Points):</strong> إيه اللي مضايقهم وعاوزين يحلوه؟</li>
+          </ul>
+
+          <h4>مثال</h4>
+          <p>في ورشة الإجازات العميل قال: "الموظف بياخد 21 يوم سنوي، بعد 10 سنين خدمة بتبقى 30، والمتبقي بيترحّل بحد أقصى 7 أيام، والطلب بيتوافق عليه من المدير المباشر وبعدين الـ HR". ده كله بيتكتب زي ما هو، من غير ما نفكر لسه هنعمله إزاي على أوراكل.</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <ul>
+            <li>مينفعش تصمم حل لمشكلة مش فاهمها.</li>
+            <li>بتحدد <strong>حجم الشغل الحقيقي (Scope)</strong> — كتير بيطلع إن الشركة عندها 6 أنواع عقود مش 2 زي ما اتقال في البيع.</li>
+            <li>بتكشف التعقيدات بدري: استثناءات، قواعد غير مكتوبة، بيانات ناقصة.</li>
+            <li>بتبني ثقة مع العميل — بيحس إنك فهمت شغله قبل ما تقترح عليه حاجة.</li>
+          </ul>
+          <div class="tip">💡 اطلب دايماً <strong>مستندات فعلية</strong> مش كلام: Payslip حقيقي، نموذج طلب إجازة، الـ Org Chart، لائحة الشركة. الكلام في الورش بيبقى ناقص، والورق بيكشف الاستثناءات.</div>
+        `
+      },
+      {
+        icon:"📐",
+        title:"2) Design و RD.011 (Future Process Model): المتطلبات",
+        body: `
+          <h4>بنعمل إيه؟</h4>
+          <p>بناخد اللي فهمناه في الـ Analysis ونرسم <strong>الشكل المستقبلي (To-Be)</strong>: كل عملية هتتم إزاي على أوراكل، خطوة بخطوة، ومين هيعمل إيه.</p>
+
+          <h4>RD.011 يعني إيه؟</h4>
+          <p>ده كود مستند في منهجية أوراكل OUM. <strong>RD</strong> = Requirements Definition (تعريف المتطلبات)، و<strong>011</strong> رقم المستند، واسمه <strong>Future Process Model</strong>. المستند ده بيبقى فيه لكل عملية:</p>
+          <ul>
+            <li>رسمة الـ Process Flow (مين بيبدأ، مين بيوافق، إيه اللي بيحصل بعدها).</li>
+            <li>المتطلبات بالتفصيل (القواعد، الشروط، الاستثناءات).</li>
+            <li>أوراكل هيغطي كل متطلب إزاي.</li>
+          </ul>
+
+          <h4>أهم حاجة في المرحلة: الـ Fit-Gap</h4>
+          <p>بنقارن كل متطلب بقدرات أوراكل القياسية:</p>
+          <ul>
+            <li><strong>Fit:</strong> أوراكل بيعملها بالإعدادات العادية. (مثال: 21 يوم إجازة سنوية ← Accrual Plan عادي.)</li>
+            <li><strong>Gap:</strong> أوراكل مش بيعملها زي ما العميل عاوز. وليها 4 حلول بالترتيب ده:
+              <ol>
+                <li>العميل <strong>يغيّر طريقته</strong> ويمشي على الـ Standard (أرخص وأأمن حل).</li>
+                <li><strong>Workaround</strong> — نلف حواليها بإعدادات موجودة.</li>
+                <li><strong>Fast Formula</strong> أو Extension — وهنا بييجي دور التكنيكال.</li>
+                <li>تتأجل لمرحلة تانية أو تتشال من الـ Scope.</li>
+              </ol>
+            </li>
+          </ul>
+          <p><strong>مثال Gap:</strong> "الإجازة تبقى 30 يوم بعد 10 سنين خدمة" — الإعدادات العادية ممكن متكفيش لقاعدة الشركة بالظبط ← نكتب <strong>Accrual Fast Formula</strong> بتحسب الرصيد حسب مدة الخدمة.</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <ul>
+            <li><strong>التوقيع (Sign-off):</strong> العميل بيوقّع على المستند. ده بيحميك من "إحنا مقلناش كده" وبيحمي العميل من إنك تبني حاجة غير اللي طلبها.</li>
+            <li>هو <strong>المرجع</strong> اللي الـ Configuration والـ Testing هيمشوا عليه.</li>
+            <li>أي طلب جديد بعد التوقيع بيبقى <strong>Change Request</strong> ليه وقت وتكلفة — وده اللي بيمنع المشروع يفضل مفتوح للأبد.</li>
+          </ul>
+          <div class="tip">💡 هتقابل أكواد مستندات تانية من نفس العيلة: <strong>BR.100</strong> (مستند الإعدادات)، <strong>MD.050</strong> (تصميم Functional لتقرير أو Extension — ده اللي بيتسلّم لك كتكنيكال)، <strong>MD.070</strong> (التصميم التقني اللي أنت بتكتبه)، <strong>TE.040 / TE.050</strong> (سكريبتات الاختبار)، <strong>CV.040</strong> (خريطة نقل البيانات). الأرقام بتختلف شوية بين AIM و OUM وبين شركة والتانية، فامشي على قوالب الشركة اللي شغال فيها.</div>
+        `
+      },
+      {
+        icon:"⚙️",
+        title:"3) Configuration Phase: نبني التصميم في السيستم",
+        body: `
+          <h4>بنعمل إيه؟</h4>
+          <p>بننفذ اللي اتوقّع عليه في الـ Design جوه أوراكل، من شاشة <strong>Setup and Maintenance (FSM)</strong>. <strong>Configuration</strong> يعني بنظبط إعدادات موجودة في السيستم، مش بنكتب كود جديد.</p>
+          <p>وبيتعمل <strong>بترتيب</strong> لأن كل حاجة معتمدة على اللي قبلها:</p>
+          <ol>
+            <li>Enterprise Structures: Enterprise ← Legal Entity ← Business Unit.</li>
+            <li>Workforce Structures: Locations ← Departments ← Grades ← Jobs ← Positions.</li>
+            <li>القيم المرجعية (Lookups، Value Sets، Flexfields).</li>
+            <li>إعدادات كل موديول (Absence Plans، Elements، ...).</li>
+            <li>الصلاحيات (Security Roles) والاعتمادات (Approvals).</li>
+          </ol>
+
+          <h4>مثال</h4>
+          <p>من مستند التصميم: "إجازة سنوية 21 يوم تترحّل بحد أقصى 7". الاستشاري بيعمل <strong>Absence Plan</strong> من نوع Accrual، يحط المعدل والـ Carryover Limit، يربطه بـ <strong>Absence Type</strong> اسمه "إجازة سنوية"، ويحدد مين المستحق (Eligibility Profile).</p>
+
+          <h4>بنعملها ليه؟</h4>
+          <p>هنا الورق بيتحول لسيستم شغال. وكل إعداد بيتسجل في مستند (BR.100 أو اللي يقابله) علشان:</p>
+          <ul>
+            <li>نقدر <strong>نعيد نفس الإعدادات</strong> على بيئة تانية (من Test لـ Production).</li>
+            <li>فريق الدعم بعد الـ Go-Live يعرف السيستم اتظبط إزاي وليه.</li>
+          </ul>
+          <div class="tip">💡 دورك كتكنيكال في المرحلة دي: التقارير (BIP / OTBI)، الـ Fast Formulas بتاعة الـ Gaps، تجهيز ملفات الـ HDL لنقل البيانات، والـ Integrations.</div>
+        `
+      },
+      {
+        icon:"🧪",
+        title:"4) Demo Environment و Setup (Test): نشتغل فين؟",
+        body: `
+          <p>أوراكل كلاود مش نسخة واحدة — فيه أكتر من <strong>بيئة (Environment / Instance)</strong>، وكل واحدة ليها دور:</p>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>البيئة</th><th>فيها إيه</th><th>بنستخدمها في إيه</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Demo</strong></td><td>شركة وهمية جاهزة ببيانات كاملة من أوراكل</td><td>نوري العميل السيستم بيعمل إيه قبل ما نظبط حاجة</td></tr>
+              <tr><td><strong>Test</strong></td><td>إعدادات العميل الحقيقية + بيانات تجريبية</td><td>نبني ونجرب ونغلط براحتنا</td></tr>
+              <tr><td><strong>Production</strong></td><td>الإعدادات المعتمدة + بيانات الموظفين الحقيقية</td><td>التشغيل الفعلي بعد الـ Go-Live</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>Demo Environment — ليه؟</h4>
+          <ul>
+            <li>العميل صعب يتخيل من الورق. لما يشوف شاشة طلب الإجازة قدامه بيقول "آه بس إحنا عاوزين خانة للمرفقات" — وده متطلب كان هيتنسى.</li>
+            <li>بتتستخدم في الورش وفي الـ <strong>CRP (Conference Room Pilot)</strong>: عرض عملي للعملية كاملة قدام العميل.</li>
+            <li>مش بتاعة العميل، فمفيش خوف نبوّظ حاجة.</li>
+            <li>وليك أنت: أحسن مكان تتعلم وتجرب فيه.</li>
+          </ul>
+
+          <h4>Setup على Test — ليه مش على Production على طول؟</h4>
+          <ul>
+            <li>حاجات كتير في أوراكل <strong>مبتتمسحش بعد ما تتحفظ</strong> (Legal Entity، Element اتستخدم في Payroll Run...). الغلطة على Production بتفضل للأبد.</li>
+            <li>بنجرب على Test كل السيناريوهات: تعيين، إجازة، ترقية، حساب مرتب، ونتأكد إن النتيجة زي المستند.</li>
+            <li>مراحل الاختبار: <strong>Unit Test</strong> (الاستشاري يجرب شغله) ← <strong>SIT</strong> (الموديولات مع بعض) ← <strong>UAT</strong> (العميل نفسه يجرب ويوقّع).</li>
+            <li>بعد التوقيع، نفس الإعدادات بتتنقل لـ Production.</li>
+          </ul>
+
+          <h4>مثال</h4>
+          <p>على Test عملنا موظف تجريبي تاريخ تعيينه من 11 سنة وطلبنا رصيده: لو طلع 30 يوم يبقى الـ Fast Formula صح. لو طلع 21 يبقى فيه غلط — واكتشفناه من غير ما موظف حقيقي يتأثر.</p>
+          <div class="tip">⚠️ أي تعديل، حتى لو صغير، بيتعمل على Test الأول ويتجرب وبعدين يتنقل. "هعدلها على Production على طول، دي حاجة بسيطة" هي أشهر جملة قبل أي كارثة.</div>
+        `
+      },
+      {
+        icon:"🏁",
+        title:"اللي بعد كده + اختبر نفسك",
+        body: `
+          <h4>المراحل اللي بتكمل بعد الـ Setup</h4>
+          <ol>
+            <li><strong>Data Migration:</strong> نقل بيانات الموظفين من النظام القديم بالـ HDL — بتتجرب على Test كذا مرة قبل Production.</li>
+            <li><strong>UAT:</strong> العميل يجرب بنفسه ويوقّع.</li>
+            <li><strong>Training:</strong> تدريب المستخدمين.</li>
+            <li><strong>Cutover و Go-Live:</strong> النقل النهائي وبداية التشغيل.</li>
+            <li><strong>Hypercare / Support:</strong> دعم مكثف أول كام أسبوع.</li>
+          </ol>
+
+          <h4>مثال واحد ماشي في كل المراحل</h4>
+          <div class="table-scroll">
+          <table class="mini">
+            <thead><tr><th>المرحلة</th><th>اللي حصل لمتطلب "الإجازة السنوية"</th></tr></thead>
+            <tbody>
+              <tr><td>Analysis</td><td>العميل شرح: 21 يوم، 30 بعد 10 سنين، ترحيل 7 أيام</td></tr>
+              <tr><td>Demo</td><td>وريناه شاشة طلب الإجازة، فطلب خانة مرفقات للإجازة المرضية</td></tr>
+              <tr><td>Design (RD.011)</td><td>اتكتب الـ Flow والقواعد، واتحدد إن قاعدة الـ 10 سنين Gap محتاج Fast Formula — والعميل وقّع</td></tr>
+              <tr><td>Configuration</td><td>اتعمل الـ Absence Plan والـ Type واتكتبت الـ Formula</td></tr>
+              <tr><td>Setup (Test)</td><td>اتجرب على موظفين تجريبيين بمدد خدمة مختلفة</td></tr>
+              <tr><td>UAT ← Production</td><td>الـ HR جرّب ووقّع، والإعدادات اتنقلت</td></tr>
+            </tbody>
+          </table>
+          </div>
+
+          <h4>اختبر نفسك</h4>
+          <ol>
+            <li>إيه الفرق بين As-Is و To-Be؟ وكل واحد في أنهي مرحلة؟</li>
+            <li>ليه لازم العميل يوقّع على الـ RD.011؟</li>
+            <li>العميل طلب حاجة أوراكل مبيعملهاش — إيه أول حل تقترحه؟</li>
+            <li>ليه بنظبط على Test قبل Production؟</li>
+          </ol>
+          <p><strong>الإجابات:</strong> (1) As-Is الوضع الحالي في الـ Analysis، To-Be الوضع المستقبلي في الـ Design. (2) علشان يبقى مرجع ثابت وأي جديد بعده يبقى Change Request. (3) إن العميل يمشي على الـ Standard، وبعدها Workaround، وآخر حاجة Customization. (4) لأن الغلط على Production بيأثر على بيانات حقيقية وفيه إعدادات مبتتمسحش.</p>
+        `
+      },
+    ]
+  },
 ];
 
 const consultantContainerEl = document.getElementById('consultantContainer');
